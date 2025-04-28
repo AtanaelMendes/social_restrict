@@ -7,22 +7,23 @@ plugins {
 android {
     namespace = "com.example.social_restrict"
 
-    compileSdk = 34
+    compileSdk = 35
     ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true // <<<<<< TEM QUE TER ESSA LINHA
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     defaultConfig {
         applicationId = "com.example.social_restrict"
         minSdk = 22
-        targetSdk = 34
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -43,7 +44,13 @@ dependencies {
 }
 
 // Repositórios para dependências
+
 allprojects {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions {
+            jvmTarget = "17"
+        }
+    }
     repositories {
         google()
         mavenCentral()
