@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screentime/android/apps_controller.dart';
-import 'package:flutter_screentime/android/constant.dart';
+import 'package:social_restrict/android/apps_controller.dart';
+import 'package:social_restrict/android/constant.dart';
 import 'package:get/instance_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:permission_handler/permission_handler.dart';

@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter_screentime/android/apps_controller.dart';
-import 'package:flutter_screentime/android/method_channel_controller.dart';
-import 'package:flutter_screentime/android/permission_controller.dart';
+import 'package:social_restrict/android/apps_controller.dart';
+import 'package:social_restrict/android/method_channel_controller.dart';
+import 'package:social_restrict/android/permission_controller.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

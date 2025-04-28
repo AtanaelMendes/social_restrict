@@ -6,5 +6,5 @@ class NavigationService {
   static SharedPreferences? prefs;
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   static MethodChannel methodChannel =
-      const MethodChannel('flutter_screentime');
+      const MethodChannel('social_restrict');
 }

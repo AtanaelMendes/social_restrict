@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screentime/android/constant.dart';
-import 'package:flutter_screentime/android/method_channel_controller.dart';
+import 'package:social_restrict/android/constant.dart';
+import 'package:social_restrict/android/method_channel_controller.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/state_manager.dart';
 
