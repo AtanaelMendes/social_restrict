@@ -1,3 +1,29 @@
+plugins {
+    id("com.android.application") apply false
+    id("com.android.library") apply false
+    kotlin("android") apply false
+}
+
+subprojects {
+    afterEvaluate {
+        if (plugins.hasPlugin("com.android.application") || plugins.hasPlugin("com.android.library")) {
+            extensions.configure<com.android.build.gradle.BaseExtension> {
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
+                    isCoreLibraryDesugaringEnabled = true
+                }
+                tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+                    kotlinOptions {
+                        jvmTarget = "17"
+                    }
+                }
+
+            }
+        }
+    }
+}
+
 allprojects {
     repositories {
         google()
