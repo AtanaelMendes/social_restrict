@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:app_usage/app_usage.dart';
-import 'package:device_apps/device_apps.dart';
+// import 'package:device_apps/device_apps.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
