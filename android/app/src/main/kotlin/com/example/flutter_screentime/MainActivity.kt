@@ -3,11 +3,10 @@ package com.example.flutter_screentime
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
+import android.os.Binder
 import android.provider.Settings
 import android.app.AppOpsManager
 import android.content.Context
-import android.os.Process
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -28,19 +27,43 @@ class MainActivity: FlutterActivity() {
                             Uri.parse("package:$packageName")
                         )
                         startActivity(intent)
+                        result.success(false)
+                    } else {
+                        result.success(true)
                     }
-                    result.success(true)
                 }
                 "askUsageStatsPermission" -> {
-                    val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-                    intent.data = Uri.parse("package:$packageName")
-                    startActivity(intent)
-                    result.success(true)
+                    if (!hasUsageStatsPermission()) {
+                        val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                        intent.data = Uri.parse("package:$packageName")
+                        startActivity(intent)
+                        result.success(false)
+                    } else {
+                        result.success(true)
+                    }
                 }
                 else -> {
                     result.notImplemented()
                 }
             }
         }
+    }
+
+    private fun hasUsageStatsPermission(): Boolean {
+        val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+        val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            appOps.unsafeCheckOpNoThrow(
+                AppOpsManager.OPSTR_GET_USAGE_STATS,
+                applicationInfo.uid,
+                packageName
+            )
+        } else {
+            appOps.checkOpNoThrow(
+                AppOpsManager.OPSTR_GET_USAGE_STATS,
+                Binder.getCallingUid(),
+                packageName
+            )
+        }
+        return mode == AppOpsManager.MODE_ALLOWED
     }
 }
