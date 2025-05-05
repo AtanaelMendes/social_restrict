@@ -34,6 +34,7 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
     BackgroundFetch.finish(taskId);
     return;
   }
+
   print('[BackgroundFetch] Headless event received.');
   // Do your work here...
   BackgroundFetch.finish(taskId);
@@ -146,7 +147,6 @@ Future<void> initservice() async {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
   final String title;
 
   @override
@@ -156,149 +156,75 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
+    super.initState();
+
     if (Platform.isAndroid) {
       Get.put(AppsController(prefs: Get.find()));
-
-      Get.find<AppsController>().getAppsData();
-      Get.find<AppsController>().getLockedApps();
-      Get.find<MethodChannelController>().addToLockedAppsMethod();
-      Get.find<PermissionController>()
-          .getPermission(Permission.ignoreBatteryOptimizations);
-      
-      askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
-      getAndroidPermissions();
-      getAndroidUsageStats();
+      _initializeAndroidServices();
     }
-    initializeNotifications();
 
-    super.initState();
+    _initializeNotifications();
   }
 
-  void initializeNotifications() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
-    await FirebaseMessaging.instance.requestPermission();
-    String? fcmToken = await FirebaseMessaging.instance.getToken();
+  Future<void> _initializeAndroidServices() async {
+    final appsController = Get.find<AppsController>();
+    final methodController = Get.find<MethodChannelController>();
+    final permissionController = Get.find<PermissionController>();
 
-    NotificationHandler.initialize();
-    print("TOKEN: " + fcmToken!);
+    await appsController.getAppsData();
+    await appsController.getLockedApps();
+    await methodController.addToLockedAppsMethod();
+    await permissionController.getPermission(Permission.ignoreBatteryOptimizations);
+
+    askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
+    await _checkAndRequestAndroidPermissions();
+    await _getAndroidUsageStats();
   }
 
-  void getAndroidUsageStats() async {
+  Future<void> _checkAndRequestAndroidPermissions() async {
+    final methodController = Get.find<MethodChannelController>();
+
+    if (!(await methodController.checkNotificationPermission()) ||
+        !(await methodController.checkOverlayPermission()) ||
+        !(await methodController.checkUsageStatePermission())) {
+      methodController.update();
+      askPermissionBottomSheet(context);
+    }
+
+    await _setAndroidPasscode();
+    await methodController.startForeground();
+  }
+
+  Future<void> _setAndroidPasscode() async {
+    final appsController = Get.find<AppsController>();
+    await appsController.savePasscode("927594");
+    await Get.find<MethodChannelController>().setPassword();
+  }
+
+  Future<void> _getAndroidUsageStats() async {
     try {
       DateTime endDate = DateTime.now();
       DateTime startDate = endDate.subtract(const Duration(days: 1));
-      List<AppUsageInfo> infoList =
-          await AppUsage().getAppUsage(startDate, endDate);
+      List<AppUsageInfo> infoList = await AppUsage().getAppUsage(startDate, endDate);
 
       for (var info in infoList) {
         print(info.toString());
       }
-    } on AppUsageException catch (exception) {
-      print(exception);
+    } on AppUsageException catch (e) {
+      print("Erro ao obter uso de apps: $e");
     }
   }
 
-  setAndroidPasscode() async {
-    Get.find<AppsController>().savePasscode("927594");
-    await Get.find<MethodChannelController>().setPassword();
-  }
+  Future<void> _initializeNotifications() async {
+    await FirebaseMessaging.instance.requestPermission();
+    final token = await FirebaseMessaging.instance.getToken();
 
-  getAndroidPermissions() async {
-    if (!(await Get.find<MethodChannelController>()
-            .checkNotificationPermission()) ||
-        !(await Get.find<MethodChannelController>().checkOverlayPermission()) ||
-        !(await Get.find<MethodChannelController>()
-            .checkUsageStatePermission())) {
-      Get.find<MethodChannelController>().update();
-      askPermissionBottomSheet(context);
-    }
-
-    await setAndroidPasscode();
-    await Get.find<MethodChannelController>().startForeground();
+    NotificationHandler.initialize();
+    print("TOKEN FCM: $token");
   }
 
   @override
   Widget build(BuildContext context) {
     return const BackgroundMainPage(title: "RHBrasil");
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Text(widget.title),
-    //   ),
-    //   body: Center(
-    //     child: Column(
-    //       mainAxisAlignment: MainAxisAlignment.center,
-    //       children: <Widget>[
-    //         TextButton(
-    //           onPressed: () async {
-    //             if (Platform.isIOS) {
-    //               methodChannel.invokeMethod('blockApps', { 'apps': ['ph.telegra.Telegraph', 'com.copel.mbf'] });
-    //             }
-
-    //             if (Platform.isAndroid) {
-    //                //var apps = await DeviceApps.getInstalledApplications(includeAppIcons: false, includeSystemApps: false, onlyAppsWithLaunchIntent: true);
-    //                var app = await DeviceApps.getApp("com.google.android.youtube", true);
-    //                await Get.find<AppsController>().addToLockedApps(app!);
-    //             }
-
-    //           },
-    //           child: const Text('bloquear aplicativos'),
-    //         ),
-    //         TextButton(
-    //           onPressed: () async {
-    //             if (Platform.isIOS) {
-    //               methodChannel.invokeMethod('unlockApps', { 'apps': ['ph.telegra.Telegraph', 'com.copel.mbf'] });
-    //             }
-
-    //             if (Platform.isAndroid) {
-    //               //  var app = await DeviceApps.getApp("com.google.android.youtube", true);
-    //               //  var appData = new ApplicationData(appName: app!.appName,
-    //               //  apkFilePath: app!.apkFilePath, packageName: app!.packageName,
-    //               //  versionName: app!.versionName!,
-    //               //  versionCode: app!.versionCode!.toString(),
-    //               //  dataDir: app!.dataDir!,
-    //               //  systemApp: app!.systemApp,
-    //               //  installTimeMillis: app!.installTimeMillis.toString(),
-    //               //  updateTimeMillis: app!.updateTimeMillis.toString(),
-    //               //  category: app!.category.name,
-    //               //  enabled: app!.enabled);
-    //               //  await Get.find<AppsController>().addRemoveFromLockedAppsFromSearch(appData);
-
-    //                var app = await DeviceApps.getApp("com.google.android.youtube", true);
-    //                await Get.find<AppsController>().addToLockedApps(app!);
-    //             }
-
-    //           },
-    //           child: const Text('liberar aplicativos'),
-    //          ),
-    //           TextButton(
-    //           onPressed: () {
-    //             if (Platform.isIOS) {
-    //               methodChannel.invokeMethod('report');
-    //             }
-
-    //             if (Platform.isAndroid) {
-
-    //             }
-
-    //           },
-    //           child: const Text('Relatorio'),
-    //          ),
-    //         // TextButton(
-    //         //   onPressed: () {
-    //         //     methodChannel.invokeMethod('selectAppsToDiscourage');
-    //         //   },
-    //         //   child: const Text('selectAppsToDiscourage'),
-    //         // ),
-    //         // TextButton(
-    //         //   onPressed: () {
-    //         //     methodChannel.invokeMethod('selectAppsToEncourage');
-    //         //   },
-    //         //   child: const Text('selectAppsToEncourage'),
-    //         // ),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 }

@@ -1,3 +1,11 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    // id "dev.flutter.flutter-gradle-plugin"
+}
+
+apply plugin: "com.google.gms.google-services"
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -33,8 +41,10 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 34
+    // compileSdkVersion rootProject.ext.compileSdkVersion
     ndkVersion flutter.ndkVersion
+    // namespace "com.example.flutter_screentime"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -51,7 +61,7 @@ android {
 
     defaultConfig {
         minSdkVersion 22
-        targetSdkVersion 33
+        targetSdkVersion 34
         multiDexEnabled true
 
 
@@ -63,6 +73,8 @@ android {
         // targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        manifestPlaceholders = [authScheme: 'customSchemeValue', authHost: 'hostValue']
+        // targetSdkVersion rootProject.ext.targetSdkVersion
     }
 
     buildTypes {
@@ -85,6 +97,18 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.multidex:multidex:2.0.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.2'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    
+    // implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
+    implementation 'com.github.aritraroy:PinLockView:2.1.0'
+    implementation platform('com.google.firebase:firebase-bom:32.4.0')
 }
