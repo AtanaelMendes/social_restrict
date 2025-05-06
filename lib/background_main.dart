@@ -10,6 +10,7 @@ import 'package:flutter_screentime/main.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:flutter_screentime/qrviewpage.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:flutter_screentime/PoliticaDePrivacidade.dart';
 import 'package:get/instance_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,13 +22,13 @@ class BackgroundMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'DayOne',
+      title: 'SocialRestrict',
       navigatorKey: NavigationService.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const BackgroundMainPage(title: 'DayOne Control'),
+      home: const BackgroundMainPage(title: 'Social Restrict'),
     );
   }
 }
@@ -63,7 +64,7 @@ class _MyHomePageState extends State<BackgroundMainPage> {
       Get.find<MethodChannelController>().addToLockedAppsMethod();
       Get.find<PermissionController>()
           .getPermission(Permission.ignoreBatteryOptimizations);
-      
+
       getAndroidPermissions();
       getAndroidUsageStats();
 
@@ -77,23 +78,21 @@ class _MyHomePageState extends State<BackgroundMainPage> {
         jsonSettings = jsonDecode(settings);
       });
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
-     
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        centerTitle: true,
       ),
       body: jsonSettings != null
           ? Center(
               child: Container(
                 alignment: Alignment.center,
                 child: const Text(
-                  'Instalação completa aplicativo PRONTO para receber atualizações',
+                  'Instalação completa. Aplicativo PRONTO para receber atualizações.',
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -129,6 +128,26 @@ class _MyHomePageState extends State<BackgroundMainPage> {
                           ),
                           const Text("LER QR CODE")
                         ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const PoliticaDePrivacidade(),
+                        ));
+                      },
+                      child: Container(
+                        width: 200,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.policy),
+                            const Text("Política de Privacidade"),
+                          ],
+                        ),
                       ),
                     ),
                   ),
