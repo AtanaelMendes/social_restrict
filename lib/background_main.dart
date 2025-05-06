@@ -11,6 +11,7 @@ import 'package:flutter_screentime/navigation_service.dart';
 import 'package:flutter_screentime/qrviewpage.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:flutter_screentime/PoliticaDePrivacidade.dart';
+import 'package:flutter_screentime/TutorialPage.dart';
 import 'package:get/instance_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -89,33 +90,41 @@ class _MyHomePageState extends State<BackgroundMainPage> {
       ),
       body: jsonSettings != null
           ? Center(
-              child: Container(
-                alignment: Alignment.center,
-                child: const Text(
-                  'Instalação completa. Aplicativo PRONTO para receber atualizaçõesss.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
+        child: Container(
+          alignment: Alignment.center,
+          child: const Text(
+            'Instalação completa. Aplicativo PRONTO para receber atualizações.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      )
           : SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Parte 1: Logo
-            Padding(
-              padding: const EdgeInsets.only(top: 40),
-              child: Center(
-                child: Image.asset(
-                  'assets/icon/socialrestrict.jpg',
-                  width: 120,
-                  height: 120,
-                ),
-              ),
-            ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              // 1. Logo do App
+              Column(
+                children: [
+                  Image.asset(
+                    'assets/icon/socialrestrict.jpg',
+                    width: 120,
+                    height: 120,
+                  ),
+                  const SizedBox(height: 20),
 
-            // Parte 2: Botão QR Code
-            Center(
-              child: ElevatedButton.icon(
+                  // 2. Texto explicativo
+                  const Text(
+                    "Solicite o QR Code ao seu guardião para poder escanear e utilizar o app.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+
+              // 3. Botão LER QR CODE
+              ElevatedButton.icon(
                 icon: const Icon(Icons.qr_code),
                 label: const Text("LER QR CODE"),
                 style: ElevatedButton.styleFrom(
@@ -128,12 +137,23 @@ class _MyHomePageState extends State<BackgroundMainPage> {
                   initialize();
                 },
               ),
-            ),
 
-            // Parte 3: Botão Política de Privacidade
-            Padding(
-              padding: const EdgeInsets.only(bottom: 30),
-              child: ElevatedButton.icon(
+              // 4. Botão VER TUTORIAL
+              OutlinedButton.icon(
+                icon: const Icon(Icons.help_outline),
+                label: const Text("VER TUTORIAL"),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(200, 50),
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => TutorialPage(), // importa TutorialPage
+                  ));
+                },
+              ),
+
+              // 5. Botão Política de Privacidade
+              ElevatedButton.icon(
                 icon: const Icon(Icons.privacy_tip),
                 label: const Text("Política de Privacidade"),
                 style: ElevatedButton.styleFrom(
@@ -145,11 +165,12 @@ class _MyHomePageState extends State<BackgroundMainPage> {
                   ));
                 },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+
 
 }
