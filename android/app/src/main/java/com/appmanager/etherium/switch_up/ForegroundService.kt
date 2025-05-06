@@ -57,11 +57,16 @@ class ForegroundService : Service() {
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("")
             .setContentText("").build()
-        startForeground(1, notification)
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            startForeground(1, notification, 0x00000008) // LOCATION
+        } else {
+            startForeground(1, notification)
+        }
+
         startMyOwnForeground()
         apllyPassword()
         startPeriodicTask()
-
     }
 
     private fun apllyPassword() {

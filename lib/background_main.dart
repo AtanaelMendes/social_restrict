@@ -92,68 +92,64 @@ class _MyHomePageState extends State<BackgroundMainPage> {
               child: Container(
                 alignment: Alignment.center,
                 child: const Text(
-                  'Instalação completa. Aplicativo PRONTO para receber atualizações.',
+                  'Instalação completa. Aplicativo PRONTO para receber atualizaçõesss.',
                   textAlign: TextAlign.center,
                 ),
               ),
             )
-          : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.center,
-                    margin: const EdgeInsets.only(bottom: 10),
-                    child: const Text(
-                      'Leia o QR code para finalizar a configuração do aplicativo',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const QRViewPage(),
-                      ));
-
-                      initialize();
-                    },
-                    child: Container(
-                      width: 200,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            child: const Icon(Icons.qr_code),
-                          ),
-                          const Text("LER QR CODE")
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const PoliticaDePrivacidade(),
-                        ));
-                      },
-                      child: Container(
-                        width: 200,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.policy),
-                            const Text("Política de Privacidade"),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+          : SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Parte 1: Logo
+            Padding(
+              padding: const EdgeInsets.only(top: 40),
+              child: Center(
+                child: Image.asset(
+                  'assets/icon/socialrestrict.jpg',
+                  width: 120,
+                  height: 120,
+                ),
               ),
             ),
+
+            // Parte 2: Botão QR Code
+            Center(
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.qr_code),
+                label: const Text("LER QR CODE"),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(200, 50),
+                ),
+                onPressed: () async {
+                  await Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const QRViewPage(),
+                  ));
+                  initialize();
+                },
+              ),
+            ),
+
+            // Parte 3: Botão Política de Privacidade
+            Padding(
+              padding: const EdgeInsets.only(bottom: 30),
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.privacy_tip),
+                label: const Text("Política de Privacidade"),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(200, 50),
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const PoliticaDePrivacidade(),
+                  ));
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
+
 }

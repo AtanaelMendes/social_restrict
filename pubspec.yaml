@@ -52,11 +52,13 @@ dependencies:
   #   path: ../app_bundle_block
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
 
   flutter_lints: ^2.0.0
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icon/
+    - assets/tutorial/
+
 
