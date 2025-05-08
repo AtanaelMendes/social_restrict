@@ -58,11 +58,7 @@ class ForegroundService : Service() {
             .setContentTitle("")
             .setContentText("").build()
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            startForeground(1, notification, 0x00000008) // LOCATION
-        } else {
-            startForeground(1, notification)
-        }
+        startForeground(1, notification)
 
         startMyOwnForeground()
         apllyPassword()

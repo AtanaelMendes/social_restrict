@@ -9,7 +9,6 @@ import 'package:flutter_screentime/android/widgets/ask_permission_dialog.dart';
 import 'package:flutter_screentime/main.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:flutter_screentime/qrviewpage.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:flutter_screentime/PoliticaDePrivacidade.dart';
 import 'package:flutter_screentime/TutorialPage.dart';
 import 'package:get/instance_manager.dart';
@@ -108,7 +107,7 @@ class _MyHomePageState extends State<BackgroundMainPage> {
               Column(
                 children: [
                   Image.asset(
-                    'assets/icon/socialrestrict.jpg',
+                    'assets/icon/180.png',
                     width: 120,
                     height: 120,
                   ),

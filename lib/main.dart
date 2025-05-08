@@ -225,6 +225,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return const BackgroundMainPage(title: "RHBrasil");
+    return const BackgroundMainPage(title: "Social Restrict");
   }
 }

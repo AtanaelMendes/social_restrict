@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
-class TutorialPage extends StatelessWidget {
+class TutorialPage extends StatefulWidget {
+  @override
+  _TutorialPageState createState() => _TutorialPageState();
+}
+
+class _TutorialPageState extends State<TutorialPage> {
+  final PageController _controller = PageController();
+  int _currentIndex = 0;
+
   final List<Map<String, String>> tutorialSteps = [
     {
       'image': 'assets/tutorial/welcome.jpg',
@@ -10,7 +18,7 @@ class TutorialPage extends StatelessWidget {
     {
       'image': 'assets/tutorial/step1.png',
       'title': 'Permissões',
-      'text': 'Permita'
+      'text': 'Permita o acesso às permissões necessárias.'
     },
     {
       'image': 'assets/tutorial/step2.png',
@@ -49,12 +57,29 @@ class TutorialPage extends StatelessWidget {
     },
   ];
 
+  void _nextPage() {
+    if (_currentIndex < tutorialSteps.length - 1) {
+      _controller.nextPage(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      Navigator.pop(context); // ou vá para a tela principal
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Tutorial')),
       body: PageView.builder(
+        controller: _controller,
         itemCount: tutorialSteps.length,
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
         itemBuilder: (context, index) {
           final step = tutorialSteps[index];
           return Padding(
@@ -80,6 +105,12 @@ class TutorialPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: _nextPage,
+                  child: Text(
+                    index == tutorialSteps.length - 1 ? 'Concluir' : 'Próximo',
+                  ),
+                ),
               ],
             ),
           );
