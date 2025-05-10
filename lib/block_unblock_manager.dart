@@ -2,9 +2,12 @@ import 'dart:io';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screentime/android/apps_controller.dart';
+import 'package:flutter_screentime/modules/home/apps_repository.dart';
 import 'package:flutter_screentime/android/method_channel_controller.dart';
+import 'package:flutter_screentime/provider/api.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:get/instance_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BlockUnblockManager {
   BlockUnblockManager._();

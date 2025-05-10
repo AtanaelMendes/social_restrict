@@ -2,71 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screentime/android/constant.dart';
 import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:get/state_manager.dart';
 
 askPermissionBottomSheet(context) {
-  return showModalBottomSheet(
-    barrierColor: Colors.black.withOpacity(0.8),
-    context: context,
-    isDismissible: false,
-    isScrollControlled: true,
-    enableDrag: false,
-    backgroundColor: Colors.transparent,
-    builder: (context) {
-      return const AskPermissionBootomSheet();
-    },
-  );
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    showModalBottomSheet(
+      barrierColor: Colors.black.withOpacity(0.8),
+      context: context,
+      isDismissible: false,
+      isScrollControlled: true,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return const AskPermissionBootomSheet();
+      },
+    );
+  });
 }
 
-class AskPermissionBootomSheet extends StatelessWidget {
+class AskPermissionBootomSheet extends StatefulWidget {
   const AskPermissionBootomSheet({Key? key}) : super(key: key);
 
-  Widget permissionWidget(context, name, bool permission) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 6,
-        horizontal: 6,
-      ),
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.8,
-        // height: 40.0,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 6,
-            vertical: 6,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "$name",
-                style: MyFont().subtitle(
-                  color: Colors.white,
-                  fontweight: FontWeight.w400,
-                  fontsize: 14,
-                ),
-              ),
-              const Spacer(),
-              // if (permission)
-              Icon(
-                Icons.check_circle,
-                color: !permission
-                    ? Colors.grey[700]
-                    : Theme.of(context).primaryColor,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  @override
+  State<AskPermissionBootomSheet> createState() => _AskPermissionBootomSheetState();
+}
 
+class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -112,6 +74,7 @@ class AskPermissionBootomSheet extends StatelessWidget {
                             GestureDetector(
                               onTap: () {
                                 state.askOverlayPermission();
+                                setState(() {}); // Atualiza a UI
                               },
                               child: permissionWidget(
                                 context,
@@ -123,10 +86,11 @@ class AskPermissionBootomSheet extends StatelessWidget {
                             GestureDetector(
                               onTap: () {
                                 state.askUsageStatsPermission();
+                                setState(() {}); // Atualiza a UI
                               },
                               child: permissionWidget(
                                 context,
-                                "Usage accesss",
+                                "Usage access",
                                 state.isUsageStatPermissionGiven,
                               ),
                             ),
@@ -134,6 +98,7 @@ class AskPermissionBootomSheet extends StatelessWidget {
                             GestureDetector(
                               onTap: () {
                                 state.askNotificationPermission();
+                                setState(() {}); // Atualiza a UI
                               },
                               child: permissionWidget(
                                 context,
@@ -141,19 +106,31 @@ class AskPermissionBootomSheet extends StatelessWidget {
                                 state.isNotificationPermissionGiven,
                               ),
                             ),
+                          if (!state.isBackgroundFetchAvailable)
+                            GestureDetector(
+                              onTap: () {
+                                state.checkBackgroundFetchStatus();
+                                setState(() {}); // Atualiza a UI
+                              },
+                              child: permissionWidget(
+                                context,
+                                "Background fetch",
+                                state.isBackgroundFetchAvailable,
+                              ),
+                            ),
                         ],
                       ),
                     ),
                     MaterialButton(
-                      color: Theme.of(context).primaryColor,
+                      color: Colors.white,
                       onPressed: () async {
                         if (await state.checkOverlayPermission() &&
                             await state.checkUsageStatePermission() &&
-                            await state.checkNotificationPermission()) {
+                            await state.checkNotificationPermission() &&
+                            state.isBackgroundFetchAvailable) {
                           Navigator.pop(context);
                         } else {
-                          Fluttertoast.showToast(
-                              msg: "Required permissions not given !");
+                          Fluttertoast.showToast(msg: "Required permissions not given !");
                         }
                       },
                       child: Text(
@@ -169,6 +146,48 @@ class AskPermissionBootomSheet extends StatelessWidget {
                 ),
               );
             }),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget permissionWidget(BuildContext context, String name, bool permission) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 6,
+        horizontal: 6,
+      ),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 6,
+            vertical: 6,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "$name",
+                style: MyFont().subtitle(
+                  color: Colors.white,
+                  fontweight: FontWeight.w400,
+                  fontsize: 14,
+                ),
+              ),
+              const Spacer(),
+              Icon(
+                Icons.check_circle,
+                color: permission ? Colors.green : Colors.white,
+              ),
+            ],
           ),
         ),
       ),

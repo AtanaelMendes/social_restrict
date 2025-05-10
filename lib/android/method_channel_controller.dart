@@ -1,8 +1,10 @@
 import 'dart:developer';
+import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screentime/android/apps_controller.dart';
 import 'package:flutter_screentime/android/constant.dart';
+import 'package:flutter_screentime/navigation_service.dart';
 import 'package:get/instance_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -11,16 +13,21 @@ import 'package:usage_stats/usage_stats.dart';
 
 import 'permission_controller.dart';
 
+// const platform = const MethodChannel('samples.flutter.dev/native');
+
 class MethodChannelController extends GetxController implements GetxService {
  static const platform = MethodChannel('flutter.native/helper');
 
-  MethodChannelController(){
+  MethodChannelController() {
     WidgetsFlutterBinding.ensureInitialized();
+    checkBackgroundFetchStatus(); // Chama a verificação do status do BackgroundFetch ao inicializar
   }
 
   bool isOverlayPermissionGiven = false;
   bool isUsageStatPermissionGiven = false;
   bool isNotificationPermissionGiven = false;
+  bool isBackgroundLocationPermissionGiven = false;
+  bool isBackgroundFetchAvailable = false;
 
   Future<bool> checkOverlayPermission() async {
     try {
@@ -52,6 +59,32 @@ class MethodChannelController extends GetxController implements GetxService {
     return isUsageStatPermissionGiven;
   }
 
+  Future<bool> checkBackgroundLocationPermission() async {
+    isBackgroundLocationPermissionGiven =
+        await Permission.locationAlways.isGranted;
+    update();
+    return isBackgroundLocationPermissionGiven;
+  }
+
+  Future<void> checkBackgroundFetchStatus() async {
+    int status = await BackgroundFetch.status;
+    switch (status) {
+      case BackgroundFetch.STATUS_RESTRICTED:
+        log("BackgroundFetch status: RESTRICTED");
+        isBackgroundFetchAvailable = false;
+        break;
+      case BackgroundFetch.STATUS_DENIED:
+        log("BackgroundFetch status: DENIED");
+        isBackgroundFetchAvailable = false;
+        break;
+      case BackgroundFetch.STATUS_AVAILABLE:
+        log("BackgroundFetch status: AVAILABLE");
+        isBackgroundFetchAvailable = true;
+        break;
+    }
+    update();
+  }
+
   addToLockedAppsMethod() async {
     try {
       Map<String, dynamic> data = {
@@ -63,9 +96,8 @@ class MethodChannelController extends GetxController implements GetxService {
           };
         }).toList()
       };
+      print('Os valores que estao no data: $data');
       await setPassword();
-      //  var teste = new AppBundleBlock();
-      // await teste.addToLockedApps(data);
       await platform.invokeMethod('addToLockedApps', data).then((value) {
         log("$value", name: "addToLockedApps CALLED");
       });
@@ -80,10 +112,6 @@ class MethodChannelController extends GetxController implements GetxService {
       String data = prefs.getString(AppConstants.setPassCode) ?? "";
       log(data, name: "PASSWORD--");
       if (data != "") {
-        //  var teste = new AppBundleBlock();
-        //  var version = await teste.getPlatformVersion();
-        //  await teste.setPasswordInNative(data);
-
         await platform.invokeMethod('setPasswordInNative', data).then((value) {
           log("$value", name: "setPasswordInNative CALLED");
         });
@@ -102,6 +130,7 @@ class MethodChannelController extends GetxController implements GetxService {
       log("Failed to Invoke: '${e.message}'.");
     }
   }
+
   Future startForeground() async {
     try {
       await platform.invokeMethod('startForeground', "").then((value) {
@@ -113,9 +142,8 @@ class MethodChannelController extends GetxController implements GetxService {
   }
 
   Future<bool> askNotificationPermission() async {
-    // await AppSettings.openAppSettings();
     await Get.find<PermissionController>()
-        .getPermission(Permission.notification);
+        .getPermissions([Permission.notification]);
     isNotificationPermissionGiven = await Permission.notification.isGranted;
     update();
     return isNotificationPermissionGiven;
@@ -146,6 +174,34 @@ class MethodChannelController extends GetxController implements GetxService {
     } on PlatformException catch (e) {
       log("Failed to Invoke: '${e.message}'.");
       return false;
+    }
+  }
+
+  Future<bool> askBackgroundLocationPermission() async {
+    await Get.find<PermissionController>()
+        .getPermissions([Permission.locationAlways]);
+    isBackgroundLocationPermissionGiven =
+        await Permission.locationAlways.isGranted;
+    update();
+    return isBackgroundLocationPermissionGiven;
+  }
+
+  void sendValuesToNative() async {
+    try {
+      final int? id = NavigationService.prefs?.getInt("id");
+      final int? companyId = NavigationService.prefs?.getInt("companyId");
+      final String? tokenId = NavigationService.prefs?.getString("token");
+
+      final Map<String, dynamic> values = {
+        'id': id,
+        'companyId': companyId,
+        'tokenId': tokenId,
+      };
+
+      final String result = await platform.invokeMethod('sendValues', values);
+      print('Received: $result');
+    } on PlatformException catch (e) {
+      print("Failed to send values: '${e.message}'.");
     }
   }
 }
