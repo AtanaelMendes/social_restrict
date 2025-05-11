@@ -21,23 +21,37 @@ class PermissionController extends GetxController implements GetxService {
     }
   }
 
-  Future<Map<Permission, PermissionStatus>> getPermissions(
-      List<Permission> permissions) async {
-    await _semaphore.acquire();
-    Map<Permission, PermissionStatus> statuses = {};
-    try {
-      statuses = await permissions.request();
-      statuses.forEach((permission, status) {
-        log("Permission: $permission, Status: $status");
-      });
-    } on PlatformException catch (e) {
-      log("Failed to get permissions: ${e.message}");
-    } finally {
-      _semaphore.release();
+  Future<void> getPermissions(Permission permsn) async {
+    var status;
+    if (!(await permsn.isGranted)) {
+      status = await permsn.request();
+      log("___________________-----$status-----___________________1",
+          name: permsn.toString());
+    } else {
+      log("___________________-----Granted-----___________________2",
+          name: permsn.toString());
     }
-    return statuses;
+    log("$status", name: "Permission Status");
   }
 }
+
+//   Future<Map<Permission, PermissionStatus>> getPermissions(
+//       List<Permission> permissions) async {
+//     await _semaphore.acquire();
+//     Map<Permission, PermissionStatus> statuses = {};
+//     try {
+//       statuses = await permissions.request();
+//       statuses.forEach((permission, status) {
+//         log("Permission: $permission, Status: $status");
+//       });
+//     } on PlatformException catch (e) {
+//       log("Failed to get permissions: ${e.message}");
+//     } finally {
+//       _semaphore.release();
+//     }
+//     return statuses;
+//   }
+// }
 
 class AsyncSemaphore {
   int _counter = 0;

@@ -273,5 +273,5 @@ class JsonMapperHelper {
   }
 
   static String? _enumToString(final dynamic enumeration) =>
-      enumeration?.toString()?.split('.')?.last;
+      enumeration?.toString().split('.').last;
 }

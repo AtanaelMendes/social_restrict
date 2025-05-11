@@ -71,7 +71,7 @@ class _QRViewPageState extends State<QRViewPage> {
         result = scanData;
         NavigationService.prefs?.setString("settings", scanData.code!);
       });
-      controller?.dispose();
+      controller.dispose();
       Navigator.pop(currentContext!);
     });
   }

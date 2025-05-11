@@ -88,7 +88,7 @@ class AppsController extends GetxController implements GetxService {
       Get.find<AppsController>().getAppsData();
       Get.find<AppsController>().getLockedApps();
 
-      Get.find<PermissionController>().getPermissions([Permission.ignoreBatteryOptimizations]);
+      Get.find<PermissionController>().getPermissions(Permission.ignoreBatteryOptimizations);
 
       getAndroidPermissions();
       getAndroidUsageStats();

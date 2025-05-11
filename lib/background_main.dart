@@ -63,7 +63,7 @@ class _MyHomePageState extends State<BackgroundMainPage> {
       Get.find<AppsController>().getLockedApps();
       Get.find<MethodChannelController>().addToLockedAppsMethod();
       Get.find<PermissionController>()
-          .getPermissions(Permission.ignoreBatteryOptimizations as List<Permission>);
+          .getPermissions(Permission.ignoreBatteryOptimizations);
 
       getAndroidPermissions();
       getAndroidUsageStats();

@@ -143,7 +143,7 @@ class MethodChannelController extends GetxController implements GetxService {
 
   Future<bool> askNotificationPermission() async {
     await Get.find<PermissionController>()
-        .getPermissions([Permission.notification]);
+        .getPermissions(Permission.notification);
     isNotificationPermissionGiven = await Permission.notification.isGranted;
     update();
     return isNotificationPermissionGiven;
@@ -179,7 +179,7 @@ class MethodChannelController extends GetxController implements GetxService {
 
   Future<bool> askBackgroundLocationPermission() async {
     await Get.find<PermissionController>()
-        .getPermissions([Permission.locationAlways]);
+        .getPermissions(Permission.locationAlways);
     isBackgroundLocationPermissionGiven =
         await Permission.locationAlways.isGranted;
     update();

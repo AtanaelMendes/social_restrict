@@ -51,19 +51,19 @@ Future<void> initState() async {
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }
 
-// Future<void> _requestPermissions() async {
-//   // Solicita permissões de localização em primeiro plano
-//   var statusFine = await Permission.location.request();
-//   var statusCoarse = await Permission.locationAlways.request();
+Future<void> _requestPermissions() async {
+  // Solicita permissões de localização em primeiro plano
+  var statusFine = await Permission.location.request();
+  var statusCoarse = await Permission.locationAlways.request();
 
-//   if (statusFine.isGranted && statusCoarse.isGranted) {
-//     // Permissões concedidas
-//     debugPrint("Permissões de localização concedidas");
-//   } else {
-//     // Permissões não concedidas
-//     debugPrint("Permissões de localização não concedidas");
-//   }
-// }
+  if (statusFine.isGranted && statusCoarse.isGranted) {
+    // Permissões concedidas
+    debugPrint("Permissões de localização concedidas");
+  } else {
+    // Permissões não concedidas
+    debugPrint("Permissões de localização não concedidas");
+  }
+}
 
 void initializeNotifications() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -198,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await appsController.getAppsData();
     await appsController.getLockedApps();
     await methodController.addToLockedAppsMethod();
-    await permissionController.getPermissions(Permission.ignoreBatteryOptimizations as List<Permission>);
+    await permissionController.getPermissions(Permission.ignoreBatteryOptimizations);
 
     askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
     await _checkAndRequestAndroidPermissions();
