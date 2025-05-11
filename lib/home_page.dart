@@ -14,13 +14,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  final controller = Get.put(AppsController(Get.find(), AppsRepository(Api())));
+  // final controller = Get.put(AppsController(Get.find(), AppsRepository(Api())));
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    controller.getCurrentLocation();
+    // controller.getCurrentLocation();
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -38,12 +38,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       print('Dayone voltou para primeiro plano Background mode');
       _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-        controller.getCurrentLocation();
+        // controller.getCurrentLocation();
       });
     } else if (state == AppLifecycleState.paused) {
       print('Dayone mudou agora segundo plano Background mode');
       _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-        controller.getCurrentLocation();
+        // controller.getCurrentLocation();
         //controller.startBackgroundFetch();
       });
     }

@@ -12,28 +12,26 @@ import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:flutter_screentime/android/permission_controller.dart';
 import 'package:flutter_screentime/android/widgets/ask_permission_dialog.dart';
 import 'package:flutter_screentime/block_unblock_manager.dart';
-import 'package:flutter_screentime/data/models/block_app_model.dart';
-import 'package:flutter_screentime/data/models/location_model.dart';
-import 'package:flutter_screentime/data/modules/home/apps_repository.dart';
-import 'package:flutter_screentime/data/provider/api.dart';
+import 'package:flutter_screentime/models/block_app_model.dart';
+import 'package:flutter_screentime/models/location_model.dart';
+// import 'package:flutter_screentime/modules/home/apps_repository.dart';
+// import 'package:flutter_screentime/provider/api.dart';
 import 'package:flutter_screentime/main.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geocoding/geocoding.dart';
+// import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
-import 'package:location/location.dart' as loc;
-import 'package:location/location.dart';
-import 'package:permission_handler/permission_handler.dart' as ph;
+// import 'package:location/location.dart' as loc;
+// import 'package:location/location.dart';
+// import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppsController extends GetxController implements GetxService {
   SharedPreferences prefs;
-  final AppsRepository repository;
-  AppsController(
-    this.prefs,
-    this.repository,
-  );
+  // final AppsRepository repository;
+  AppsController({required this.prefs});
+
 
   String? dummyPasscode;
   int? selectQuestion;
@@ -85,7 +83,7 @@ class AppsController extends GetxController implements GetxService {
     NavigationService.prefs ??= await SharedPreferences.getInstance();
 
     if (Platform.isAndroid) {
-      Get.put(AppsController(Get.find(), AppsRepository(Api())));
+      // Get.put(AppsController(Get.find(), AppsRepository(Api())));
 
       Get.find<AppsController>().getAppsData();
       Get.find<AppsController>().getLockedApps();
@@ -344,44 +342,44 @@ class AppsController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> getCurrentLocation() async {
-    final loc.Location location = loc.Location();
-    try {
-      final loc.LocationData locationData = await location.getLocation();
-      latitude.value = locationData.latitude!;
-      longitude.value = locationData.longitude!;
-      getAddress(latitude.value, longitude.value);
-      location.onLocationChanged.listen((loc.LocationData currentLocation) {
-        latitude.value = currentLocation.latitude!;
-        longitude.value = currentLocation.longitude!;
-        getAddress(latitude.value, longitude.value);
-      });
-      location.enableBackgroundMode(enable: true);
-      location.isBackgroundModeEnabled().then((value) {
-        debugPrint('Dayone primeiro plano Background mode: $value');
-      });
-    } catch (e) {
-      debugPrint('Dayone primeiro plano Error getting location: $e');
-    }
-  }
+  // Future<void> getCurrentLocation() async {
+  //   final loc.Location location = loc.Location();
+  //   try {
+  //     final loc.LocationData locationData = await location.getLocation();
+  //     latitude.value = locationData.latitude!;
+  //     longitude.value = locationData.longitude!;
+  //     getAddress(latitude.value, longitude.value);
+  //     location.onLocationChanged.listen((loc.LocationData currentLocation) {
+  //       latitude.value = currentLocation.latitude!;
+  //       longitude.value = currentLocation.longitude!;
+  //       getAddress(latitude.value, longitude.value);
+  //     });
+  //     location.enableBackgroundMode(enable: true);
+  //     location.isBackgroundModeEnabled().then((value) {
+  //       debugPrint('Dayone primeiro plano Background mode: $value');
+  //     });
+  //   } catch (e) {
+  //     debugPrint('Dayone primeiro plano Error getting location: $e');
+  //   }
+  // }
 
-  getAddress(double latitude, double longitude) async {
-    try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
-      Placemark place = placemarks[0];
-
-      String address = "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
-
-      String foregroundOrBackground = WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed ? 'primeiro plano' : 'segundo plano';
-
-      latitudeValue = latitude;
-      longitudeValue = longitude;
-
-      fullAddress.value = address;
-    } catch (e) {
-      debugPrint('Dayone primeiro plano No address available');
-    }
-  }
+  // getAddress(double latitude, double longitude) async {
+  //   try {
+  //     List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+  //     Placemark place = placemarks[0];
+  //
+  //     String address = "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+  //
+  //     String foregroundOrBackground = WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed ? 'primeiro plano' : 'segundo plano';
+  //
+  //     latitudeValue = latitude;
+  //     longitudeValue = longitude;
+  //
+  //     fullAddress.value = address;
+  //   } catch (e) {
+  //     debugPrint('Dayone primeiro plano No address available');
+  //   }
+  // }
 
   void startBackgroundFetch() {
     BackgroundFetch.configure(
@@ -396,33 +394,33 @@ class AppsController extends GetxController implements GetxService {
           requiresDeviceIdle: false,
           requiredNetworkType: NetworkType.NONE,
         ), (String taskId) async {
-      LocationData locationData = await fetchLocation() ?? LocationData.fromMap({});
+      // LocationData locationData = await fetchLocation() ?? LocationData.fromMap({});
 
       BackgroundFetch.finish(taskId);
     }).then((int status) async {
-      LocationData locationData = await fetchLocation() ?? LocationData.fromMap({});
+      // LocationData locationData = await fetchLocation() ?? LocationData.fromMap({});
     }).catchError((e) {});
   }
 
-  Future<LocationData?> fetchLocation() async {
-    loc.Location location = loc.Location();
-    bool serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) {
-        return null;
-      }
-    }
-
-    await permissionController.getPermissions([Permission.location]);
-
-    loc.PermissionStatus permissionStatus = await location.hasPermission();
-    if (permissionStatus != loc.PermissionStatus.granted) {
-      return null;
-    }
-
-    return await location.getLocation();
-  }
+  // Future<LocationData?> fetchLocation() async {
+  //   loc.Location location = loc.Location();
+  //   bool serviceEnabled = await location.serviceEnabled();
+  //   if (!serviceEnabled) {
+  //     serviceEnabled = await location.requestService();
+  //     if (!serviceEnabled) {
+  //       return null;
+  //     }
+  //   }
+  //
+  //   await permissionController.getPermissions([Permission.location]);
+  //
+  //   loc.PermissionStatus permissionStatus = await location.hasPermission();
+  //   if (permissionStatus != loc.PermissionStatus.granted) {
+  //     return null;
+  //   }
+  //
+  //   return await location.getLocation();
+  // }
 
   Future<void> sendLocation(
     int customerId,
@@ -435,7 +433,7 @@ class AppsController extends GetxController implements GetxService {
       long: longitude,
     );
 
-    await repository.postLocation(locationModel);
+    // await repository.postLocation(locationModel);
   }
 
   Future<void> initservice() async {
