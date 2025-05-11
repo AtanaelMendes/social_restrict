@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screentime/data/modules/home/apps_controller.dart';
-import 'package:flutter_screentime/data/modules/home/apps_repository.dart';
-import 'package:flutter_screentime/data/provider/api.dart';
+import 'package:flutter_screentime/modules/home/apps_controller.dart';
+import 'package:flutter_screentime/modules/home/apps_repository.dart';
+import 'package:flutter_screentime/provider/api.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
