@@ -56,10 +56,19 @@ dependencies:
 
 dev_dependencies:
   flutter_lints: ^2.0.0
+  # flutter_lints: ^4.0.0 // nova versao recebida
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/logo-app.png"
 
 flutter:
   uses-material-design: true
   assets:
+    - .env
     - assets/icon/
     - assets/tutorial/
 
