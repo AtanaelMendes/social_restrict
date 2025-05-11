@@ -41,6 +41,8 @@ dependencies:
     path: ./packages/workmanager-0.5.1
   qr_code_scanner: ^1.0.1
   background_fetch: ^1.2.1
+  # dart_format: ^1.4.1
+  dart_format: ^0.0.4
   # background_fetch:
   #   git:
   #     url: https://github.com/transistorsoft/flutter_background_fetch
@@ -53,7 +55,6 @@ dependencies:
   #   path: ../app_bundle_block
 
 dev_dependencies:
-
   flutter_lints: ^2.0.0
 
 flutter:
