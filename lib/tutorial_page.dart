@@ -60,7 +60,7 @@ class _TutorialPageState extends State<TutorialPage> {
   void _nextPage() {
     if (_currentIndex < tutorialSteps.length - 1) {
       _controller.nextPage(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     } else {
@@ -71,7 +71,7 @@ class _TutorialPageState extends State<TutorialPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Tutorial')),
+      appBar: AppBar(title: const Text('Tutorial')),
       body: PageView.builder(
         controller: _controller,
         itemCount: tutorialSteps.length,
@@ -86,25 +86,25 @@ class _TutorialPageState extends State<TutorialPage> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Text(
                   step['title']!,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Expanded(
                   child: Image.asset(
                     step['image']!,
                     fit: BoxFit.contain,
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Text(
                   step['text']!,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: _nextPage,
                   child: Text(

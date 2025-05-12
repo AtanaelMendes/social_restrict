@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 
 import 'options.dart';
 
-const _noDuration = const Duration(seconds: 0);
+const _noDuration = Duration(seconds: 0);
 
 /// Function that executes your background work.
 /// You should return whether the task ran successfully or not.

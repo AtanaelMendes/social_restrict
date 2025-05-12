@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-  var jsonSettings = null;
+  var jsonSettings;
 
   // @override
   // void initState() {

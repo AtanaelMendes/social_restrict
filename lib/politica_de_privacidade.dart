@@ -9,10 +9,10 @@ class PoliticaDePrivacidade extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Política de Privacidade'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: const Padding(
+        padding: EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: const Text(
+          child: Text(
             '''
 Política de Privacidade
 

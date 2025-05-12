@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -14,7 +15,7 @@ class PermissionController extends GetxController implements GetxService {
       if (status.isGranted) {
       } else if (status.isDenied) {
         // Permission denied.
-        print('Dayone primeiro plano Location_permission_denied');
+        debugPrint('Dayone primeiro plano Location_permission_denied');
       }
     } finally {
       _semaphore.release();

@@ -68,6 +68,7 @@ Future<void> _requestPermissions() async {
 void initializeNotifications() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await Permission.notification.request(); // <- Android 13+
   await FirebaseMessaging.instance.requestPermission();
   String? fcmToken = await FirebaseMessaging.instance.getToken();
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -187,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _initializeAndroidServices();
     }
 
-    _initializeNotifications();
+    // _initializeNotifications();
   }
 
   Future<void> _initializeAndroidServices() async {
@@ -232,19 +233,20 @@ class _MyHomePageState extends State<MyHomePage> {
       List<AppUsageInfo> infoList = await AppUsage().getAppUsage(startDate, endDate);
 
       for (var info in infoList) {
-        print(info.toString());
+        debugPrint(info.toString());
       }
     } on AppUsageException catch (e) {
-      print("Erro ao obter uso de apps: $e");
+      debugPrint("Erro ao obter uso de apps: $e");
     }
   }
 
   Future<void> _initializeNotifications() async {
+    await Permission.notification.request();
     await FirebaseMessaging.instance.requestPermission();
     final token = await FirebaseMessaging.instance.getToken();
 
     NotificationHandler.initialize();
-    print("TOKEN FCM: $token");
+    debugPrint("TOKEN FCM: $token");
   }
 
   // Future<void> requestLocationPermission() async {
