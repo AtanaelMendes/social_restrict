@@ -13,47 +13,78 @@ class _TutorialPageState extends State<TutorialPage> {
     {
       'image': 'assets/tutorial/welcome.jpg',
       'title': 'Bem-vindo',
-      'text': 'Descubra como usar o app para monitorar o uso de aplicativos.'
+      'subtitle': 'Configurar aplicativo',
+      'text': 'Proteja sua família: defina limites de uso ou bloqueie apps nocivos. Vamos para as configurações. Clique em Próximo.'
     },
     {
+      'id': '1',
       'image': 'assets/tutorial/step1.png',
       'title': 'Permissões',
-      'text': 'Permita o acesso às permissões necessárias.'
+      'subtitle': 'Execução em segundo plano.',
+      'text': 'Clique em permitir para que o aplicativo possa ser executado em segundo plano, caso não apareça essa opção, a permissão deve ser concedida em configurações de aplicativos.'
     },
     {
+      'id': '2',
       'image': 'assets/tutorial/step2.png',
       'title': 'Permissões',
-      'text': 'Dê as permissões necessárias para o app funcionar corretamente.'
+      'subtitle': 'Verificação de permissões',
+      'text': 'Clique no botão "VERIFICAR PERMISSSÕES" para o correto funcionamento do aplicativo.'
     },
     {
+      'id': '3',
       'image': 'assets/tutorial/step3.png',
-      'title': 'Apps Bloqueados',
-      'text': 'Você pode selecionar quais aplicativos deseja bloquear.'
+      'title': 'Permissões',
+      'subtitle': 'Conceda as permissões na sequência uma por vez.',
+      'text': 'Para os próximos passos, clique em voltar até essa tela, para conceder as permissões uma por vez.'
     },
     {
+      'id': '4',
       'image': 'assets/tutorial/step4.png',
-      'title': 'Relatórios',
-      'text': 'Visualize relatórios de uso diário e semanal.'
+      'title': 'Acesso ao uso',
+      'subtitle': 'Acesso a execução dos aplicativos.',
+      'text': 'Caso ainda não esteja concedido essa permissão, clique no APP para conceder.'
     },
     {
+      'id': '5',
       'image': 'assets/tutorial/step5.png',
-      'title': 'Alertas',
-      'text': 'Receba alertas ao ultrapassar limites de tempo.'
+      'title': 'Acesso ao uso',
+      'subtitle': 'Conceda acesso ao uso marcando essa opção.',
+      'text': 'Após marcar, clique em voltar até a tela de verificação e clique na próxima verificação.'
     },
     {
+      'id': '6',
       'image': 'assets/tutorial/step6.png',
-      'title': 'Personalização',
-      'text': 'Configure bloqueios por horário e dias da semana.'
+      'title': 'Sobrepor a outros apps',
+      'subtitle': 'Executar em conjunto aos apps definidos para restrição.',
+      'text': 'Caso ainda não esteja concedido essa permissão, clique no APP para conceder.'
     },
     {
+      'id': '7',
       'image': 'assets/tutorial/step7.png',
-      'title': 'Ajuda',
-      'text': 'Acesse a central de ajuda a qualquer momento.'
+      'title': 'Sobrepor a outros apps',
+      'subtitle': 'Conceda a sobreposição marcando essa opção.',
+      'text': 'Após marcar, clique em voltar até a tela de verificação e clique na próxima verificação.'
     },
     {
+      'id': '8',
       'image': 'assets/tutorial/step8.png',
-      'title': 'Pronto!',
-      'text': 'Agora você está pronto para usar o aplicativo.'
+      'title': 'Notificações',
+      'subtitle': 'Permitir execução de notificações.',
+      'text': 'Clique em permitir, para receber alertas de uso. Após conceder todas as permissões clique em "Confirm"'
+    },
+    {
+      'id': '9',
+      'image': 'assets/tutorial/step9.png',
+      'title': 'Iniciar execução de restrição',
+      'subtitle': 'Clique em ler QR CODE',
+      'text': 'Isso deve abrir a camêra para ler o QR CODE.'
+    },
+    {
+      'id': '10',
+      'image': 'assets/tutorial/step10.png',
+      'title': 'Camêra',
+      'subtitle': 'Conceda acesso ao uso da camêra.',
+      'text': 'Após ler o QR CODE o Social Restric entra em ação'
     },
   ];
 
@@ -90,6 +121,11 @@ class _TutorialPageState extends State<TutorialPage> {
                 Text(
                   step['title']!,
                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  step['subtitle']!,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
                 Expanded(
