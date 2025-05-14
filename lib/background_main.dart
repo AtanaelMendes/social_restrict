@@ -22,7 +22,7 @@ class BackgroundMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SocialRestrict',
+      title: 'Social Restrict',
       navigatorKey: NavigationService.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -113,7 +113,7 @@ class _MyHomePageState extends State<BackgroundMainPage> {
 
                         // 2. Texto explicativo
                         const Text(
-                          "Solicite o QR Code ao seu guardião para poder escanear e utilizar o app.",
+                          "Solicite o QR Code ao seu guardião para escanear e utilizar o app, mas antes clique em \"VER TUTORIAL\"",
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 16),
                         ),
@@ -131,7 +131,7 @@ class _MyHomePageState extends State<BackgroundMainPage> {
                         await Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const QRViewPage(),
                         ));
-                        initialize();
+                        // initialize();
                       },
                     ),
 

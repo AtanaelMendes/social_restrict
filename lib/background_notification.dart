@@ -14,8 +14,8 @@ class NotificationHandler {
   static Future<void> onNotification(RemoteMessage message) async {
     var blockApps = jsonDecode(message.data["block"]);
     var unBlockApps = jsonDecode(message.data["unblock"]);
-    print('Block apps: $blockApps');
-    print('Unblock apps: $unBlockApps');
+    debugPrint('Block apps: $blockApps');
+    debugPrint('Unblock apps: $unBlockApps');
 
     WidgetsFlutterBinding.ensureInitialized();
     final prefs = await SharedPreferences.getInstance();

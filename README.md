@@ -32,7 +32,7 @@ flutter pub get
 ENVIRONMENT=production
 
 # API Configuration
-HOST=https://www.rhbrasil.com.br
+HOST=https://app-api.rhbrasil.com.br
 API_VERSION=v1
 API_PATH=app/api
 TOKEN=seu_token_aqui

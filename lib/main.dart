@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screentime/android/permission_controller.dart';
 import 'package:flutter_screentime/config/env.dart';
-import 'package:flutter_screentime/modules/home/apps_controller.dart';
+import 'package:flutter_screentime/android/apps_controller.dart';
 import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:flutter_screentime/background_notification.dart';
 import 'package:flutter_screentime/background_main.dart';
@@ -51,19 +51,19 @@ Future<void> initState() async {
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }
 
-Future<void> _requestPermissions() async {
-  // Solicita permissões de localização em primeiro plano
-  var statusFine = await Permission.location.request();
-  var statusCoarse = await Permission.locationAlways.request();
+// Future<void> _requestPermissions() async {
+//   // Solicita permissões de localização em primeiro plano
+//   var statusFine = await Permission.location.request();
+//   var statusCoarse = await Permission.locationAlways.request();
 
-  if (statusFine.isGranted && statusCoarse.isGranted) {
-    // Permissões concedidas
-    debugPrint("Permissões de localização concedidas");
-  } else {
-    // Permissões não concedidas
-    debugPrint("Permissões de localização não concedidas");
-  }
-}
+//   if (statusFine.isGranted && statusCoarse.isGranted) {
+//     // Permissões concedidas
+//     debugPrint("Permissões de localização concedidas");
+//   } else {
+//     // Permissões não concedidas
+//     debugPrint("Permissões de localização não concedidas");
+//   }
+// }
 
 void initializeNotifications() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -128,19 +128,19 @@ void main() async {
   lazyPutInitialize();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   Get.put(prefs);
-  // initializeNotifications();
+  initializeNotifications();
   // await _requestPermissions();
-  // companyId = NavigationService.prefs?.getInt("companyId") ?? 0;
-  // customerId = NavigationService.prefs?.getInt("id") ?? 0;
+  companyId = NavigationService.prefs?.getInt("companyId") ?? 0;
+  customerId = NavigationService.prefs?.getInt("id") ?? 0;
   // await dotenv.load(fileName: '.env');
   // await Env.instance.load();
-  await initservice();
+  // await initservice(); nao faz sentido
   runApp(const BackgroundMain());
 }
 
-Future<void> initservice() async {
-  BlockUnblockManager.unblockApps(['ph.telegra.Telegraph', 'com.copel.mbf']);
-}
+// Future<void> initservice() async {
+//   BlockUnblockManager.unblockApps(['ph.telegra.Telegraph', 'com.copel.mbf']);
+// }
 
 // void requestAllPermissions() async {
 //   PermissionController permissionController = Get.find();
@@ -240,14 +240,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> _initializeNotifications() async {
-    await Permission.notification.request();
-    await FirebaseMessaging.instance.requestPermission();
-    final token = await FirebaseMessaging.instance.getToken();
+  // Future<void> _initializeNotifications() async {
+  //   await Permission.notification.request();
+  //   await FirebaseMessaging.instance.requestPermission();
+  //   final token = await FirebaseMessaging.instance.getToken();
 
-    NotificationHandler.initialize();
-    debugPrint("TOKEN FCM: $token");
-  }
+  //   NotificationHandler.initialize();
+  //   debugPrint("TOKEN FCM: $token");
+  // }
 
   // Future<void> requestLocationPermission() async {
   //   var status = await Permission.location.request();
