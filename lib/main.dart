@@ -132,15 +132,10 @@ void main() async {
   // await _requestPermissions();
   companyId = NavigationService.prefs?.getInt("companyId") ?? 0;
   customerId = NavigationService.prefs?.getInt("id") ?? 0;
-  // await dotenv.load(fileName: '.env');
-  // await Env.instance.load();
-  // await initservice(); nao faz sentido
+  await dotenv.load(fileName: '.env');
+  await Env.instance.load();
   runApp(const BackgroundMain());
 }
-
-// Future<void> initservice() async {
-//   BlockUnblockManager.unblockApps(['ph.telegra.Telegraph', 'com.copel.mbf']);
-// }
 
 // void requestAllPermissions() async {
 //   PermissionController permissionController = Get.find();
@@ -179,18 +174,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int customerId = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    // requestLocationPermission();
-    if (Platform.isAndroid) {
-      Get.put(AppsController(prefs: Get.find()));
-      _initializeAndroidServices();
-    }
-
-    // _initializeNotifications();
-  }
-
   Future<void> _initializeAndroidServices() async {
     final appsController = Get.find<AppsController>();
     final methodController = Get.find<MethodChannelController>();
@@ -208,16 +191,36 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _checkAndRequestAndroidPermissions() async {
     final methodController = Get.find<MethodChannelController>();
+    final prefs = await SharedPreferences.getInstance();
 
-    if (!(await methodController.checkNotificationPermission()) ||
-        !(await methodController.checkOverlayPermission()) ||
-        !(await methodController.checkUsageStatePermission())) {
-      methodController.update();
-      askPermissionBottomSheet(context);
+    bool hasNotification = await methodController.checkNotificationPermission();
+    bool hasOverlay = await methodController.checkOverlayPermission();
+    bool hasUsageAccess = await methodController.checkUsageStatePermission();
+
+    // Verifica se todas as permissões estão OK
+    bool allGranted = hasNotification && hasOverlay && hasUsageAccess;
+
+    if (!allGranted) {
+      methodController.update(); // Atualiza estado visual
+      askPermissionBottomSheet(context); // Mostra o diálogo de permissão
+      prefs.setBool("foreground_initialized", false); // Marca como não inicializado
+      return;
     }
 
+    // Se já inicializou, evita rodar de novo
+    bool alreadyInitialized = prefs.getBool("foreground_initialized") ?? false;
+    if (alreadyInitialized) {
+      debugPrint("Foreground service já foi iniciado anteriormente.");
+      return;
+    }
+
+    // Inicializa pela primeira vez
     await _setAndroidPasscode();
     await methodController.startForeground();
+
+    // Marca como inicializado
+    prefs.setBool("foreground_initialized", true);
+    debugPrint("Foreground service iniciado e marcado como inicializado.");
   }
 
   Future<void> _setAndroidPasscode() async {

@@ -56,31 +56,34 @@ String getMailUrl(String email, [String subject = '']) {
 }
 
 Future<void> launchInBrowser(String url) async {
-  if (await canLaunch(url)) {
-    await launch(
-      url,
-      forceSafariVC: false,
-      forceWebView: false,
-      headers: <String, String>{'my_header_key': 'my_header_value'},
+  final Uri uri = Uri.parse(url);
+
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication, // abre no navegador padrão
+      webViewConfiguration: const WebViewConfiguration(
+        headers: <String, String>{'my_header_key': 'my_header_value'},
+      ),
     );
   } else {
-    Fluttertoast.showToast(msg: 'Invalid url {$url}');
+    Fluttertoast.showToast(msg: 'Invalid URL: $url');
     log('Could not launch $url');
   }
 }
 
 Future<void> launchWebsite(String url) async {
-  if (!(url.startsWith('http'))) {
-    if (!(url.startsWith('https://'))) {
-      url = 'https://$url';
-    }
+  // Garante que o URL comece com https://
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'https://$url';
   }
-  if (await canLaunch(url)) {
-    await launch(
-      url,
-      forceSafariVC: false,
-      forceWebView: false,
-      // headers: <String, String>{'my_header_key': 'my_header_value'},
+
+  final Uri uri = Uri.parse(url);
+
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
     );
   } else {
     log('Could not launch $url');

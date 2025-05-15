@@ -8,7 +8,7 @@ import 'package:flutter_screentime/android/permission_controller.dart';
 import 'package:flutter_screentime/android/widgets/ask_permission_dialog.dart';
 import 'package:flutter_screentime/main.dart';
 import 'package:flutter_screentime/navigation_service.dart';
-import 'package:flutter_screentime/qrviewpage.dart';
+import 'package:flutter_screentime/modules/qr-code/qrviewpage.dart';
 import 'package:flutter_screentime/politica_de_privacidade.dart';
 import 'package:flutter_screentime/tutorial_page.dart';
 import 'package:get/instance_manager.dart';
