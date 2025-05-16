@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screentime/android/apps_controller.dart';
+import 'package:flutter_screentime/modules/home/apps_controller.dart';
 import 'package:flutter_screentime/android/constant.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:get/instance_manager.dart';

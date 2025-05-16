@@ -8,13 +8,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screentime/android/permission_controller.dart';
 import 'package:flutter_screentime/config/env.dart';
-import 'package:flutter_screentime/android/apps_controller.dart';
+import 'package:flutter_screentime/modules/home/apps_controller.dart';
 import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:flutter_screentime/background_notification.dart';
 import 'package:flutter_screentime/background_main.dart';
-// import 'package:flutter_screentime/modules/home/apps_repository.dart';
-// import 'package:flutter_screentime/provider/api.dart';
-// import 'package:flutter_screentime/home_page.dart';
+import 'package:flutter_screentime/modules/home/apps_repository.dart';
+import 'package:flutter_screentime/provider/api.dart';
+import 'package:flutter_screentime/home_page.dart';
 import 'package:flutter_screentime/init.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:get/get.dart';
@@ -134,7 +134,8 @@ void main() async {
   customerId = NavigationService.prefs?.getInt("id") ?? 0;
   await dotenv.load(fileName: '.env');
   await Env.instance.load();
-  runApp(const BackgroundMain());
+  runApp(const MyApp());
+  // runApp(const BackgroundMain());
 }
 
 // void requestAllPermissions() async {
@@ -145,27 +146,26 @@ void main() async {
 //   ]);
 // }
 
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     Get.put(AppsController(Get.find(), AppsRepository(Api())));
-//     return GetMaterialApp(
-//       navigatorKey: NavigationService.navigatorKey,
-//       title: 'App Control',
-//       debugShowCheckedModeBanner: false,
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: const MyHomePage(),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    Get.put(AppsController(Get.find(), AppsRepository(Api())));
+    return GetMaterialApp(
+      navigatorKey: NavigationService.navigatorKey,
+      title: 'App Control',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const MyHomePage(),
+    );
+  }
+}
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -269,17 +269,17 @@ class _MyHomePageState extends State<MyHomePage> {
   //   });
   // }
 
-  @override
-  Widget build(BuildContext context) {
-    return const BackgroundMainPage(title: "Social Restrict");
-  }
-
   // @override
   // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: customerId == 0
-  //         ? const BackgroundMainPage(title: "Social Restrict")
-  //         : const HomePage(),
-  //   );
+  //   return const BackgroundMainPage(title: "Social Restrict");
   // }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: customerId == 0
+          ? const BackgroundMainPage(title: "Social Restrict")
+          : const HomePage(),
+    );
+  }
 }

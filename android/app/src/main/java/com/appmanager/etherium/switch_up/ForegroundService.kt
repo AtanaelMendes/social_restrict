@@ -51,7 +51,6 @@ class ForegroundService : Service() {
         throw UnsupportedOperationException("")
         return binder
     }
-
     var timer: Timer = Timer()
     var isTimerStarted = false
     var timerReload: Long = 500
@@ -89,8 +88,7 @@ class ForegroundService : Service() {
     }
 
     private fun apllyPassword(code: String?) {
-        val saveAppData =
-            applicationContext.getSharedPreferences("save_app_data", Context.MODE_PRIVATE)
+        val saveAppData = applicationContext.getSharedPreferences("save_app_data", Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = saveAppData.edit()
 
         if (!code.isNullOrEmpty()) {
@@ -690,7 +688,6 @@ class ForegroundService : Service() {
                         window.close()
                     }
                 }
-
                 override fun onHomeLongPressed() {
                     println("Dayone onHomeLongPressed")
                     currentAppActivityList.clear()
@@ -737,8 +734,7 @@ class ForegroundService : Service() {
         while (usageEvents.hasNextEvent()) {
             usageEvents.getNextEvent(event)
             if (event.eventType == UsageEvents.Event.ACTIVITY_RESUMED) {
-                lastResumedPackage =
-                    event.packageName // O último pacote que foi trazido para o primeiro plano
+                lastResumedPackage = event.packageName // O último pacote que foi trazido para o primeiro plano
             }
         }
         return lastResumedPackage

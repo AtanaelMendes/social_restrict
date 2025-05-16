@@ -41,6 +41,8 @@ dependencies:
     path: ./packages/workmanager-0.5.1
   qr_code_scanner: ^1.0.1
   background_fetch: ^1.2.1
+#  dio: ^5.4.0
+#  logger: ^2.0.2+1
   # dart_format: ^1.4.1
   dart_format: ^0.0.4
   # background_fetch:

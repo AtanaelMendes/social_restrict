@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screentime/android/apps_controller.dart';
+import 'package:flutter_screentime/modules/home/apps_controller.dart';
 import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:flutter_screentime/android/permission_controller.dart';
 import 'package:flutter_screentime/android/widgets/ask_permission_dialog.dart';
@@ -11,11 +11,12 @@ import 'package:flutter_screentime/navigation_service.dart';
 import 'package:flutter_screentime/modules/qr-code/qrviewpage.dart';
 import 'package:flutter_screentime/politica_de_privacidade.dart';
 import 'package:flutter_screentime/tutorial_page.dart';
+import 'package:get/get.dart';
 import 'package:get/instance_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class BackgroundMain extends StatelessWidget {
+class BackgroundMain extends GetView {
   const BackgroundMain({super.key});
 
   // This widget is the root of your application.
@@ -33,69 +34,64 @@ class BackgroundMain extends StatelessWidget {
   }
 }
 
-class BackgroundMainPage extends StatefulWidget {
-  const BackgroundMainPage({super.key, required this.title});
+// class BackgroundMainPage extends StatefulWidget {
+//   const BackgroundMainPage({super.key, required this.title});
+//
+//   final String title;
+//
+//   @override
+//   State<BackgroundMainPage> createState() => _MyHomePageState();
+// }
+
+// class _MyHomePageState extends State<BackgroundMainPage> {
+//   var jsonSettings;
+//
+//   @override
+//   void initState() {
+//     initialize();
+//     super.initState();
+//   }
+//
+//   initialize() async {
+//     if (NavigationService.prefs == null) {
+//       NavigationService.prefs = await SharedPreferences.getInstance();
+//     }
+//
+//     if (Platform.isAndroid) {
+//       Get.put(AppsController(Get.find(), AppsRepository(Api())));
+//
+//
+//       Get.find<AppsController>().getAppsData();
+//       Get.find<AppsController>().getLockedApps();
+//       Get.find<MethodChannelController>().addToLockedAppsMethod();
+//       Get.find<PermissionController>().getPermissions(Permission.ignoreBatteryOptimizations);
+//
+//       // getAndroidPermissions();
+//       // getAndroidUsageStats();
+//       // askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
+//     }
+//     initializeNotifications();
+//
+//     var settings = NavigationService.prefs?.getString("settings");
+//     if (settings != null && settings != "") {
+//       setState(() {
+//         jsonSettings = jsonDecode(settings);
+//       });
+//     }
+//   }
+
+class BackgroundMainPage extends GetView<AppsController> {
+  const BackgroundMainPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
-
-  @override
-  State<BackgroundMainPage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<BackgroundMainPage> {
-  var jsonSettings;
-
-  @override
-  void initState() {
-    initialize();
-    super.initState();
-  }
-
-  initialize() async {
-    if (NavigationService.prefs == null) {
-      NavigationService.prefs = await SharedPreferences.getInstance();
-    }
-
-    if (Platform.isAndroid) {
-      Get.put(AppsController(prefs: Get.find()));
-
-      Get.find<AppsController>().getAppsData();
-      Get.find<AppsController>().getLockedApps();
-      Get.find<MethodChannelController>().addToLockedAppsMethod();
-      Get.find<PermissionController>().getPermissions(Permission.ignoreBatteryOptimizations);
-
-      // getAndroidPermissions();
-      // getAndroidUsageStats();
-      // askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
-    }
-    initializeNotifications();
-
-    var settings = NavigationService.prefs?.getString("settings");
-    if (settings != null && settings != "") {
-      setState(() {
-        jsonSettings = jsonDecode(settings);
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
+        title: Text(title),
       ),
-      body: jsonSettings != null
-          ? Center(
-              child: Container(
-                alignment: Alignment.center,
-                child: const Text(
-                  'Instalação completa. Aplicativo PRONTO para receber atualizações.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
-          : SafeArea(
+      body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(

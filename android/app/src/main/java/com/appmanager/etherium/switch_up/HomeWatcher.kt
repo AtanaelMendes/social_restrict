@@ -18,7 +18,11 @@ class HomeWatcher(private val mContext: Context) {
 
     fun startWatch() {
         if (mReceiver != null) {
-            mContext.registerReceiver(mReceiver, mFilter)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                mContext.registerReceiver(mReceiver, mFilter, Context.RECEIVER_NOT_EXPORTED)
+            } else {
+                mContext.registerReceiver(mReceiver, mFilter)
+            }
         }
     }
 
