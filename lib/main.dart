@@ -51,20 +51,6 @@ Future<void> initState() async {
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }
 
-// Future<void> _requestPermissions() async {
-//   // Solicita permissões de localização em primeiro plano
-//   var statusFine = await Permission.location.request();
-//   var statusCoarse = await Permission.locationAlways.request();
-
-//   if (statusFine.isGranted && statusCoarse.isGranted) {
-//     // Permissões concedidas
-//     debugPrint("Permissões de localização concedidas");
-//   } else {
-//     // Permissões não concedidas
-//     debugPrint("Permissões de localização não concedidas");
-//   }
-// }
-
 void initializeNotifications() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -76,7 +62,7 @@ void initializeNotifications() async {
   NavigationService.prefs?.setString("token", fcmToken!);
   String tokenPrefereces = NavigationService.prefs?.getString("token") ?? "";
 
-  NotificationHandler.initialize();
+  // NotificationHandler.initialize();
   debugPrint("TOKENPREFERE: $tokenPrefereces");
 
   _firebaseMessaging.getToken().then((String? token) {
@@ -129,7 +115,6 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   Get.put(prefs);
   initializeNotifications();
-  // await _requestPermissions();
   companyId = NavigationService.prefs?.getInt("companyId") ?? 0;
   customerId = NavigationService.prefs?.getInt("id") ?? 0;
   await dotenv.load(fileName: '.env');
@@ -173,84 +158,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int customerId = 0;
-
-  Future<void> _initializeAndroidServices() async {
-    final appsController = Get.find<AppsController>();
-    final methodController = Get.find<MethodChannelController>();
-    final permissionController = Get.find<PermissionController>();
-
-    await appsController.getAppsData();
-    await appsController.getLockedApps();
-    await methodController.addToLockedAppsMethod();
-    await permissionController.getPermissions(Permission.ignoreBatteryOptimizations);
-
-    askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
-    await _checkAndRequestAndroidPermissions();
-    await _getAndroidUsageStats();
+  @override
+  void initState() {
+    super.initState();
+    loadCustomerId();
   }
-
-  Future<void> _checkAndRequestAndroidPermissions() async {
-    final methodController = Get.find<MethodChannelController>();
-    final prefs = await SharedPreferences.getInstance();
-
-    bool hasNotification = await methodController.checkNotificationPermission();
-    bool hasOverlay = await methodController.checkOverlayPermission();
-    bool hasUsageAccess = await methodController.checkUsageStatePermission();
-
-    // Verifica se todas as permissões estão OK
-    bool allGranted = hasNotification && hasOverlay && hasUsageAccess;
-
-    if (!allGranted) {
-      methodController.update(); // Atualiza estado visual
-      askPermissionBottomSheet(context); // Mostra o diálogo de permissão
-      prefs.setBool("foreground_initialized", false); // Marca como não inicializado
-      return;
-    }
-
-    // Se já inicializou, evita rodar de novo
-    bool alreadyInitialized = prefs.getBool("foreground_initialized") ?? false;
-    if (alreadyInitialized) {
-      debugPrint("Foreground service já foi iniciado anteriormente.");
-      return;
-    }
-
-    // Inicializa pela primeira vez
-    await _setAndroidPasscode();
-    await methodController.startForeground();
-
-    // Marca como inicializado
-    prefs.setBool("foreground_initialized", true);
-    debugPrint("Foreground service iniciado e marcado como inicializado.");
-  }
-
-  Future<void> _setAndroidPasscode() async {
-    final appsController = Get.find<AppsController>();
-    await appsController.savePasscode("927594");
-    await Get.find<MethodChannelController>().setPassword();
-  }
-
-  Future<void> _getAndroidUsageStats() async {
-    try {
-      DateTime endDate = DateTime.now();
-      DateTime startDate = endDate.subtract(const Duration(days: 1));
-      List<AppUsageInfo> infoList = await AppUsage().getAppUsage(startDate, endDate);
-
-      for (var info in infoList) {
-        debugPrint(info.toString());
-      }
-    } on AppUsageException catch (e) {
-      debugPrint("Erro ao obter uso de apps: $e");
-    }
-  }
-
-  // Future<void> _initializeNotifications() async {
-  //   await Permission.notification.request();
-  //   await FirebaseMessaging.instance.requestPermission();
-  //   final token = await FirebaseMessaging.instance.getToken();
-
-  //   NotificationHandler.initialize();
-  //   debugPrint("TOKEN FCM: $token");
-  // }
 
   // Future<void> requestLocationPermission() async {
   //   var status = await Permission.location.request();
@@ -261,17 +173,19 @@ class _MyHomePageState extends State<MyHomePage> {
   //   }
   // }
 
-  // Future<void> loadCustomerId() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     customerId = prefs.getInt('id') ?? 0;
-  //     debugPrint('CustomerID na MAIN: $customerId');
-  //   });
-  // }
+  Future<void> loadCustomerId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      customerId = prefs.getInt('id') ?? 0;
+      debugPrint('CustomerID na MAIN: $customerId');
+    });
+  }
 
   // @override
   // Widget build(BuildContext context) {
-  //   return const BackgroundMainPage(title: "Social Restrict");
+  //   return Scaffold(
+  //     body: const BackgroundMainPage(title: "Social Restrict")
+  //   );
   // }
 
   @override

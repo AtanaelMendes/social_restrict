@@ -5,11 +5,11 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screentime/background_main.dart';
 import 'package:flutter_screentime/models/token_id_model.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
 import 'package:flutter_screentime/modules/home/apps_repository.dart';
 import 'package:flutter_screentime/provider/api.dart';
-import 'package:flutter_screentime/home_page.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:flutter_screentime/modules/qr-code/qr_repository.dart';
 import 'package:get/get.dart';
@@ -140,6 +140,11 @@ class _QRViewPageState extends State<QRViewPage> {
               'Erro ao enviar token.',
               snackPosition: SnackPosition.BOTTOM,
             );
+            setState(() {
+              NavigationService.prefs?.setInt("companyId", 0);
+              NavigationService.prefs?.setInt("id", 0);
+              NavigationService.prefs?.setString("settings", "");
+            });
           }
 
           setState(() {
@@ -150,7 +155,7 @@ class _QRViewPageState extends State<QRViewPage> {
             const Duration(seconds: 2),
             () {
               Get.offAll(
-                () => const HomePage(),
+                () => const BackgroundMainPage(title: "Social Restrict"),
               );
             },
           );

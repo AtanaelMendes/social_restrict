@@ -69,8 +69,8 @@ class AppsController extends GetxController implements GetxService {
 
   @override
   void onReady() {
-    initialize();
-    timer = Timer.periodic(const Duration(minutes: 2), (timer) {
+    // initialize();
+    timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       initservice();
     });
     super.onReady();

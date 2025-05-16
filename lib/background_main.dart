@@ -34,52 +34,6 @@ class BackgroundMain extends GetView {
   }
 }
 
-// class BackgroundMainPage extends StatefulWidget {
-//   const BackgroundMainPage({super.key, required this.title});
-//
-//   final String title;
-//
-//   @override
-//   State<BackgroundMainPage> createState() => _MyHomePageState();
-// }
-
-// class _MyHomePageState extends State<BackgroundMainPage> {
-//   var jsonSettings;
-//
-//   @override
-//   void initState() {
-//     initialize();
-//     super.initState();
-//   }
-//
-//   initialize() async {
-//     if (NavigationService.prefs == null) {
-//       NavigationService.prefs = await SharedPreferences.getInstance();
-//     }
-//
-//     if (Platform.isAndroid) {
-//       Get.put(AppsController(Get.find(), AppsRepository(Api())));
-//
-//
-//       Get.find<AppsController>().getAppsData();
-//       Get.find<AppsController>().getLockedApps();
-//       Get.find<MethodChannelController>().addToLockedAppsMethod();
-//       Get.find<PermissionController>().getPermissions(Permission.ignoreBatteryOptimizations);
-//
-//       // getAndroidPermissions();
-//       // getAndroidUsageStats();
-//       // askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
-//     }
-//     initializeNotifications();
-//
-//     var settings = NavigationService.prefs?.getString("settings");
-//     if (settings != null && settings != "") {
-//       setState(() {
-//         jsonSettings = jsonDecode(settings);
-//       });
-//     }
-//   }
-
 class BackgroundMainPage extends GetView<AppsController> {
   const BackgroundMainPage({Key? key, required this.title}) : super(key: key);
 
@@ -116,6 +70,8 @@ class BackgroundMainPage extends GetView<AppsController> {
                       ],
                     ),
 
+                    const SizedBox(height: 10),
+
                     // 3. Botão LER QR CODE
                     ElevatedButton.icon(
                       icon: const Icon(Icons.qr_code),
@@ -130,6 +86,8 @@ class BackgroundMainPage extends GetView<AppsController> {
                         // initialize();
                       },
                     ),
+
+                    const SizedBox(height: 10),
 
                     // 4. Botão VER TUTORIAL
                     OutlinedButton.icon(
@@ -146,7 +104,7 @@ class BackgroundMainPage extends GetView<AppsController> {
                       },
                     ),
 
-                    // const SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     // VERIFICAR PERMISSÕES
                     ElevatedButton.icon(
@@ -162,7 +120,7 @@ class BackgroundMainPage extends GetView<AppsController> {
                       },
                     ),
 
-                    // const SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     // 5. Botão Política de Privacidade
                     ElevatedButton.icon(

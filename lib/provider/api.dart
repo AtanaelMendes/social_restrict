@@ -28,7 +28,6 @@ class Api {
     try {
       var response = await dio.put(
         '/customers/status',
-        //'https://957d-177-124-114-100.ngrok-free.app/api/customers/status',
         data: body,
         options: Options(
           headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $_token'},
@@ -45,7 +44,6 @@ class Api {
     try {
       var response = await dio.put(
         '/customers/loc',
-        //'https://957d-177-124-114-100.ngrok-free.app/api/customers/loc',
         data: body,
         options: Options(
           headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $_token'},
