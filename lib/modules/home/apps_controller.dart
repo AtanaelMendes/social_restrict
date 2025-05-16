@@ -436,7 +436,7 @@ class AppsController extends GetxController implements GetxService {
       long: longitude,
     );
 
-    // await repository.postLocation(locationModel);
+    await repository.postLocation(locationModel);
   }
 
   Future<void> initservice() async {
