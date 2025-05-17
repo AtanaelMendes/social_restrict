@@ -53,22 +53,42 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('Social Restrict'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(bottom: 10),
-              child: const Text(
-                'Instalação completa aplicativo PRONTO para receber atualizações',
-                textAlign: TextAlign.center,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              // 1. Logo do App
+              Column(
+                children: [
+                  Image.asset(
+                    'assets/icon/180.png',
+                    width: 120,
+                    height: 120,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // 2. Texto explicativo
+                  const Text(
+                    "Seu aplicativo está configurado e pronto para receber atualizações.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 26),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Agora pode fechar o aplicativo que cuidaremos do resto.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 26),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 10)
-          ],
+              const SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     );

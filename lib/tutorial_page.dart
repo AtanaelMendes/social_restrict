@@ -86,6 +86,13 @@ class _TutorialPageState extends State<TutorialPage> {
       'subtitle': 'Conceda acesso ao uso da camêra.',
       'text': 'Após ler o QR CODE o Social Restric entra em ação'
     },
+    {
+      'id': '11',
+      'image': 'assets/tutorial/step11.png',
+      'title': 'Concluído',
+      'subtitle': 'Configuração concluída',
+      'text': 'Após ler o QR CODE o APP deve abrir essa tela, nesse momento pode fechar o APP.'
+    },
   ];
 
   void _nextPage() {
@@ -120,12 +127,12 @@ class _TutorialPageState extends State<TutorialPage> {
                 const SizedBox(height: 20),
                 Text(
                   step['title']!,
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
                 Text(
                   step['subtitle']!,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
                 Expanded(
@@ -137,7 +144,7 @@ class _TutorialPageState extends State<TutorialPage> {
                 const SizedBox(height: 20),
                 Text(
                   step['text']!,
-                  style: const TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 18),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 30),

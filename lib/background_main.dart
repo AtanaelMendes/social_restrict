@@ -36,6 +36,7 @@ class BackgroundMainPage extends GetView<AppsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(title),
       ),
       body: SafeArea(
@@ -58,7 +59,7 @@ class BackgroundMainPage extends GetView<AppsController> {
                         const Text(
                           "Solicite o QR Code ao seu guardião para escanear e utilizar o app, mas antes clique em \"VER TUTORIAL\"",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 20),
                         ),
                       ],
                     ),

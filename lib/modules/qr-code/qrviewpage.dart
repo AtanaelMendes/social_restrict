@@ -90,22 +90,14 @@ class _QRViewPageState extends State<QRViewPage> {
         setState(() {
           isLoading = true;
         });
+        result = scanData;
+        Map<String, dynamic> data = jsonDecode(scanData.code!);
         setState(() {
-          result = scanData;
-          Map<String, dynamic> data = jsonDecode(scanData.code!);
           if (kDebugMode) {
             print(data);
-          }
-          NavigationService.prefs?.setString("settings", scanData.code!);
-          NavigationService.prefs?.setInt("id", data['id'] ?? 0);
-          if (kDebugMode) {
             print(data['id']);
-          }
-          NavigationService.prefs?.setInt("companyId", data['companyId'] ?? 0);
-          if (kDebugMode) {
             print(data['companyId']);
           }
-
           id = data['id'] ?? 0;
           companyId = data['companyId'] ?? 0;
         });
@@ -134,6 +126,10 @@ class _QRViewPageState extends State<QRViewPage> {
               'Token enviado.',
               snackPosition: SnackPosition.BOTTOM,
             );
+            NavigationService.prefs?.setString("settings", scanData.code!);
+            NavigationService.prefs?.setInt("id", id!);
+            NavigationService.prefs?.setInt("companyId", companyId!);
+
           } else {
             Get.snackbar(
               'Erro',
