@@ -208,8 +208,6 @@ class ForegroundService : Service() {
 
                     val retrofit =
                         Retrofit.Builder()
-                            //.baseUrl("http://66.94.104.117:3003/api/")
-//                            .baseUrl("https://www.rhbrasil.com.br/app/api/")
                             .baseUrl("https://app-api.rhbrasil.com.br/api/")
 
                             .addConverterFactory(NullOnEmptyConverterFactory())

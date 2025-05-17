@@ -6,11 +6,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_screentime/android/permission_controller.dart';
 import 'package:flutter_screentime/config/env.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
 import 'package:flutter_screentime/android/method_channel_controller.dart';
-import 'package:flutter_screentime/background_notification.dart';
 import 'package:flutter_screentime/background_main.dart';
 import 'package:flutter_screentime/modules/home/apps_repository.dart';
 import 'package:flutter_screentime/provider/api.dart';
@@ -19,8 +17,6 @@ import 'package:flutter_screentime/init.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:get/get.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_screentime/block_unblock_manager.dart';
-import 'package:flutter_screentime/android/widgets/ask_permission_dialog.dart';
 
 import 'dart:async';
 
@@ -54,7 +50,6 @@ Future<void> initState() async {
 void initializeNotifications() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await Permission.notification.request(); // <- Android 13+
   await FirebaseMessaging.instance.requestPermission();
   String? fcmToken = await FirebaseMessaging.instance.getToken();
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -100,7 +95,7 @@ getAndroidPermissions() async {
   }
 
   await setAndroidPasscode();
-  await Get.find<MethodChannelController>().startForeground();
+  // await Get.find<MethodChannelController>().startForeground();
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalPlugin = FlutterLocalNotificationsPlugin();
@@ -114,22 +109,13 @@ void main() async {
   lazyPutInitialize();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   Get.put(prefs);
-  initializeNotifications();
+  initializeNotifications(); // chamada permissao notificacao
   companyId = NavigationService.prefs?.getInt("companyId") ?? 0;
   customerId = NavigationService.prefs?.getInt("id") ?? 0;
   await dotenv.load(fileName: '.env');
   await Env.instance.load();
   runApp(const MyApp());
-  // runApp(const BackgroundMain());
 }
-
-// void requestAllPermissions() async {
-//   PermissionController permissionController = Get.find();
-//   await permissionController.getPermissions([
-//     Permission.location,
-//     Permission.camera,
-//   ]);
-// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -164,15 +150,6 @@ class _MyHomePageState extends State<MyHomePage> {
     loadCustomerId();
   }
 
-  // Future<void> requestLocationPermission() async {
-  //   var status = await Permission.location.request();
-  //   if (status.isGranted) {
-  //     loadCustomerId();
-  //   } else {
-  //     debugPrint('Location permission denied');
-  //   }
-  // }
-
   Future<void> loadCustomerId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -180,13 +157,6 @@ class _MyHomePageState extends State<MyHomePage> {
       debugPrint('CustomerID na MAIN: $customerId');
     });
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: const BackgroundMainPage(title: "Social Restrict")
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {

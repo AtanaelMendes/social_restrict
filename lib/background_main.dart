@@ -1,20 +1,13 @@
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
-import 'package:flutter_screentime/android/method_channel_controller.dart';
-import 'package:flutter_screentime/android/permission_controller.dart';
 import 'package:flutter_screentime/android/widgets/ask_permission_dialog.dart';
-import 'package:flutter_screentime/main.dart';
+// import 'package:flutter_screentime/main.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:flutter_screentime/modules/qr-code/qrviewpage.dart';
 import 'package:flutter_screentime/politica_de_privacidade.dart';
 import 'package:flutter_screentime/tutorial_page.dart';
 import 'package:get/get.dart';
-import 'package:get/instance_manager.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BackgroundMain extends GetView {
   const BackgroundMain({super.key});
@@ -114,8 +107,8 @@ class BackgroundMainPage extends GetView<AppsController> {
                         minimumSize: const Size(200, 50),
                       ),
                       onPressed: () async {
-                        getAndroidPermissions();
-                        getAndroidUsageStats();
+                        // getAndroidPermissions();
+                        // getAndroidUsageStats();
                         askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
                       },
                     ),

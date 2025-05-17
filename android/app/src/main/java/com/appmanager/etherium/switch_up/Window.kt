@@ -18,7 +18,7 @@ import com.example.flutter_screentime.R
 
 @SuppressLint("InflateParams")
 class Window(
-		private val context: Context
+	private val context: Context
 ) {
 	private val mView: View
 	var pinCode: String = ""
@@ -65,10 +65,11 @@ class Window(
 	fun close() {
 		try {
 			Handler(Looper.getMainLooper()).postDelayed({
-				(context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).removeView(mView)
-				mView.invalidate()
-			},500)
-
+				if (mView.isAttachedToWindow) {
+					(context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).removeView(mView)
+					mView.invalidate()
+				}
+			}, 500)
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}
@@ -93,11 +94,11 @@ class Window(
 	init {
 
 		mParams = WindowManager.LayoutParams(
-				WindowManager.LayoutParams.MATCH_PARENT,
-				WindowManager.LayoutParams.MATCH_PARENT,
-				WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-				WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-				PixelFormat.TRANSLUCENT
+			WindowManager.LayoutParams.MATCH_PARENT,
+			WindowManager.LayoutParams.MATCH_PARENT,
+			WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+			WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+			PixelFormat.TRANSLUCENT
 		)
 		layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 		mView = layoutInflater.inflate(R.layout.pin_activity, null)
@@ -113,7 +114,7 @@ class Window(
 
 		mPinLockView!!.attachIndicatorDots(mIndicatorDots)
 		mPinLockView!!.setPinLockListener(mPinLockListener)
-		mPinLockView!!.pinLength = 6
+		mPinLockView!!.pinLength = 4
 		mPinLockView!!.textColor = ContextCompat.getColor(context, R.color.ic_launcher_background)
 		mIndicatorDots!!.indicatorType = IndicatorDots.IndicatorType.FILL_WITH_ANIMATION
 

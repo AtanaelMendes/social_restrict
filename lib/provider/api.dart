@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_final_fields
-
 import 'package:dio/dio.dart';
 import 'package:flutter_screentime/config/env_variables.dart';
 import 'package:logger/logger.dart';
@@ -55,20 +53,4 @@ class Api {
       return null;
     }
   }
-
-// Future<Response?> getAllOrdes() async {
-//   _customerId = NavigationService.prefs?.getInt("id");
-//   try {
-//     var response = await dio.get(
-//         '${RHBrasilApi.HOST}/${RHBrasilApi.MAIN_PATH}/orders',
-//          options: Options(headers: {'Content-Type': 'application/json','Authorization': 'Bearer $_token'},));
-//         query: {
-//           'customerId': [_customerId.toString()]
-//         });
-//     return response;
-//   } catch (e) {
-//     Get.log(e.toString(), isError: true);
-//     return null;
-//   }
-// }
 }

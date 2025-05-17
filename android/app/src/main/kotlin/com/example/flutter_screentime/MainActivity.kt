@@ -49,7 +49,7 @@ class MainActivity : FlutterActivity() {
         GeneratedPluginRegistrant.registerWith(FlutterEngine(this))
         setupMethodChannel()
 
-        requestLocationPermissions()
+        // requestLocationPermissions()
         registerBootUpReceiver()
     }
 

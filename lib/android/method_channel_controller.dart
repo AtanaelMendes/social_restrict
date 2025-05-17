@@ -13,7 +13,7 @@ import 'package:usage_stats/usage_stats.dart';
 
 import 'permission_controller.dart';
 
-// const platform = const MethodChannel('samples.flutter.dev/native');
+const platform = const MethodChannel('samples.flutter.dev/native');
 
 class MethodChannelController extends GetxController implements GetxService {
  static const platform = MethodChannel('flutter.native/helper');
@@ -30,6 +30,7 @@ class MethodChannelController extends GetxController implements GetxService {
   bool isBackgroundFetchAvailable = false;
 
   Future<bool> checkOverlayPermission() async {
+    log("pedindo permissao checkOverlayPermission");
     try {
       return await platform
           .invokeMethod('checkOverlayPermission')
@@ -48,11 +49,13 @@ class MethodChannelController extends GetxController implements GetxService {
   }
 
   Future<bool> checkNotificationPermission() async {
+    log("chamando checkNotificationPermission");
     return isNotificationPermissionGiven =
         await Permission.notification.isGranted;
   }
 
   Future<bool> checkUsageStatePermission() async {
+    log("chamando checkUsageStatePermission");
     isUsageStatPermissionGiven =
         (await UsageStats.checkUsagePermission() ?? false);
     update();
@@ -142,14 +145,15 @@ class MethodChannelController extends GetxController implements GetxService {
   }
 
   Future<bool> askNotificationPermission() async {
-    await Get.find<PermissionController>()
-        .getPermissions(Permission.notification);
+    log("pedindo permissao askNotificationPermission");
+    await Get.find<PermissionController>().getPermissions([Permission.notification]);
     isNotificationPermissionGiven = await Permission.notification.isGranted;
     update();
     return isNotificationPermissionGiven;
   }
 
   Future<bool> askOverlayPermission() async {
+    log("pedindo permissao askOverlayPermission");
     try {
       return await platform.invokeMethod('askOverlayPermission').then((value) {
         log("$value", name: "askOverlayPermission");
@@ -164,6 +168,7 @@ class MethodChannelController extends GetxController implements GetxService {
   }
 
   Future<bool> askUsageStatsPermission() async {
+    log("pedindo permissao askUsageStatsPermission");
     try {
       return await platform
           .invokeMethod('askUsageStatsPermission')
@@ -178,10 +183,8 @@ class MethodChannelController extends GetxController implements GetxService {
   }
 
   Future<bool> askBackgroundLocationPermission() async {
-    await Get.find<PermissionController>()
-        .getPermissions(Permission.locationAlways);
-    isBackgroundLocationPermissionGiven =
-        await Permission.locationAlways.isGranted;
+    await Get.find<PermissionController>().getPermissions([Permission.locationAlways]);
+    isBackgroundLocationPermissionGiven = await Permission.locationAlways.isGranted;
     update();
     return isBackgroundLocationPermissionGiven;
   }

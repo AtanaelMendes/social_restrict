@@ -16,15 +16,12 @@ import 'package:flutter_screentime/models/block_app_model.dart';
 import 'package:flutter_screentime/models/location_model.dart';
 import 'package:flutter_screentime/modules/home/apps_repository.dart';
 import 'package:flutter_screentime/provider/api.dart';
-import 'package:flutter_screentime/main.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 // import 'package:location/location.dart' as loc;
-// import 'package:location/location.dart';
-// import 'package:permission_handler/permission_handler.dart' as ph;
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppsController extends GetxController implements GetxService {
@@ -69,7 +66,7 @@ class AppsController extends GetxController implements GetxService {
 
   @override
   void onReady() {
-    // initialize();
+    initialize();
     timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       initservice();
     });
@@ -91,21 +88,22 @@ class AppsController extends GetxController implements GetxService {
       Get.find<AppsController>().getAppsData();
       Get.find<AppsController>().getLockedApps();
 
-      Get.find<PermissionController>().getPermissions(Permission.ignoreBatteryOptimizations);
+      // Get.find<PermissionController>().getPermissions([Permission.ignoreBatteryOptimizations]);
 
-      getAndroidPermissions();
-      getAndroidUsageStats();
+      // getAndroidPermissions();
+      // getAndroidUsageStats();
 
-      askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
+      // askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
     }
-    initializeNotifications();
+    // initializeNotifications();
+
+    jsonSettings.value = {};
 
     var settings = NavigationService.prefs?.getString("settings");
     if (settings != null && settings != "") {
       jsonSettings.value = jsonDecode(settings);
     }
 
-    jsonSettings.value = {};
   }
 
   changeQuestionIndex(index) {
@@ -442,6 +440,9 @@ class AppsController extends GetxController implements GetxService {
   Future<void> initservice() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int customerId = prefs.getInt("id") ?? 0;
+
+    if (!(customerId > 0)) return;
+
     debugPrint('Dayone primeiro plano CustomerId: $customerId');
     double latitude = latitudeValue ?? 0.0;
     double longitude = longitudeValue ?? 0.0;
