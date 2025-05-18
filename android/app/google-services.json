@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "218460714542",
+    "project_id": "homologacao-c2690",
+    "storage_bucket": "homologacao-c2690.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218460714542:android:0d1e989540772a022451bf",
+        "android_client_info": {
+          "package_name": "com.example.flutter_screentime"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "218460714542-2n0akukt5onqk6rapd8t0e51nhq5bgc9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1gC8oJKgvy2nSa3ZeYCdGGXb66R-X-Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "218460714542-2n0akukt5onqk6rapd8t0e51nhq5bgc9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
