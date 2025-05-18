@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 List<ApplicationDataModel> applicationDataModelFromJson(String str) =>
-    List<ApplicationDataModel>.from(
-        json.decode(str).map((x) => ApplicationDataModel.fromJson(x)));
+    List<ApplicationDataModel>.from((str == null || str == '')
+        ? {}
+        : json.decode(str).map((x) => ApplicationDataModel.fromJson(x)));
 
 String applicationDataModelToJson(List<ApplicationDataModel> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
@@ -69,21 +70,19 @@ class ApplicationData {
     }
 
     return ApplicationData(
-      appName: json["appName"] == null ? null : json["appName"],
+      appName: json["appName"],
       // icon: getUinit8List(json["icon"]),
       icon: getUinit8List(json["icon"]),
-      apkFilePath: json["apkFilePath"] == null ? null : json["apkFilePath"],
-      packageName: json["packageName"] == null ? null : json["packageName"],
-      versionName: json["versionName"] == null ? null : json["versionName"],
-      versionCode: json["versionCode"] == null ? null : json["versionCode"],
-      dataDir: json["dataDir"] == null ? null : json["dataDir"],
-      systemApp: json["systemApp"] == null ? null : json["systemApp"],
-      installTimeMillis:
-          json["installTimeMillis"] == null ? null : json["installTimeMillis"],
-      updateTimeMillis:
-          json["updateTimeMillis"] == null ? null : json["updateTimeMillis"],
-      category: json["category"] == null ? null : json["category"],
-      enabled: json["enabled"] == null ? null : json["enabled"],
+      apkFilePath: json["apkFilePath"],
+      packageName: json["packageName"],
+      versionName: json["versionName"],
+      versionCode: json["versionCode"],
+      dataDir: json["dataDir"],
+      systemApp: json["systemApp"],
+      installTimeMillis: json["installTimeMillis"],
+      updateTimeMillis: json["updateTimeMillis"],
+      category: json["category"],
+      enabled: json["enabled"],
     );
   }
 
@@ -93,18 +92,18 @@ class ApplicationData {
     }
 
     return {
-      "appName": appName == null ? null : appName,
+      "appName": appName,
       "icon": icon == null ? null : getUinit8List(icon),
-      "apkFilePath": apkFilePath == null ? null : apkFilePath,
-      "packageName": packageName == null ? null : packageName,
-      "versionName": versionName == null ? null : versionName,
-      "versionCode": versionCode == null ? null : versionCode,
-      "dataDir": dataDir == null ? null : dataDir,
-      "systemApp": systemApp == null ? null : systemApp,
-      "installTimeMillis": installTimeMillis == null ? null : installTimeMillis,
-      "updateTimeMillis": updateTimeMillis == null ? null : updateTimeMillis,
-      "category": category == null ? null : category,
-      "enabled": enabled == null ? null : enabled,
+      "apkFilePath": apkFilePath,
+      "packageName": packageName,
+      "versionName": versionName,
+      "versionCode": versionCode,
+      "dataDir": dataDir,
+      "systemApp": systemApp,
+      "installTimeMillis": installTimeMillis,
+      "updateTimeMillis": updateTimeMillis,
+      "category": category,
+      "enabled": enabled,
     };
   }
 }

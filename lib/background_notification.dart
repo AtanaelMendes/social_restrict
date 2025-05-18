@@ -2,10 +2,9 @@ import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:social_restrict/android/apps_controller.dart';
-import 'package:social_restrict/android/method_channel_controller.dart';
-import 'package:social_restrict/android/permission_controller.dart';
-import 'package:social_restrict/block_unblock_manager.dart';
+import 'package:flutter_screentime/android/method_channel_controller.dart';
+import 'package:flutter_screentime/android/permission_controller.dart';
+import 'package:flutter_screentime/block_unblock_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 
@@ -29,8 +28,10 @@ class NotificationHandler {
   }
 
   static void initialize() {
-    FirebaseMessaging.onMessageOpenedApp.forEach((RemoteMessage message) {NotificationHandler.onNotification(message);});
+    FirebaseMessaging.onMessageOpenedApp.forEach((RemoteMessage message) =>
+        {NotificationHandler.onNotification(message)});
     FirebaseMessaging.onBackgroundMessage(NotificationHandler.onNotification);
-    FirebaseMessaging.onMessage.forEach((RemoteMessage message) {NotificationHandler.onNotification(message);});
+    FirebaseMessaging.onMessage.forEach((RemoteMessage message) =>
+        {NotificationHandler.onNotification(message)});
   }
 }

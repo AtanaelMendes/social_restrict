@@ -1,0 +1,81 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter debug_adapter
+
+## exception
+
+SentinelException: [Sentinel kind: Collected, valueAsString: <collected>] from getIsolate()
+
+```
+#0      new _OutstandingRequest (package:vm_service/src/vm_service.dart:1930:45)
+#1      VmService._call (package:vm_service/src/vm_service.dart:2499:21)
+#2      VmService.getIsolate (package:vm_service/src/vm_service.dart:2202:7)
+#3      MappedIterator.moveNext (dart:_internal/iterable.dart:403:20)
+#4      Future.wait (dart:async/future.dart:521:26)
+#5      DartDebugAdapter._configureExistingIsolates (package:dds/src/dap/adapters/dart.dart:778:24)
+#6      DartDebugAdapter.connectDebugger.<anonymous closure> (package:dds/src/dap/adapters/dart.dart:717:13)
+#7      DartDebugAdapter._withErrorHandling (package:dds/src/dap/adapters/dart.dart:2596:24)
+#8      DartDebugAdapter.connectDebugger (package:dds/src/dap/adapters/dart.dart:716:11)
+<asynchronous suspension>
+#9      FlutterDebugAdapter._connectDebugger (package:flutter_tools/src/debug_adapters/flutter_adapter.dart:381:9)
+<asynchronous suspension>
+#10     FlutterDebugAdapter._handleDebugPort (package:flutter_tools/src/debug_adapters/flutter_adapter.dart:462:7)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[!] Flutter (Channel stable, 3.16.0, on macOS 15.0.1 24A348 darwin-arm64, locale en-BR)
+    • Flutter version 3.16.0 on channel stable at /Users/brunoborges/fvm/versions/3.16.0
+    ! Warning: `flutter` on your path resolves to /Users/brunoborges/fvm/versions/stable/bin/flutter, which is not inside your current Flutter SDK checkout at /Users/brunoborges/fvm/versions/3.16.0. Consider adding /Users/brunoborges/fvm/versions/3.16.0/bin to the front of your path.
+    ! Warning: `dart` on your path resolves to /Users/brunoborges/fvm/versions/stable/bin/dart, which is not inside your current Flutter SDK checkout at /Users/brunoborges/fvm/versions/3.16.0. Consider adding /Users/brunoborges/fvm/versions/3.16.0/bin to the front of your path.
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision db7ef5bf9f (12 months ago), 2023-11-15 11:25:44 -0800
+    • Engine revision 74d16627b9
+    • Dart version 3.2.0
+    • DevTools version 2.28.2
+    • If those were intentional, you can disregard the above warnings; however it is recommended to use "git" directly to perform update checks and upgrades.
+
+[✓] Android toolchain - develop for Android devices (Android SDK version 35.0.0)
+    • Android SDK at /Users/brunoborges/Library/Android/sdk
+    • Platform android-34, build-tools 35.0.0
+    • Java binary at: /Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java
+    • Java version OpenJDK Runtime Environment (build 17.0.6+0-17.0.6b802.4-9586694)
+    • All Android licenses accepted.
+
+[✓] Xcode - develop for iOS and macOS (Xcode 16.0)
+    • Xcode at /Applications/Xcode.app/Contents/Developer
+    • Build 16A242d
+    • CocoaPods version 1.15.0
+
+[✓] Chrome - develop for the web
+    • Chrome at /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+
+[✓] Android Studio (version 2022.2)
+    • Android Studio at /Applications/Android Studio.app/Contents
+    • Flutter plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/9212-flutter
+    • Dart plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/6351-dart
+    • Java version OpenJDK Runtime Environment (build 17.0.6+0-17.0.6b802.4-9586694)
+
+[✓] VS Code (version 1.94.2)
+    • VS Code at /Applications/Visual Studio Code.app/Contents
+    • Flutter extension version 3.64.0
+
+[✓] Connected device (5 available)
+    • 23129RA5FL (mobile)        • 425d98ef                             • android-arm64  • Android 14 (API 34)
+    • iPhone 16 Pro Max (mobile) • 7D33B7D9-3D32-4C6A-AB8F-F039AA62DA02 • ios            • com.apple.CoreSimulator.SimRuntime.iOS-18-0 (simulator)
+    • iPhone 14 Pro Max (mobile) • C20E7568-096E-4A74-8301-AFE122D45386 • ios            • com.apple.CoreSimulator.SimRuntime.iOS-16-4 (simulator)
+    • macOS (desktop)            • macos                                • darwin-arm64   • macOS 15.0.1 24A348 darwin-arm64
+    • Chrome (web)               • chrome                               • web-javascript • Google Chrome 130.0.6723.119
+
+[✓] Network resources
+    • All expected network resources are available.
+
+! Doctor found issues in 1 category.
+```
