@@ -2,6 +2,7 @@
 
 package com.example.flutter_screentime
 
+import android.util.Log
 import android.annotation.SuppressLint
 import android.app.AppOpsManager
 import android.content.BroadcastReceiver
@@ -43,7 +44,7 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        println("INIT NATIVE CREATE")
+        println("INICIADO CODIGO NATIVO")
         super.onCreate(savedInstanceState)
         saveAppData = applicationContext.getSharedPreferences("save_app_data", Context.MODE_PRIVATE)
         GeneratedPluginRegistrant.registerWith(FlutterEngine(this))
@@ -55,7 +56,7 @@ class MainActivity : FlutterActivity() {
 
     private fun setupMethodChannel() {
         MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, channel).setMethodCallHandler { call, result ->
-            println("CALL ----- METHODS")
+            println("CHAMANDO METODOS")
             when {
                 call.method.equals("addToLockedApps") -> {
                     val args = call.arguments as HashMap<*, *>
@@ -77,6 +78,8 @@ class MainActivity : FlutterActivity() {
                     stopForegroundService()
                 }
                 call.method.equals("startForeground") -> {
+                    val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
+                    Log.d("ForegroundService", "startForegroundService CHAMANDO\nCaller:\n$stackTrace")
                     startForegroundService()
                 }
                 call.method.equals("askOverlayPermission") -> {
@@ -115,6 +118,8 @@ class MainActivity : FlutterActivity() {
                 arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.FOREGROUND_SERVICE_LOCATION),
                 LOCATION_PERMISSION_REQUEST_CODE)
         } else {
+            val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
+            Log.d("ForegroundService", "startForegroundService CHAMANDO\nCaller:\n$stackTrace")
             startForegroundService()
         }
     }
@@ -127,6 +132,8 @@ class MainActivity : FlutterActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
+                Log.d("ForegroundService", "startForegroundService CHAMANDO\nCaller:\n$stackTrace")
                 startForegroundService()
             } else {
                 println("Permissão de localização negada.")
@@ -165,6 +172,9 @@ class MainActivity : FlutterActivity() {
         editor.putString("app_data", "$packageData")
         editor.apply()
 
+        val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
+        Log.d("ForegroundService", "startForegroundService CHAMANDO\nCaller:\n$stackTrace")
+
         startForegroundService()
 
         return "Success"
@@ -177,6 +187,8 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun startForegroundService() {
+        val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
+        Log.d("ForegroundService", "startForegroundService CHAMANDO\nCaller:\n$stackTrace")
         if (Settings.canDrawOverlays(this)) {
             setIfServiceClosed("1")
             ContextCompat.startForegroundService(this, Intent(this, ForegroundService::class.java))

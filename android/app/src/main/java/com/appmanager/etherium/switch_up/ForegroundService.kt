@@ -1,5 +1,6 @@
 package com.example.flutter_screentime
 
+import android.util.Log
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -24,13 +25,12 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
-
-// import java.util.Calendar
-// import com.google.android.gms.location.FusedLocationProviderClient
-// import com.google.android.gms.location.LocationServices
-// import com.google.firebase.database.FirebaseDatabase
-// import android.content.Intent
+import okhttp3.OkHttpClient
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 class ForegroundService : Service() {
     private var appInfo: List<ApplicationInfo>? = null
@@ -38,7 +38,7 @@ class ForegroundService : Service() {
     private var unLockedAppList: List<ApplicationInfo> = emptyList()
     private var saveAppData: SharedPreferences? = null
     private val binder = LocalBinder()
-    // private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var isWindowOpen = false
 
     private var _customerId: Int? = null
     private var _companyId: Int? = null
@@ -48,9 +48,13 @@ class ForegroundService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        throw UnsupportedOperationException("")
         return binder
     }
+
+    companion object {
+        var isServiceRunning = false
+    }
+
     var timer: Timer = Timer()
     var isTimerStarted = false
     var timerReload: Long = 500
@@ -59,32 +63,31 @@ class ForegroundService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+
+        if (isServiceRunning) {
+            println("Dayone Serviço já está em execução, não será reiniciado.")
+            stopSelf() // ou apenas return
+            return
+        }
+
+        isServiceRunning = true
+
         saveAppData = applicationContext.getSharedPreferences("save_app_data", Context.MODE_PRIVATE)
         val channelId = "AppLock-10"
-        val channel =
-            NotificationChannel(
-                channelId,
-                "Channel human readable title",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
+        val channel = NotificationChannel(
+            channelId,
+            "Channel human readable title",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
         (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
             .createNotificationChannel(channel)
-        val notification =
-            NotificationCompat.Builder(this, channelId)
-                .setContentTitle("")
-                .setContentText("")
-                .build()
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("")
+            .setContentText("")
+            .build()
         startForeground(1, notification)
-        startMyOwnForeground()
-        // apllyPassword()
+//        startMyOwnForeground()
         startTimeApps()
-
-        val intent = Intent(this, ForegroundService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
-        }
     }
 
     private fun apllyPassword(code: String?) {
@@ -194,7 +197,7 @@ class ForegroundService : Service() {
     }
 
     private fun startTimeApps() {
-        val handler = Handler()
+        val handler = Handler(Looper.getMainLooper())
         // val delay = 5 * 60 * 1000
         val delay = 60 * 1000
         var execute = 0
@@ -209,20 +212,19 @@ class ForegroundService : Service() {
                     val retrofit =
                         Retrofit.Builder()
                             .baseUrl("https://app-api.rhbrasil.com.br/api/")
-
+//                            .client(getUnsafeOkHttpClient()) // Usa o cliente que ignora SSL
                             .addConverterFactory(NullOnEmptyConverterFactory())
                             .addConverterFactory(GsonConverterFactory.create())
                             .build()
 
                     var blockListSuccess: List<Block>? = null
-                    println("Dayone blockListSuccess: ${blockListSuccess}")
-                    var lockedAppList: List<ApplicationInfo>? = null
+//                    var lockedAppList: List<ApplicationInfo>? = null
                     var lockedAppPackageNames: Set<String>? = null
                     var matchingBlocks: List<Block>? = null
                     var matchingIds: List<Int>? = null
 
                     var unBlockListSuccess: List<UnBlock>? = null
-                    var unLockedAppList: List<ApplicationInfo>? = null
+//                    var unLockedAppList: List<ApplicationInfo>? = null
                     var unLockedAppPackageNames: Set<String>? = null
                     var matchingUnBlocks: List<UnBlock>? = null
                     var matchingUnBlocksIds: List<Int>? = null
@@ -241,6 +243,9 @@ class ForegroundService : Service() {
                             _newCustomerId,
                             _newCompanyId
                         )
+
+                    println("📡 URL chamada: ${call.request().url().toString()}")
+
                     call.enqueue(
                         object : Callback<Order> {
                             override fun onResponse(
@@ -428,15 +433,15 @@ class ForegroundService : Service() {
                                                     companyId = _newCompanyId
                                                 )
                                             println("Dayone AppTime: ${appTime}")
-                                            val api =
-                                                retrofit.create(
-                                                    RHBrasilAppTimeApi::class.java
-                                                )
+                                            val api = retrofit.create(RHBrasilAppTimeApi::class.java)
                                             val call =
                                                 api.postAppTime(
                                                     "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55IjoicmgtYnJhc2lsIiwiZW52IjoibG9jYWwiLCJpYXQiOjE3MDUxNTk3MzMsImV4cCI6MTAwMDAxNzA1MTU5NzMzfQ.TvnxFXLdz0dM9hIOGtmjhakIi2yLSMnhWb9QvNhiZZQ",
                                                     appTime
                                                 )
+
+                                            println("📡 URL chamada: ${call.request().url().toString()}")
+
                                             call.enqueue(
                                                 object : Callback<Void> {
                                                     override fun onResponse(
@@ -492,16 +497,14 @@ class ForegroundService : Service() {
 
                                         println("Dayone OrderBlock: ${orderBlock}")
 
-                                        val api =
-                                            retrofit.create(
-                                                RHBrasilOrderApi::class.java
-                                            )
+                                        val api = retrofit.create(RHBrasilOrderApi::class.java)
                                         val call =
                                             api.putAllOrders(
                                                 "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55IjoicmgtYnJhc2lsIiwiZW52IjoibG9jYWwiLCJpYXQiOjE3MDUxNTk3MzMsImV4cCI6MTAwMDAxNzA1MTU5NzMzfQ.TvnxFXLdz0dM9hIOGtmjhakIi2yLSMnhWb9QvNhiZZQ",
                                                 orderBlock
                                             )
-                                        println("Dayone -----Call-----: ${call}")
+
+                                        println("📡 URL chamada: ${call.request().url().toString()}")
 
                                         call.enqueue(
                                             object : Callback<Void> {
@@ -549,7 +552,7 @@ class ForegroundService : Service() {
                                             }
                                         )
                                     } else {
-                                        println("Dayone Error no PUT")
+                                        "Dayone Error no PUT do Bloqueio"
                                     }
                                     // Fim da verificacao do PUT para bloquear
 
@@ -578,16 +581,15 @@ class ForegroundService : Service() {
 
                                         println("Dayone OrderBlock: ${orderBlock}")
 
-                                        val api =
-                                            retrofit.create(
-                                                RHBrasilOrderApi::class.java
-                                            )
+                                        val api = retrofit.create(RHBrasilOrderApi::class.java)
                                         val call =
                                             api.putAllOrders(
                                                 "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55IjoicmgtYnJhc2lsIiwiZW52IjoibG9jYWwiLCJpYXQiOjE3MDUxNTk3MzMsImV4cCI6MTAwMDAxNzA1MTU5NzMzfQ.TvnxFXLdz0dM9hIOGtmjhakIi2yLSMnhWb9QvNhiZZQ",
                                                 orderBlock
                                             )
-                                        println("Dayone -----Call-----: ${call}")
+
+
+                                        println("📡 URL chamada: ${call.request().url().toString()}")
 
                                         call.enqueue(
                                             object : Callback<Void> {
@@ -634,7 +636,7 @@ class ForegroundService : Service() {
                                             }
                                         )
                                     } else {
-                                        println("Dayone Error no PUT")
+                                        "Dayone Error no PUT Desbloqueio"
                                     }
                                     // Fim da verificacao do PUT para desbloquear
 
@@ -676,6 +678,10 @@ class ForegroundService : Service() {
     }
 
     private fun startMyOwnForeground() {
+        // Loga o stack trace para saber quem chamou a função
+        val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
+        Log.d("ForegroundService", "startMyOwnForeground CALLED\nCaller:\n$stackTrace")
+
         val window = Window(this)
         mHomeWatcher.setOnHomePressedListener(
             object : HomeWatcher.OnHomePressedListener {
@@ -686,6 +692,7 @@ class ForegroundService : Service() {
                         window.close()
                     }
                 }
+
                 override fun onHomeLongPressed() {
                     println("Dayone onHomeLongPressed")
                     currentAppActivityList.clear()
@@ -698,6 +705,7 @@ class ForegroundService : Service() {
         mHomeWatcher.startWatch()
         timerRun(window)
     }
+
 
     override fun onDestroy() {
         timer.cancel()
@@ -744,7 +752,6 @@ class ForegroundService : Service() {
 
 
         val handler = Handler(Looper.getMainLooper())
-        var isWindowOpen = false
 
         val monitorRunnable = object : Runnable {
             override fun run() {
@@ -794,4 +801,29 @@ class ForegroundService : Service() {
         }
         return totalTimeForeground / 1000
     }
+
+    fun getUnsafeOkHttpClient(): OkHttpClient {
+        try {
+            val trustAllCerts = arrayOf<TrustManager>(
+                object : X509TrustManager {
+                    override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
+                    override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
+                    override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+                }
+            )
+
+            val sslContext = SSLContext.getInstance("SSL")
+            sslContext.init(null, trustAllCerts, SecureRandom())
+            val sslSocketFactory = sslContext.socketFactory
+
+            return OkHttpClient.Builder()
+                .sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
+                .hostnameVerifier { _, _ -> true } // Confia em todos os hosts
+                .build()
+
+        } catch (e: Exception) {
+            throw RuntimeException(e)
+        }
+    }
+
 }

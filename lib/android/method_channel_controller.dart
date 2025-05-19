@@ -73,15 +73,15 @@ class MethodChannelController extends GetxController implements GetxService {
     int status = await BackgroundFetch.status;
     switch (status) {
       case BackgroundFetch.STATUS_RESTRICTED:
-        log("BackgroundFetch status: RESTRICTED");
+        log("AQUI NO BackgroundFetchStatus: RESTRICTED");
         isBackgroundFetchAvailable = false;
         break;
       case BackgroundFetch.STATUS_DENIED:
-        log("BackgroundFetch status: DENIED");
+        log("AQUI NO BackgroundFetchStatus: DENIED");
         isBackgroundFetchAvailable = false;
         break;
       case BackgroundFetch.STATUS_AVAILABLE:
-        log("BackgroundFetch status: AVAILABLE");
+        log("AQUI NO BackgroundFetchStatus: AVAILABLE");
         isBackgroundFetchAvailable = true;
         break;
     }
@@ -102,7 +102,7 @@ class MethodChannelController extends GetxController implements GetxService {
       print('Os valores que estao no data: $data');
       await setPassword();
       await platform.invokeMethod('addToLockedApps', data).then((value) {
-        log("$value", name: "addToLockedApps CALLED");
+        log("$value", name: "addToLockedApps CHAMADO");
       });
     } on PlatformException catch (e) {
       log("Failed to Invoke: '${e.message}'.");
@@ -113,10 +113,10 @@ class MethodChannelController extends GetxController implements GetxService {
     final prefs = await SharedPreferences.getInstance();
     try {
       String data = prefs.getString(AppConstants.setPassCode) ?? "";
-      log(data, name: "PASSWORD--");
+      log(data, name: "Definindo PASSWORD-----------");
       if (data != "") {
         await platform.invokeMethod('setPasswordInNative', data).then((value) {
-          log("$value", name: "setPasswordInNative CALLED");
+          log("$value", name: "setPasswordInNative CHAMADO");
         });
       }
     } on PlatformException catch (e) {
@@ -127,22 +127,28 @@ class MethodChannelController extends GetxController implements GetxService {
   Future stopForeground() async {
     try {
       await platform.invokeMethod('stopForeground', "").then((value) {
-        log("$value", name: "stopForeground CALLED");
+        log("$value", name: "stopForeground CHAMADO");
       });
     } on PlatformException catch (e) {
-      log("Failed to Invoke: '${e.message}'.");
+      log("Falha ao parar stopForeground: '${e.message}'.");
     }
   }
 
-  Future startForeground() async {
-    try {
-      await platform.invokeMethod('startForeground', "").then((value) {
-        log("$value", name: "startForeground CALLED");
-      });
-    } on PlatformException catch (e) {
-      log("Failed to Invoke: '${e.message}'.");
-    }
-  }
+ Future startForeground() async {
+   try {
+     // Captura stack trace para saber quem chamou a função
+     final stack = StackTrace.current;
+
+     await platform.invokeMethod('startForeground', "").then((value) {
+       log(
+         "Chamando startForeground:  $value\nCaller:\n$stack",
+         name: "ForegroundService",
+       );
+     });
+   } on PlatformException catch (e) {
+     log("Falha ao pedir permissao startForeground: '${e.message}'.");
+   }
+ }
 
   Future<bool> askNotificationPermission() async {
     log("pedindo permissao askNotificationPermission");
@@ -162,7 +168,7 @@ class MethodChannelController extends GetxController implements GetxService {
         return isOverlayPermissionGiven;
       });
     } on PlatformException catch (e) {
-      log("Failed to Invoke: '${e.message}'.");
+      log("Falha ao pedir permissao askOverlayPermission: '${e.message}'.");
       return false;
     }
   }
@@ -170,14 +176,14 @@ class MethodChannelController extends GetxController implements GetxService {
   Future<bool> askUsageStatsPermission() async {
     log("pedindo permissao askUsageStatsPermission");
     try {
-      return await platform
-          .invokeMethod('askUsageStatsPermission')
-          .then((value) {
+      return await platform.invokeMethod('askUsageStatsPermission').then((value) {
         log("$value", name: "askUsageStatsPermission");
-        return (value as bool);
+        isOverlayPermissionGiven = (value as bool);
+        update();
+        return isOverlayPermissionGiven;
       });
     } on PlatformException catch (e) {
-      log("Failed to Invoke: '${e.message}'.");
+      log("Falha ao pedir permissao askUsageStatsPermission: '${e.message}'.");
       return false;
     }
   }
@@ -202,9 +208,9 @@ class MethodChannelController extends GetxController implements GetxService {
       };
 
       final String result = await platform.invokeMethod('sendValues', values);
-      print('Received: $result');
+      print('RECEBIDO: $result');
     } on PlatformException catch (e) {
-      print("Failed to send values: '${e.message}'.");
+      print("Falaha ao enviar valores para o native: '${e.message}'.");
     }
   }
 }

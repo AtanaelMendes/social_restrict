@@ -5,11 +5,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screentime/background_main.dart';
+import 'package:flutter_screentime/main.dart';
 import 'package:flutter_screentime/models/token_id_model.dart';
-import 'package:flutter_screentime/modules/home/apps_controller.dart';
-import 'package:flutter_screentime/modules/home/apps_repository.dart';
-import 'package:flutter_screentime/provider/api.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:flutter_screentime/modules/qr-code/qr_repository.dart';
 import 'package:get/get.dart';
@@ -85,19 +82,16 @@ class _QRViewPageState extends State<QRViewPage> {
     this.controller = controller;
     bool valuesSent = false;
 
-    controller.scannedDataStream.listen(
-      (scanData) async {
+    controller.scannedDataStream.listen((scanData) async {
         setState(() {
           isLoading = true;
         });
         result = scanData;
         Map<String, dynamic> data = jsonDecode(scanData.code!);
         setState(() {
-          if (kDebugMode) {
-            print(data);
-            print(data['id']);
-            print(data['companyId']);
-          }
+          debugPrint(data.toString());
+          debugPrint("id: ${data['id'].toString()}");
+          debugPrint("companyId: ${data['companyId'].toString()}");
           id = data['id'] ?? 0;
           companyId = data['companyId'] ?? 0;
         });
@@ -115,7 +109,6 @@ class _QRViewPageState extends State<QRViewPage> {
             status: 1,
           );
 
-          sendValuesToNative();
           bool confirmSendToken = await qrRepository.tokenId(token);
 
           controller.dispose();
@@ -129,6 +122,7 @@ class _QRViewPageState extends State<QRViewPage> {
             NavigationService.prefs?.setString("settings", scanData.code!);
             NavigationService.prefs?.setInt("id", id!);
             NavigationService.prefs?.setInt("companyId", companyId!);
+            sendValuesToNative(id, companyId, tokenId);
 
           } else {
             Get.snackbar(
@@ -151,7 +145,7 @@ class _QRViewPageState extends State<QRViewPage> {
             const Duration(seconds: 2),
             () {
               Get.offAll(
-                () => const BackgroundMainPage(title: "Social Restrict"),
+                () => const MyHomePage(),
               );
             },
           );
@@ -203,23 +197,22 @@ class _QRViewPageState extends State<QRViewPage> {
   }
 }
 
-void sendValuesToNative() async {
+void sendValuesToNative(id, companyId, tokenId) async {
   const platform = MethodChannel('samples.flutter.dev/native');
   try {
-    final int? id = NavigationService.prefs?.getInt("id");
-    final int? companyId = NavigationService.prefs?.getInt("companyId");
-    final String? tokenId = NavigationService.prefs?.getString("token");
+    // final int? id = NavigationService.prefs?.getInt("id");
+    // final int? companyId = NavigationService.prefs?.getInt("companyId");
+    // final String? tokenId = NavigationService.prefs?.getString("token");
 
     final Map<String, dynamic> values = {
       'id': id,
       'companyId': companyId,
       'tokenId': tokenId,
     };
-
+    debugPrint('ENVIANDO VALORES PARA O NATIVO: $values');
     final String result = await platform.invokeMethod('sendValues', values);
-    debugPrint('Dayone FLUTTER Received: $result');
-    debugPrint('Dayone FLUTTER Values para o nativo*******: $values');
+    debugPrint('Valores enviados com sucesso: $result');
   } on PlatformException catch (e) {
-    debugPrint("Dayone FLUTTER Failed to send values: '${e.message}'.");
+    debugPrint("FALHA ao enviar valores para o nativo: '${e.message}'.");
   }
 }

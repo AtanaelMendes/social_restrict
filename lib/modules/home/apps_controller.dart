@@ -260,13 +260,14 @@ class AppsController extends GetxController implements GetxService {
     try {
       lockList = applicationDataModelFromJson(prefs.getString(AppConstants.lockedApps) ?? '');
       selectLockList.clear();
-      log('${lockList.length}', name: "STORED LIST");
+      debugPrint("lista de apps para bloquear: --------------");
+      debugPrint(lockList.toString());
       for (var e in lockList) {
         selectLockList.add(e.application!.appName);
       }
-      log('${lockList.length}-$selectLockList', name: "Locked Apps");
+      debugPrint('${lockList.length}-$selectLockList Aplicativos bloqueados');
     } catch (e) {
-      log("-------$e", name: "getLockedApps");
+      debugPrint('Erro ao obter aplicativos bloqueados: $e');
     }
 
     update();

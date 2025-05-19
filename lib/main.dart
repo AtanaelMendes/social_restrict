@@ -21,7 +21,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:async';
 
 import 'package:background_fetch/background_fetch.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 int companyId = NavigationService.prefs?.getInt("companyId") ?? 0;
@@ -152,6 +151,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> loadCustomerId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    // if (prefs.containsKey('id') && prefs.getInt('id')! > 0) {
+      // await Get.find<MethodChannelController>().startForeground();
+    // }
     setState(() {
       customerId = prefs.getInt('id') ?? 0;
       debugPrint('CustomerID na MAIN: $customerId');
