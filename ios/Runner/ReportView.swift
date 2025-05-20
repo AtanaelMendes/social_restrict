@@ -1,6 +1,7 @@
 import SwiftUI
 import DeviceActivity
 
+@available(iOS 16.0, *)
 struct ReportView: View {
 
     @State private var context: DeviceActivityReport.Context = .init(rawValue: "Total Activity")
@@ -57,9 +58,10 @@ struct ReportView: View {
     }
 }
 
-
+@available(iOS 16.0, *)
 struct ReportView_Previews: PreviewProvider {
     static var previews: some View {
+        
         ReportView()
             .environmentObject(MyModel())
     }

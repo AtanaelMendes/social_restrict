@@ -13,13 +13,13 @@
 		89F1135429FE6D6100D6318C /* MySchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89F1135329FE6D6100D6318C /* MySchedule.swift */; };
 		89F1135629FE6D6A00D6318C /* MyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89F1135529FE6D6A00D6318C /* MyModel.swift */; };
 		89F1135A29FE7B0B00D6318C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89F1135929FE7B0B00D6318C /* ContentView.swift */; };
+		95EBBA7FCC304FFCD32B74E0 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7163C7BE9F6C98FC559A767 /* Pods_Runner.framework */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		9DAFAAA92AFE9F8000BE9D89 /* BackgroundTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DAFAAA82AFE9F8000BE9D89 /* BackgroundTask.swift */; };
 		9DD087AD2AE01FB000918ECD /* ReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DD087AC2AE01FB000918ECD /* ReportView.swift */; };
 		9DD087F22AEBF52400918ECD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9DD087F12AEBF52400918ECD /* GoogleService-Info.plist */; };
-		C99F59CBE93C2AC33E9BFB35 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7163C7BE9F6C98FC559A767 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,7 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C99F59CBE93C2AC33E9BFB35 /* Pods_Runner.framework in Frameworks */,
+				95EBBA7FCC304FFCD32B74E0 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,6 +178,7 @@
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				716F50ADEB24072E378DEEE9 /* [CP] Embed Pods Frameworks */,
+				C794793BF36E423E4D3D3D76 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -192,7 +193,7 @@
 		};
 		9DD087B12AE03CD000918ECD /* activityReportExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9DD087C32AE03CD000918ECD /* Build configuration list for PBXNativeTarget "activityReportExtension" */;
+			buildConfigurationList = 9DD087C32AE03CD000918ECD /* Build configuration list for <deleted target> */;
 			buildPhases = (
 				9DD087AE2AE03CD000918ECD /* Sources */,
 				9DD087AF2AE03CD000918ECD /* Frameworks */,
@@ -333,6 +334,23 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
 		};
+		C794793BF36E423E4D3D3D76 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -447,17 +465,21 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = VN5672APLY;
+				DEVELOPMENT_TEAM = 4LM75U3TLU;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				INFOPLIST_KEY_CFBundleDisplayName = "Social Restrict";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.flutterScreentime;
+				PRODUCT_BUNDLE_IDENTIFIER = com.parentalcontrol.dayone;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -581,15 +603,16 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = VN5672APLY;
+				DEVELOPMENT_TEAM = 4LM75U3TLU;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				INFOPLIST_KEY_CFBundleDisplayName = "Social Restrict";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.parentalcontrol.rhbrasil;
+				PRODUCT_BUNDLE_IDENTIFIER = com.parentalcontrol.dayone;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -606,17 +629,21 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = VN5672APLY;
+				DEVELOPMENT_TEAM = 4LM75U3TLU;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				INFOPLIST_KEY_CFBundleDisplayName = "Social Restrict";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.flutterScreentime;
+				PRODUCT_BUNDLE_IDENTIFIER = com.parentalcontrol.dayone;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -673,7 +700,7 @@
 				CODE_SIGN_ENTITLEMENTS = activityReportExtension/activityReportExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = VN5672APLY;
+				DEVELOPMENT_TEAM = 9RWAJP8AG7;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = activityReportExtension/Info.plist;
@@ -708,7 +735,7 @@
 				CODE_SIGN_ENTITLEMENTS = activityReportExtension/activityReportExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = VN5672APLY;
+				DEVELOPMENT_TEAM = 9RWAJP8AG7;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = activityReportExtension/Info.plist;
@@ -754,7 +781,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9DD087C32AE03CD000918ECD /* Build configuration list for PBXNativeTarget "activityReportExtension" */ = {
+		9DD087C32AE03CD000918ECD /* Build configuration list for <deleted target> */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9DD087C02AE03CD000918ECD /* Debug */,

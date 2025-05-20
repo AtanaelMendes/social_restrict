@@ -11,7 +11,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Flutter Screentime</string>
+	<string>Social Restrict</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -31,11 +31,13 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Este aplicativo precisa de permissão para utilizar a camera para ler o QRCODE</string>
+	<string>Social Restrict precisa de permissão para utilizar a camera para ler o QRCODE e conectar o usário ao sistema</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Social Restrict precisa de permissão para utilizar a localizacao com base na sua localização atual, para ajudarmos e oferecer melhor performance do aplicativo</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Este aplicativo precisa de permissão para utilizar a localizacao </string>
+	<string>Social Restrict precisa de permissão para utilizar a localizacao </string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Este aplicativo precisa de permissão para utilizar a localizacao </string>
+	<string>Social Restrict precisa de permissão para utilizar a localizacao </string>
 	<key>Permitted background task scheduler identifiers</key>
 	<array>
 		<string>com.transistorsoft.customtask</string>

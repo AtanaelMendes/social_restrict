@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.parentalcontrol.rhbrasil</string>
+	<string>com.parentalcontrol.dayone</string>
 	<key>PROJECT_ID</key>
 	<string>homologacao-c2690</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:218460714542:ios:7d4e86d157eba4dc2451bf</string>
+	<string>1:218460714542:ios:369591d1baa215362451bf</string>
 </dict>
 </plist>

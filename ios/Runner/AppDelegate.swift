@@ -9,6 +9,7 @@ import FirebaseMessaging
 import Foundation
 
 var globalMethodCall = ""
+@available(iOS 15.0, *)
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate, MessagingDelegate {
     var model = MyModel.shared

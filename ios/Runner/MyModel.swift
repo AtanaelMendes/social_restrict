@@ -2,8 +2,10 @@ import Foundation
 import FamilyControls
 import ManagedSettings
 import DeviceActivity
+@available(iOS 15.0, *)
 private let _MyModel = MyModel()
 
+@available(iOS 15.0, *)
 class MyModel: ObservableObject {
     // Import ManagedSettings to get access to the application shield restriction
     let store = ManagedSettingsStore()
