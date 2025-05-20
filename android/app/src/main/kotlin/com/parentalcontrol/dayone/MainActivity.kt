@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package com.example.flutter_screentime
+package com.parentalcontrol.dayone
 
 import android.util.Log
 import android.annotation.SuppressLint
@@ -16,7 +16,6 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.flutter_screentime.ForegroundService
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -49,8 +48,6 @@ class MainActivity : FlutterActivity() {
         saveAppData = applicationContext.getSharedPreferences("save_app_data", Context.MODE_PRIVATE)
         GeneratedPluginRegistrant.registerWith(FlutterEngine(this))
         setupMethodChannel()
-
-        // requestLocationPermissions()
         registerBootUpReceiver()
     }
 

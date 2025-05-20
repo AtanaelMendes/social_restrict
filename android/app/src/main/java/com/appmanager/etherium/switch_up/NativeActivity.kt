@@ -1,4 +1,4 @@
-package com.example.flutter_screentime
+package com.parentalcontrol.dayone
 
 import android.annotation.SuppressLint
 import android.os.Bundle

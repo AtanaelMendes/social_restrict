@@ -1,4 +1,4 @@
-package com.example.flutter_screentime
+package com.parentalcontrol.dayone
 
 import okhttp3.ResponseBody
 import retrofit2.Converter

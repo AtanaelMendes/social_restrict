@@ -1,4 +1,4 @@
-package com.example.flutter_screentime
+package com.parentalcontrol.dayone
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat
 import com.andrognito.pinlockview.IndicatorDots
 import com.andrognito.pinlockview.PinLockListener
 import com.andrognito.pinlockview.PinLockView
-import com.example.flutter_screentime.R
+import com.parentalcontrol.dayone.R
 
 
 @SuppressLint("InflateParams")

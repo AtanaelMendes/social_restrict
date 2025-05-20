@@ -1,4 +1,4 @@
-package com.example.flutter_screentime
+package com.parentalcontrol.dayone
 
 import android.content.BroadcastReceiver
 import android.content.Context
