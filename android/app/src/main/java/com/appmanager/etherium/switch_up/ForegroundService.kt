@@ -39,9 +39,13 @@ class ForegroundService : Service() {
     private var saveAppData: SharedPreferences? = null
     private val binder = LocalBinder()
     private var isWindowOpen = false
-
+    private var monitorHandler: Handler? = null
+    private var monitorRunnable: Runnable? = null
+    private var isMonitoring = false
     private var _customerId: Int? = null
     private var _companyId: Int? = null
+    private val handler = Handler(Looper.getMainLooper())
+
 
     inner class LocalBinder : Binder() {
         fun getService(): ForegroundService = this@ForegroundService
@@ -86,7 +90,7 @@ class ForegroundService : Service() {
             .setContentText("")
             .build()
         startForeground(1, notification)
-//        startMyOwnForeground()
+        startMyOwnForeground()
         startTimeApps()
     }
 
@@ -102,40 +106,6 @@ class ForegroundService : Service() {
 
         editor.apply()
         println("Senha aplicada: $code")
-    }
-
-    private fun unblockBlockApps(args: HashMap<*, *>): String {
-        lockedAppList = emptyList()
-
-        appInfo = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-
-        val arr: ArrayList<Map<String, *>> = args["app_list"] as ArrayList<Map<String, *>>
-
-        for (element in arr) {
-            run breaking@{
-                for (i in appInfo!!.indices) {
-                    if (appInfo!![i].packageName.toString() == element["package_name"].toString()) {
-                        val ogList = lockedAppList
-                        lockedAppList = ogList + appInfo!![i]
-                        return@breaking
-                    }
-                }
-            }
-        }
-
-        var packageData: List<String> = emptyList()
-
-        for (element in lockedAppList) {
-            val ogList = packageData
-            packageData = ogList + element.packageName
-        }
-
-        val editor: SharedPreferences.Editor = saveAppData!!.edit()
-        editor.remove("app_data")
-        editor.putString("app_data", "$packageData")
-        editor.apply()
-
-        return "Success unblock apps**********"
     }
 
     private fun unblockApps(args: HashMap<*, *>): List<ApplicationInfo> {
@@ -218,13 +188,12 @@ class ForegroundService : Service() {
                             .build()
 
                     var blockListSuccess: List<Block>? = null
-//                    var lockedAppList: List<ApplicationInfo>? = null
                     var lockedAppPackageNames: Set<String>? = null
                     var matchingBlocks: List<Block>? = null
                     var matchingIds: List<Int>? = null
 
                     var unBlockListSuccess: List<UnBlock>? = null
-//                    var unLockedAppList: List<ApplicationInfo>? = null
+                    var unLockedAppList: List<ApplicationInfo>? = null
                     var unLockedAppPackageNames: Set<String>? = null
                     var matchingUnBlocks: List<UnBlock>? = null
                     var matchingUnBlocksIds: List<Int>? = null
@@ -234,7 +203,7 @@ class ForegroundService : Service() {
                     val _newCustomerId = prefs.getInt("customerId", 0)
                     val _newCompanyId = prefs.getInt("companyId", 0)
 
-                    println("Dayone _newCompanyId: ${_newCustomerId}")
+                    println("Dayone _newCustomerId: ${_newCustomerId}")
                     println("Dayone _newCompanyId: ${_newCompanyId}")
 
                     val call =
@@ -329,15 +298,14 @@ class ForegroundService : Service() {
                                     println("Dayone MAPApp listBlock: ${mapList}")
                                     println("Dayone MAPApp listUnBlock: ${mapListUnblock}")
 
+                                    println("Dayone antes de chamar o bloquieo: ${blockList.toString()}")
                                     if (blockList.isNotEmpty()) {
-
+                                        println("Dayone chamando o bloquieo: ${blockList.toString()}")
                                         args["app_list"] = mapList
-                                        // blockApps(args)
                                         blockListSuccess = order?.block
+//                                        blockApps(args)
                                         lockedAppList = blockApps(args)
-                                        println(
-                                            "Dayone lockedAppList listBlock: ${mapList}"
-                                        )
+                                        println("Dayone lockedAppList listBlock: ${lockedAppList}")
                                         lockedAppPackageNames =
                                             lockedAppList
                                                 ?.map { it.packageName }
@@ -352,7 +320,6 @@ class ForegroundService : Service() {
                                     }
 
                                     // Fim do Get para pegar a lista dos apps bloqueados
-
                                     // Aqui começa a verificacao do GET para pegar a lista
                                     // dos apps desbloqueados
 
@@ -401,14 +368,7 @@ class ForegroundService : Service() {
 
                                     // Aqui começa a verificacao do tempo em foreground
                                     appsList.forEach { app ->
-                                        // val (totalTimeForeground, totalTimeBackground,
-                                        // total) = getAppUsageTime(this@ForegroundService,
-                                        // app.bundle)
-                                        //     println("Dayone Total time in foreground:
-                                        // $totalTimeForeground")
-                                        //     println("Dayone Total time in background:
-                                        // $totalTimeBackground")
-                                        //     println("Dayone Total time: $total")
+
                                         val totalTimeForeground =
                                             getAppUsageTime(
                                                 this@ForegroundService,
@@ -419,8 +379,7 @@ class ForegroundService : Service() {
                                         )
 
                                         if (totalTimeForeground > 0) {
-                                            // println("Dayone App bloqueado:
-                                            // ${blockApps(app.bundle)}")
+//                                             println("Dayone App bloqueado: ${blockApps(app.bundle)}")
                                             val appTime =
                                                 AppTime(
                                                     customerId = _newCustomerId
@@ -517,10 +476,7 @@ class ForegroundService : Service() {
                                                             response.body()
                                                         if (orderBlockResponse != null
                                                         ) {
-                                                            // println("Dayone
-                                                            // *****OrderBlock
-                                                            // Response****:
-                                                            // ${orderBlockResponse}")
+                                                            println("Dayone *****OrderBlock Response****: ${orderBlockResponse}")
                                                             println(
                                                                 "Dayone Deu certo no PUT Bloqueio ${orderBlockResponse}"
                                                             )
@@ -533,8 +489,7 @@ class ForegroundService : Service() {
                                                             "Dayone PUT Success Bloqueio ${response.code()}"
                                                         )
                                                     } else {
-                                                        // println("Dayone Res[ponse]
-                                                        // ${response.errorBody()?.string()}")
+                                                        println("Dayone Res[ponse] ${response.errorBody()?.string()}")
                                                         println(
                                                             "Dayone Error no PUT do Bloqueio"
                                                         )
@@ -554,16 +509,13 @@ class ForegroundService : Service() {
                                     } else {
                                         "Dayone Error no PUT do Bloqueio"
                                     }
-                                    // Fim da verificacao do PUT para bloquear
 
+                                    // Fim da verificacao do PUT para bloquear
                                     // Aqui começa a verificacao do PUT para desbloquear
+
                                     if (mapListUnblock.isNotEmpty()) {
-                                        println(
-                                            "Dayone ----DESBLOQUEIO---Success posso fazer o PUT"
-                                        )
-                                        println(
-                                            "Dayone ----DESBLOQUEIO---MatchingUnBlocksIds: ${matchingUnBlocksIds}"
-                                        )
+                                        println("Dayone ----DESBLOQUEIO---Success posso fazer o PUT")
+                                        println("Dayone ----DESBLOQUEIO---MatchingUnBlocksIds: ${matchingUnBlocksIds}")
 
                                         val orders =
                                             matchingUnBlocksIds?.map {
@@ -617,8 +569,7 @@ class ForegroundService : Service() {
                                                             "Dayone PUT Success Desbloqueio ${response.code()}"
                                                         )
                                                     } else {
-                                                        // println("Dayone Res[ponse]
-                                                        // ${response.errorBody()?.string()}")
+                                                        println("Dayone Response ${response.errorBody()?.string()}")
                                                         println(
                                                             "Dayone Error no PUT Desbloqueio"
                                                         )
@@ -682,7 +633,14 @@ class ForegroundService : Service() {
         val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
         Log.d("ForegroundService", "startMyOwnForeground CALLED\nCaller:\n$stackTrace")
 
+        // Evita múltiplas chamadas
+        if (isMonitoring) {
+            Log.d("ForegroundService", "⏱️ Monitoramento já iniciado, ignorando nova chamada")
+            return
+        }
+
         val window = Window(this)
+
         mHomeWatcher.setOnHomePressedListener(
             object : HomeWatcher.OnHomePressedListener {
                 override fun onHomePressed() {
@@ -702,16 +660,87 @@ class ForegroundService : Service() {
                 }
             }
         )
+
         mHomeWatcher.startWatch()
-        timerRun(window)
+        startMonitoring(window)
     }
 
+    private fun startMonitoring(window: Window) {
+        isMonitoring = true
+        Log.d("ForegroundService", "✅ Iniciando monitoramento de apps...")
+
+        val saveAppData: SharedPreferences =
+            applicationContext.getSharedPreferences("save_app_data", Context.MODE_PRIVATE)
+
+        monitorHandler = Handler(Looper.getMainLooper())
+
+        monitorRunnable = object : Runnable {
+            override fun run() {
+                val foregroundApp = getForegroundApp()
+                var lockedAppPackageNames: Set<String>? = null
+                lockedAppPackageNames = lockedAppList?.map { it.packageName }?.toSet()
+                val fgApp = foregroundApp?.trim()
+
+                Log.d("AppLock", "📱 App em primeiro plano: ${fgApp ?: "nulo"}")
+                Log.d("AppLock", "🔒 Lista de apps bloqueados: ${lockedAppPackageNames ?: "nula"}")
+
+                if (lockedAppPackageNames != null) {
+                    for (app in lockedAppPackageNames) {
+                        Log.d("AppLock", "🔍 Comparando: '${app.trim()}' com '${fgApp}'")
+                    }
+                }
+
+                val contem = lockedAppPackageNames?.contains(fgApp) == true
+                Log.d("AppLock", "✅ Resultado da verificação: $contem")
+
+                if (fgApp != null && contem) {
+                    Log.d("AppLock", "🚫 App deve ser bloqueado!")
+                    // código de bloqueio aqui
+                } else {
+                    Log.d("AppLock", "✅ App está liberado.")
+                    // código para não bloquear
+                }
+
+
+                if (foregroundApp != null && lockedAppPackageNames?.contains(foregroundApp.trim()) == true) {
+                    if (!isWindowOpen) {
+                        window.txtView?.visibility = View.INVISIBLE
+                        window.open()
+                        isWindowOpen = true
+                        Log.d("ForegroundService", "🔒 App bloqueado detectado: $foregroundApp")
+                    }
+                } else {
+                    if (isWindowOpen) {
+                        window.close()
+                        isWindowOpen = false
+                        Log.d("ForegroundService", "✅ App liberado ou sem app, fechando overlay")
+                    }
+                }
+
+                // Agendamento contínuo
+                monitorHandler?.postDelayed(this, 3000)
+            }
+        }
+
+        // Inicia monitoramento
+        monitorHandler?.post(monitorRunnable!!)
+    }
+
+    fun stopMonitoring() {
+        Log.d("ForegroundService", "🛑 Parando monitoramento de apps.")
+        monitorHandler?.removeCallbacks(monitorRunnable!!)
+        isMonitoring = false
+        isWindowOpen = false
+    }
 
     override fun onDestroy() {
+        super.onDestroy()
         timer.cancel()
         mHomeWatcher.stopWatch()
-        super.onDestroy()
+        handler.removeCallbacks(monitorRunnable!!)
+        Log.d("ForegroundService", "🧹 Serviço destruído: Timer e monitoramento parados.")
     }
+
 
     private fun timerRun(window: Window) {
         timer.scheduleAtFixedRate(
@@ -730,9 +759,8 @@ class ForegroundService : Service() {
     fun getForegroundApp(): String? {
         val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         val endTime = System.currentTimeMillis()
-        val startTime = endTime - 1000 * 60 * 600 // Últimos 3 segundos
+        val startTime = endTime - 1000 * 60 * 600
 
-        // Buscar os eventos de uso recentes
         val usageEvents = usageStatsManager.queryEvents(startTime, endTime)
         val event = UsageEvents.Event()
         var lastResumedPackage: String? = null
@@ -747,21 +775,16 @@ class ForegroundService : Service() {
     }
 
     fun isServiceRunning(window: Window) {
-        val saveAppData: SharedPreferences =
+        val saveAppData =
             applicationContext.getSharedPreferences("save_app_data", Context.MODE_PRIVATE)
 
-
-        val handler = Handler(Looper.getMainLooper())
-
-        val monitorRunnable = object : Runnable {
+        monitorRunnable = object : Runnable {
             override fun run() {
                 val foregroundApp = getForegroundApp()
-                val lockedAppList: List<String> = saveAppData.getString("app_data", "AppList")!!
-                    .replace("[", "")
-                    .replace("]", "")
-                    .split(",")
-                    .map { it.trim() }
-                if (foregroundApp != null && lockedAppList.contains(foregroundApp.trim())) {
+                var lockedAppPackageNames: Set<String>? = null
+                lockedAppPackageNames = lockedAppList?.map { it.packageName }?.toSet()
+
+                if (foregroundApp != null && lockedAppPackageNames?.contains(foregroundApp.trim()) == true) {
                     if (!isWindowOpen) {
                         window.txtView?.visibility = View.INVISIBLE
                         window.open()
@@ -774,12 +797,11 @@ class ForegroundService : Service() {
                     }
                 }
 
-                // Continuar monitorando
-                handler.postDelayed(this, 3000) // Verifica a cada 1 segundo
+                handler.postDelayed(this, 3000)
             }
         }
 
-        handler.post(monitorRunnable)
+        handler.post(monitorRunnable!!)
     }
 
     fun getAppUsageTime(context: Context, packageName: String): Long {
@@ -799,6 +821,7 @@ class ForegroundService : Service() {
                 totalTimeForeground += usageStats.totalTimeInForeground
             }
         }
+
         return totalTimeForeground / 1000
     }
 

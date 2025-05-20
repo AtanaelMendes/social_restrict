@@ -16,7 +16,7 @@
         android:layout_marginTop="140dp"
         android:background="#0A0A0A"
         android:scaleType="center"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@mipmap/launcher_icon"/>
 
 
     <TextView
