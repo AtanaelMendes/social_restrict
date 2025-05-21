@@ -10,10 +10,7 @@ import 'package:get/state_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usage_stats/usage_stats.dart';
-
 import 'permission_controller.dart';
-
-const platform = const MethodChannel('samples.flutter.dev/native');
 
 class MethodChannelController extends GetxController implements GetxService {
  static const platform = MethodChannel('flutter.native/helper');

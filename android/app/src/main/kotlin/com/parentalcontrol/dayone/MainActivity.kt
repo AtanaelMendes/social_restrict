@@ -2,7 +2,6 @@
 
 package com.parentalcontrol.dayone
 
-import android.util.Log
 import android.annotation.SuppressLint
 import android.app.AppOpsManager
 import android.content.BroadcastReceiver
@@ -14,14 +13,13 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugins.GeneratedPluginRegistrant
 import java.util.*
-import android.os.Build;
 
 class MainActivity : FlutterActivity() {
     private val channel = "flutter.native/helper"
@@ -37,51 +35,39 @@ class MainActivity : FlutterActivity() {
     private val bootUpReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (Intent.ACTION_BOOT_COMPLETED == intent.action) {
-                println("Dispositivo inicializado!")
+                Log.d("BootReceiver", "Device booted!")
             }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        println("INICIADO CODIGO NATIVO")
         super.onCreate(savedInstanceState)
+        Log.d("MainActivity", "Native code started")
         saveAppData = applicationContext.getSharedPreferences("save_app_data", Context.MODE_PRIVATE)
-//        GeneratedPluginRegistrant.registerWith(FlutterEngine(this))
-//        setupMethodChannel()
         registerBootUpReceiver()
     }
 
     private fun setupMethodChannel(flutterEngine: FlutterEngine) {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channel).setMethodCallHandler { call, result ->
-            println("CHAMANDO METODOS")
             when (call.method) {
-                "addToLockedApps" -> { ... }
-                "setPasswordInNative" -> { ... }
-                "checkOverlayPermission" -> {
-                    result.success(Settings.canDrawOverlays(this))
-                }
-                "stopForeground" -> {
-                    stopForegroundService()
-                }
+                "addToLockedApps" -> result.notImplemented() // Implement as needed
+                "setPasswordInNative" -> result.notImplemented() // Implement as needed
+                "checkOverlayPermission" -> result.success(Settings.canDrawOverlays(this))
+                "stopForeground" -> stopForegroundService()
                 "startForeground" -> {
-                    val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
-                    Log.d("ForegroundService", "startForegroundService CHAMANDO\nCaller:\n$stackTrace")
+                    logStackTrace()
                     startForegroundService()
                 }
-                "askOverlayPermission" -> {
-                    result.success(checkOverlayPermission())
-                }
+                "askOverlayPermission" -> result.success(checkOverlayPermission())
                 "askUsageStatsPermission" -> {
                     if (!isAccessGranted()) {
-                        val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-                        startActivity(intent)
+                        startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
                     }
                 }
                 else -> result.notImplemented()
             }
         }
     }
-
 
     private fun registerBootUpReceiver() {
         val filter = IntentFilter(Intent.ACTION_BOOT_COMPLETED)
@@ -98,16 +84,18 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun requestLocationPermissions() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this, android.Manifest.permission.FOREGROUND_SERVICE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        val permissions = arrayOf(
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.FOREGROUND_SERVICE_LOCATION
+        )
 
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.FOREGROUND_SERVICE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE)
+        if (permissions.any {
+                ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+            }) {
+            ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE)
         } else {
-            val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
-            Log.d("ForegroundService", "startForegroundService CHAMANDO\nCaller:\n$stackTrace")
+            logStackTrace()
             startForegroundService()
         }
     }
@@ -119,12 +107,11 @@ class MainActivity : FlutterActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
-                Log.d("ForegroundService", "startForegroundService CHAMANDO\nCaller:\n$stackTrace")
+            if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                logStackTrace()
                 startForegroundService()
             } else {
-                println("Permissão de localização negada.")
+                Log.d("Permissions", "Location permission denied.")
             }
         }
     }
@@ -134,49 +121,37 @@ class MainActivity : FlutterActivity() {
         lockedAppList = emptyList()
         appInfo = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
 
-        val arr: ArrayList<Map<String, *>> = args["app_list"] as ArrayList<Map<String, *>>
+        val arr = args["app_list"] as? ArrayList<*> ?: return "Invalid app list"
 
         for (element in arr) {
-            run breaking@{
-                for (i in appInfo!!.indices) {
-                    if (appInfo!![i].packageName.toString() == element["package_name"].toString()) {
-                        val ogList = lockedAppList
-                        lockedAppList = ogList + appInfo!![i]
-                        return@breaking
-                    }
-                }
+            val map = element as? Map<*, *> ?: continue
+            val packageName = map["package_name"]?.toString() ?: continue
+            appInfo?.firstOrNull { it.packageName == packageName }?.let {
+                lockedAppList = lockedAppList + it
             }
         }
 
-        var packageData: List<String> = emptyList()
+        val packageData = lockedAppList.map { it.packageName }
 
-        for (element in lockedAppList) {
-            val ogList = packageData
-            packageData = ogList + element.packageName
+        saveAppData?.edit()?.apply {
+            putString("app_data", packageData.toString())
+            apply()
         }
 
-        val editor: SharedPreferences.Editor = saveAppData!!.edit()
-        editor.remove("app_data")
-        editor.putString("app_data", "$packageData")
-        editor.apply()
-
-        val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
-        Log.d("ForegroundService", "startForegroundService CHAMANDO\nCaller:\n$stackTrace")
-
+        logStackTrace()
         startForegroundService()
 
         return "Success"
     }
 
     private fun setIfServiceClosed(data: String) {
-        val editor: SharedPreferences.Editor = saveAppData!!.edit()
-        editor.putString("is_stopped", data)
-        editor.apply()
+        saveAppData?.edit()?.apply {
+            putString("is_stopped", data)
+            apply()
+        }
     }
 
     private fun startForegroundService() {
-        val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
-        Log.d("ForegroundService", "startForegroundService CHAMANDO\nCaller:\n$stackTrace")
         if (Settings.canDrawOverlays(this)) {
             setIfServiceClosed("1")
             ContextCompat.startForegroundService(this, Intent(this, ForegroundService::class.java))
@@ -190,49 +165,50 @@ class MainActivity : FlutterActivity() {
 
     private fun checkOverlayPermission(): Boolean {
         if (!Settings.canDrawOverlays(this)) {
-            val myIntent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-            startActivity(myIntent)
+            startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
         }
         return Settings.canDrawOverlays(this)
     }
 
     private fun isAccessGranted(): Boolean {
         return try {
-            val packageManager = packageManager
+            val appOpsManager = getSystemService(APP_OPS_SERVICE) as AppOpsManager
             val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
-            val appOpsManager: AppOpsManager = getSystemService(APP_OPS_SERVICE) as AppOpsManager
             val mode = appOpsManager.checkOpNoThrow(
                 AppOpsManager.OPSTR_GET_USAGE_STATS,
                 applicationInfo.uid, applicationInfo.packageName
             )
             mode == AppOpsManager.MODE_ALLOWED
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (e: Exception) {
             false
         }
     }
 
+    private fun logStackTrace() {
+        val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
+        Log.d("ForegroundService", "startForegroundService CHAMANDO\nCaller:\n$stackTrace")
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-
         setupMethodChannel(flutterEngine)
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "flutter.native/helper").setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channel).setMethodCallHandler { call, result ->
             if (call.method == "sendValues") {
-                _customerId = call.argument<Int>("id")
-                _companyId = call.argument<Int>("companyId")
+                _customerId = call.argument("id")
+                _companyId = call.argument("companyId")
 
-                val prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-                val editor = prefs.edit()
-                editor.putInt("customerId", _customerId ?: 0)
-                editor.putInt("companyId", _companyId ?: 0)
-                editor.apply()
+                getSharedPreferences("MyPrefs", Context.MODE_PRIVATE).edit().apply {
+                    putInt("customerId", _customerId ?: 0)
+                    putInt("companyId", _companyId ?: 0)
+                    apply()
+                }
 
                 if (_customerId != 0 && _companyId != 0) {
                     val intent = Intent(this, ForegroundService::class.java).apply {
                         putExtra("customerId", _customerId)
                         putExtra("companyId", _companyId)
                     }
-
                     startService(intent)
                 }
 
