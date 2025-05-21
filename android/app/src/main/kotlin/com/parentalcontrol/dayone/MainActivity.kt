@@ -35,7 +35,7 @@ class MainActivity : FlutterActivity() {
     private val bootUpReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (Intent.ACTION_BOOT_COMPLETED == intent.action) {
-                Log.d("BootReceiver", "Device booted!")
+                Log.d("BootReceiver", "Device bootexxd!")
             }
         }
     }
