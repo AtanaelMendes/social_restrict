@@ -46,51 +46,42 @@ class MainActivity : FlutterActivity() {
         println("INICIADO CODIGO NATIVO")
         super.onCreate(savedInstanceState)
         saveAppData = applicationContext.getSharedPreferences("save_app_data", Context.MODE_PRIVATE)
-        GeneratedPluginRegistrant.registerWith(FlutterEngine(this))
-        setupMethodChannel()
+//        GeneratedPluginRegistrant.registerWith(FlutterEngine(this))
+//        setupMethodChannel()
         registerBootUpReceiver()
     }
 
-    private fun setupMethodChannel() {
-        MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, channel).setMethodCallHandler { call, result ->
+    private fun setupMethodChannel(flutterEngine: FlutterEngine) {
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channel).setMethodCallHandler { call, result ->
             println("CHAMANDO METODOS")
-            when {
-                call.method.equals("addToLockedApps") -> {
-                    val args = call.arguments as HashMap<*, *>
-                    println("$args ----- ARGS")
-                    val greetings = showCustomNotification(args)
-                    result.success(greetings)
-                }
-                call.method.equals("setPasswordInNative") -> {
-                    val args = call.arguments
-                    val editor: SharedPreferences.Editor = saveAppData!!.edit()
-                    editor.putString("password", "$args")
-                    editor.apply()
-                    result.success("Success")
-                }
-                call.method.equals("checkOverlayPermission") -> {
+            when (call.method) {
+                "addToLockedApps" -> { ... }
+                "setPasswordInNative" -> { ... }
+                "checkOverlayPermission" -> {
                     result.success(Settings.canDrawOverlays(this))
                 }
-                call.method.equals("stopForeground") -> {
+                "stopForeground" -> {
                     stopForegroundService()
                 }
-                call.method.equals("startForeground") -> {
+                "startForeground" -> {
                     val stackTrace = Throwable().stackTrace.joinToString("\n") { "\tat $it" }
                     Log.d("ForegroundService", "startForegroundService CHAMANDO\nCaller:\n$stackTrace")
                     startForegroundService()
                 }
-                call.method.equals("askOverlayPermission") -> {
+                "askOverlayPermission" -> {
                     result.success(checkOverlayPermission())
                 }
-                call.method.equals("askUsageStatsPermission") -> {
+                "askUsageStatsPermission" -> {
                     if (!isAccessGranted()) {
                         val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
                         startActivity(intent)
                     }
                 }
+                else -> result.notImplemented()
             }
         }
     }
+
 
     private fun registerBootUpReceiver() {
         val filter = IntentFilter(Intent.ACTION_BOOT_COMPLETED)
@@ -222,7 +213,10 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "samples.flutter.dev/native").setMethodCallHandler { call, result ->
+
+        setupMethodChannel(flutterEngine)
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "flutter.native/helper").setMethodCallHandler { call, result ->
             if (call.method == "sendValues") {
                 _customerId = call.argument<Int>("id")
                 _companyId = call.argument<Int>("companyId")
