@@ -8,7 +8,7 @@ import FamilyControls
 import DeviceActivity
 import ManagedSettings
 
-// Variável global usada para rastrear o método Flutter chamado
+// Variável global usada para rastrear o método Flutter
 var globalMethodCall: String = ""
 
 @available(iOS 15.0, *)
