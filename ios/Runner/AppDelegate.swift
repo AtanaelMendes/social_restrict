@@ -8,6 +8,10 @@ import FamilyControls
 import DeviceActivity
 import ManagedSettings
 
+// Variável global usada para rastrear o método Flutter chamado
+var globalMethodCall: String = ""
+
+@available(iOS 15.0, *)
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate, MessagingDelegate {
     var model = MyModel.shared
@@ -71,7 +75,7 @@ import ManagedSettings
                 globalMethodCall = call.method
                 print("[AppDelegate] Apresentando ContentView para \(call.method)")
                 let vc = UIHostingController(
-                    rootView: ContentView()
+                    rootView: ContentView(globalMethodCall: call.method)
                         .environmentObject(self.model)
                         .environmentObject(self.store)
                 )

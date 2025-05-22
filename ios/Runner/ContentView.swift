@@ -1,16 +1,14 @@
-import FamilyControls
 import SwiftUI
+import FamilyControls
 import ManagedSettings
 
 @available(iOS 15.0, *)
 struct ContentView: View {
-        
-    @State private var isDiscouragedPresented = true
-    @State private var isEncouragedPresented = false
-    
+    let globalMethodCall: String
+
     @EnvironmentObject var model: MyModel
-    @Environment(\.presentationMode) var presentationMode
-    
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+
     @ViewBuilder
     func contentView() -> some View {
         switch globalMethodCall {
@@ -19,30 +17,33 @@ struct ContentView: View {
                 .onChange(of: model.selectionToDiscourage) { _ in
                     model.setShieldRestrictions()
                 }
+
         case "selectAppsToEncourage":
             FamilyActivityPicker(selection: $model.selectionToEncourage)
                 .onChange(of: model.selectionToEncourage) { _ in
                     MySchedule.setSchedule()
                 }
-            
+
         default:
             EmptyView()
-            // if #available(iOS 15.0, *) {
-            // }
         }
     }
-        
-        var body: some View {
-            NavigationView {
-                VStack {
-                    contentView()
-                }
-                .navigationBarTitle("Select Apps", displayMode: .inline)
-                .navigationBarItems(
-                    leading: Button("Cancel") {
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                contentView()
+            }
+            .navigationBarTitle("Select Apps", displayMode: .inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
                         presentationMode.wrappedValue.dismiss()
-                    },
-                    trailing: Button("Done") {
+                    }
+                }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
                         switch globalMethodCall {
                         case "selectAppsToDiscourage":
                             model.setShieldRestrictions()
@@ -53,15 +54,16 @@ struct ContentView: View {
                         }
                         presentationMode.wrappedValue.dismiss()
                     }
-                )
+                }
             }
         }
-    
-    
-    struct ContentView_Previews: PreviewProvider {
-        static var previews: some View {
-            ContentView()
-                .environmentObject(MyModel())
-        }
+    }
+}
+
+@available(iOS 15.0, *)
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView(globalMethodCall: "selectAppsToDiscourage")
+            .environmentObject(MyModel())
     }
 }
