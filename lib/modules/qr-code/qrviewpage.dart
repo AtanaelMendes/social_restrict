@@ -13,7 +13,7 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-const platform = MethodChannel('samples.flutter.dev/native');
+const platform = MethodChannel('flutter.native/helper');
 
 class QRViewPage extends StatefulWidget {
   const QRViewPage({super.key});
@@ -198,11 +198,10 @@ class _QRViewPageState extends State<QRViewPage> {
 }
 
 void sendValuesToNative(id, companyId, tokenId) async {
-  const platform = MethodChannel('samples.flutter.dev/native');
   try {
-    // final int? id = NavigationService.prefs?.getInt("id");
-    // final int? companyId = NavigationService.prefs?.getInt("companyId");
-    // final String? tokenId = NavigationService.prefs?.getString("token");
+    final int? id = NavigationService.prefs?.getInt("id");
+    final int? companyId = NavigationService.prefs?.getInt("companyId");
+    final String? tokenId = NavigationService.prefs?.getString("token");
 
     final Map<String, dynamic> values = {
       'id': id,

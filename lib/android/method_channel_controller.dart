@@ -17,7 +17,12 @@ class MethodChannelController extends GetxController implements GetxService {
 
   MethodChannelController() {
     WidgetsFlutterBinding.ensureInitialized();
-    checkBackgroundFetchStatus(); // Chama a verificação do status do BackgroundFetch ao inicializar
+  }
+
+  @override
+  void onInit() {
+   super.onInit();
+   checkBackgroundFetchStatus();
   }
 
   bool isOverlayPermissionGiven = false;

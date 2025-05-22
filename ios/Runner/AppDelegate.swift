@@ -1,218 +1,180 @@
-import DeviceActivity
-import FamilyControls
-import Flutter
-import ManagedSettings
-import SwiftUI
 import UIKit
+import Flutter
+import SwiftUI
 import FirebaseCore
 import FirebaseMessaging
 import Foundation
+import FamilyControls
+import DeviceActivity
+import ManagedSettings
 
-var globalMethodCall = ""
-@available(iOS 15.0, *)
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate, MessagingDelegate {
     var model = MyModel.shared
     var store = ManagedSettingsStore()
-    
+
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        print("[AppDelegate] didFinishLaunchingWithOptions chamado")
+
         FirebaseApp.configure()
-        //BackgroundTask.start()
-        
-        // Solicita permissão para notificações
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
+        print("[AppDelegate] Firebase configurado")
+
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+            print("[AppDelegate] Permissão de notificação: \(granted)")
             if granted {
                 DispatchQueue.main.async {
                     application.registerForRemoteNotifications()
+                    print("[AppDelegate] Notificações remotas registradas")
                 }
-            } else {
-                // Tratamento para quando a permissão é negada
             }
         }
-        // Configuração do delegate do FCM
+
         Messaging.messaging().delegate = self
+        print("[AppDelegate] Firebase Messaging delegate configurado")
 
-        let controller: FlutterViewController = window?.rootViewController as! FlutterViewController
-        // メソッドチャンネル名
-        let METHOD_CHANNEL_NAME = "flutter_screentime"
-        // FlutterMethodChannel
-        let methodChannel = FlutterMethodChannel(name: METHOD_CHANNEL_NAME, binaryMessenger: controller as! FlutterBinaryMessenger)
+        GeneratedPluginRegistrant.register(with: self)
+        print("[AppDelegate] Plugins do Flutter registrados")
 
-              // setMethodCallHandlerでコールバックを登録
-        methodChannel.setMethodCallHandler { [self]
-            (call: FlutterMethodCall, result: @escaping FlutterResult) in
+        guard let controller = window?.rootViewController as? FlutterViewController else {
+            print("[AppDelegate] Erro ao acessar FlutterViewController")
+            return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+        }
+
+        let methodChannel = FlutterMethodChannel(
+            name: "flutter.native/helper",
+            binaryMessenger: controller.binaryMessenger
+        )
+        print("[AppDelegate] FlutterMethodChannel criado")
+
+        methodChannel.setMethodCallHandler { [weak self] call, result in
+            guard let self = self else { return }
+
+            print("[AppDelegate] Método chamado do Flutter: \(call.method)")
+
             Task {
-                print("Task")
-                do {
-                    if #available(iOS 16.0, *) {
-                        print("try requestAuthorization")
-                        try await AuthorizationCenter.shared.requestAuthorization(for: FamilyControlsMember.individual)
-                        print("requestAuthorization success")
-                        switch AuthorizationCenter.shared.authorizationStatus {
-                        case .notDetermined:
-                            print("not determined")
-                        case .denied:
-                            print("denied")
-                        case .approved:
-                            print("approved")
-                        @unknown default:
-                            break
-                        }
-                    } else {
-                        // Fallback on earlier versions
+                if #available(iOS 16.0, *) {
+                    do {
+                        print("[AppDelegate] Solicitando autorização FamilyControls...")
+                        try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
+                        print("[AppDelegate] Autorização concluída: \(AuthorizationCenter.shared.authorizationStatus.rawValue)")
+                    } catch {
+                        print("[AppDelegate] Erro ao solicitar autorização: \(error)")
                     }
-                } catch {
-                    print("Error requestAuthorization: ", error)
                 }
             }
+
             switch call.method {
-            case "selectAppsToDiscourage":
-                globalMethodCall = "selectAppsToDiscourage"
-                let vc = UIHostingController(rootView: ContentView()
-                    .environmentObject(self.model)
-                    .environmentObject(self.store))
-
-                controller.present(vc, animated: false, completion: nil)
-
-                print("selectAppsToDiscourage")
+            case "selectAppsToDiscourage", "selectAppsToEncourage":
+                globalMethodCall = call.method
+                print("[AppDelegate] Apresentando ContentView para \(call.method)")
+                let vc = UIHostingController(
+                    rootView: ContentView()
+                        .environmentObject(self.model)
+                        .environmentObject(self.store)
+                )
+                controller.present(vc, animated: false)
                 result(nil)
-            case "selectAppsToEncourage":
-                globalMethodCall = "selectAppsToEncourage"
-                let vc = UIHostingController(rootView: ContentView()
-                    .environmentObject(self.model)
-                    .environmentObject(self.store))
-                controller.present(vc, animated: false, completion: nil)
 
-                print("selectAppsToEncourage")
-                result(nil)
             case "blockApps":
-                var applications: Set<Application> = []
-                
-                if (self.store.application.blockedApplications != nil) {
-                    applications = self.store.application.blockedApplications!
-                }
-                
-                if let arguments = call.arguments as? [String: Any] {
-                    if let apps = arguments["apps"] as? Array<String> {
-                        apps.forEach { _app in
-                            applications.insert(Application(bundleIdentifier: String(_app)))
-                        }
-                        if (applications.count > 0) {
-                            self.store.application.blockedApplications = applications
-                        }
+                print("[AppDelegate] Chamado blockApps")
+                var applications = self.store.application.blockedApplications ?? Set<Application>()
+                if let args = call.arguments as? [String: Any],
+                   let apps = args["apps"] as? [String] {
+                    print("[AppDelegate] Aplicativos para bloquear: \(apps)")
+                    apps.forEach { appId in
+                        applications.insert(Application(bundleIdentifier: appId))
                     }
+                    self.store.application.blockedApplications = applications
                 }
-                // let apps = store.application.blockedApplications
-                
-                // let vc = UIHostingController(rootView: ReportView())
-                // controller.present(vc, animated: false, completion: nil)
+                result(nil)
 
-                // print("report")
-                result(nil)
             case "unlockApps":
-                if let arguments = call.arguments as? [String: Any] {
-                    if let apps = arguments["apps"] as? Array<String> {
-                        apps.forEach { _app in
-                            self.store.application.blockedApplications?.remove(Application(bundleIdentifier: String(_app)))
-                        }
+                print("[AppDelegate] Chamado unlockApps")
+                if let args = call.arguments as? [String: Any],
+                   let apps = args["apps"] as? [String] {
+                    print("[AppDelegate] Aplicativos para desbloquear: \(apps)")
+                    apps.forEach { appId in
+                        self.store.application.blockedApplications?.remove(Application(bundleIdentifier: appId))
                     }
                 }
                 result(nil)
+
             case "report":
+                print("[AppDelegate] Chamado report")
                 let monitor = DeviceActivityCenter()
-                let deviceName = DeviceActivityName(rawValue: "teste")
-                
-                let activities = monitor.events(for: deviceName)
-                
+                let deviceName = DeviceActivityName("teste")
                 let schedule = DeviceActivitySchedule(
                     intervalStart: DateComponents(hour: 8, minute: 0),
                     intervalEnd: DateComponents(hour: 20, minute: 0),
-                    repeats: false,
-                    warningTime: nil
+                    repeats: false
                 )
-                
                 do {
                     try monitor.startMonitoring(deviceName, during: schedule)
-                    print("teste")
-                } catch let error {
-                    print(error.localizedDescription)
+                    print("[AppDelegate] Monitoramento iniciado para: \(deviceName.rawValue)")
+                } catch {
+                    print("[AppDelegate] Erro ao iniciar monitoramento: \(error)")
                 }
-                
-               
-               
                 result(nil)
+
             default:
-                print("no method")
+                print("[AppDelegate] Método não implementado: \(call.method)")
                 result(FlutterMethodNotImplemented)
             }
         }
 
-        GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print("FCM Token: \(fcmToken)")
-        // Aqui você pode enviar o token para o seu servidor, se necessário
+        print("[AppDelegate] Token FCM recebido: \(fcmToken ?? "vazio")")
     }
 
-    override func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        // Trate a notificação recebida
-        print("Notificação recebida: \(userInfo)")
-        var blockArrayString = userInfo["block"] as? String ?? ""
-        var unblockArrayString = userInfo["unblock"] as? String ?? ""
-                
-        
-        if let unblockdata = unblockArrayString.data(using: .utf8) {
-            do {
-                // Usando o JSONSerialization para converter a string em um array de Any
-                if let jsonArray = try JSONSerialization.jsonObject(with: unblockdata, options: []) as? [Any] {
-                    
-                    // Convertendo os elementos para strings, se possível
-                    let stringArray = jsonArray.compactMap { $0 as? String }
-                                                            
-                    stringArray.forEach { _app in
-                        self.store.application.blockedApplications?.remove(Application(bundleIdentifier: String(_app)))
-                    }
-                }
-            } catch {
-                print("Erro ao converter JSON: \(error.localizedDescription)")
+    override func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        print("[AppDelegate] Notificação remota recebida: \(userInfo)")
+
+        if let unblockJSON = userInfo["unblock"] as? String {
+            print("[AppDelegate] Dados para desbloquear apps: \(unblockJSON)")
+            processJSONAppList(unblockJSON) { appId in
+                self.store.application.blockedApplications?.remove(Application(bundleIdentifier: appId))
+                print("[AppDelegate] App desbloqueado: \(appId)")
             }
-        } else {
-            print("Erro ao converter a string para dados.")
         }
-               
-        if let data = blockArrayString.data(using: .utf8) {
-            do {
-                // Usando o JSONSerialization para converter a string em um array de Any
-                if let jsonArray = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] {
-                    
-                    // Convertendo os elementos para strings, se possível
-                    let stringArray = jsonArray.compactMap { $0 as? String }
-                    
-                    var applications: Set<Application> = []
-                    
-                    if (store.application.blockedApplications != nil) {
-                        applications = store.application.blockedApplications!
-                    }
-                    
-                    stringArray.forEach { _app in
-                        applications.insert(Application(bundleIdentifier: String(_app)))
-                    }
-                    if (applications.count > 0) {
-                        store.application.blockedApplications = applications
-                    }
-                }
-            } catch {
-                print("Erro ao converter JSON: \(error.localizedDescription)")
+
+        if let blockJSON = userInfo["block"] as? String {
+            print("[AppDelegate] Dados para bloquear apps: \(blockJSON)")
+            processJSONAppList(blockJSON) { appId in
+                var apps = self.store.application.blockedApplications ?? Set<Application>()
+                apps.insert(Application(bundleIdentifier: appId))
+                self.store.application.blockedApplications = apps
+                print("[AppDelegate] App bloqueado: \(appId)")
             }
-        } else {
-            print("Erro ao converter a string para dados.")
         }
-        
+
         completionHandler(.newData)
+    }
+
+    private func processJSONAppList(_ jsonString: String, _ handler: (String) -> Void) {
+        print("[AppDelegate] processJSONAppList chamado com: \(jsonString)")
+        guard let data = jsonString.data(using: .utf8) else {
+            print("[AppDelegate] Erro ao converter string para Data")
+            return
+        }
+
+        do {
+            if let jsonArray = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] {
+                let appIds = jsonArray.compactMap { $0 as? String }
+                print("[AppDelegate] Apps extraídos do JSON: \(appIds)")
+                appIds.forEach(handler)
+            }
+        } catch {
+            print("[AppDelegate] Erro ao decodificar JSON: \(error.localizedDescription)")
+        }
     }
 }

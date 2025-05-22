@@ -20,6 +20,7 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
+import android.net.Uri
 
 class MainActivity : FlutterActivity() {
     private val channel = "flutter.native/helper"
@@ -57,12 +58,39 @@ class MainActivity : FlutterActivity() {
                 "startForeground" -> {
                     logStackTrace()
                     startForegroundService()
+                    result.success(null)
                 }
-                "askOverlayPermission" -> result.success(checkOverlayPermission())
+                "askOverlayPermission" -> {
+                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                    intent.data = Uri.parse("package:$packageName")
+                    startActivity(intent)
+                    result.success(true)
+                }
                 "askUsageStatsPermission" -> {
                     if (!isAccessGranted()) {
                         startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
                     }
+                    result.success(true)
+                }
+                "sendValues" -> {
+                    _customerId = call.argument("id")
+                    _companyId = call.argument("companyId")
+
+                    getSharedPreferences("MyPrefs", Context.MODE_PRIVATE).edit().apply {
+                        putInt("customerId", _customerId ?: 0)
+                        putInt("companyId", _companyId ?: 0)
+                        apply()
+                    }
+
+                    if (_customerId != 0 && _companyId != 0) {
+                        val intent = Intent(this, ForegroundService::class.java).apply {
+                            putExtra("customerId", _customerId)
+                            putExtra("companyId", _companyId)
+                        }
+                        startService(intent)
+                    }
+
+                    result.success("Received values")
                 }
                 else -> result.notImplemented()
             }
@@ -192,30 +220,5 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         setupMethodChannel(flutterEngine)
-
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channel).setMethodCallHandler { call, result ->
-            if (call.method == "sendValues") {
-                _customerId = call.argument("id")
-                _companyId = call.argument("companyId")
-
-                getSharedPreferences("MyPrefs", Context.MODE_PRIVATE).edit().apply {
-                    putInt("customerId", _customerId ?: 0)
-                    putInt("companyId", _companyId ?: 0)
-                    apply()
-                }
-
-                if (_customerId != 0 && _companyId != 0) {
-                    val intent = Intent(this, ForegroundService::class.java).apply {
-                        putExtra("customerId", _customerId)
-                        putExtra("companyId", _companyId)
-                    }
-                    startService(intent)
-                }
-
-                result.success("Received values")
-            } else {
-                result.notImplemented()
-            }
-        }
     }
 }
