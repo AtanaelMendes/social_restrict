@@ -56,7 +56,7 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                         vertical: 10,
                       ),
                       child: Text(
-                        "AppLock needs system permissions to work with.",
+                        "Social Restrict precisa de algumas permissões para funcionar corretamente.",
                         textAlign: TextAlign.center,
                         style: MyFont().subtitle(
                           color: Colors.white,
@@ -78,7 +78,7 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                               },
                               child: permissionWidget(
                                 context,
-                                "System overlay",
+                                "Sobreposição a outros apps",
                                 state.isOverlayPermissionGiven,
                               ),
                             ),
@@ -90,7 +90,7 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                               },
                               child: permissionWidget(
                                 context,
-                                "Usage access",
+                                "Acesso ao uso",
                                 state.isUsageStatPermissionGiven,
                               ),
                             ),
@@ -102,7 +102,7 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                               },
                               child: permissionWidget(
                                 context,
-                                "Push notification",
+                                "Enviar notificações",
                                 state.isNotificationPermissionGiven,
                               ),
                             ),
@@ -114,7 +114,7 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                               },
                               child: permissionWidget(
                                 context,
-                                "Background fetch",
+                                "Atualização em segundo plano",
                                 state.isBackgroundFetchAvailable,
                               ),
                             ),
@@ -128,13 +128,14 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                             await state.checkUsageStatePermission() &&
                             await state.checkNotificationPermission() &&
                             state.isBackgroundFetchAvailable) {
+                          Fluttertoast.showToast(msg: "Permissões concedidas");
                           Navigator.pop(context);
                         } else {
-                          Fluttertoast.showToast(msg: "Required permissions not given !");
+                          Fluttertoast.showToast(msg: "Permissões negadas");
                         }
                       },
                       child: Text(
-                        "Confirm",
+                        "Verificar",
                         style: MyFont().subtitle(
                           color: Colors.black,
                           fontweight: FontWeight.w400,
@@ -142,6 +143,20 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                         ),
                       ),
                     ),
+                    MaterialButton(
+                      color: Colors.white,
+                      onPressed: () async {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "Cancelar",
+                        style: MyFont().subtitle(
+                          color: Colors.black,
+                          fontweight: FontWeight.w400,
+                          fontsize: 14,
+                        ),
+                      ),
+                    )
                   ],
                 ),
               );

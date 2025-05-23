@@ -18,7 +18,6 @@ import 'package:flutter_screentime/modules/home/apps_repository.dart';
 import 'package:flutter_screentime/provider/api.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-// import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 // import 'package:location/location.dart' as loc;
 // import 'package:permission_handler/permission_handler.dart';
