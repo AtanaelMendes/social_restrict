@@ -123,6 +123,33 @@ var globalMethodCall: String = ""
                 }
                 result(nil)
 
+            // NOVOS MÉTODOS AQUI ⬇️⬇️⬇️
+            case "checkOverlayPermission":
+                print("[AppDelegate] checkOverlayPermission não aplicável no iOS")
+                result(false)
+
+            case "askOverlayPermission":
+                print("[AppDelegate] askOverlayPermission não aplicável no iOS")
+                result(FlutterError(code: "UNAVAILABLE",
+                                    message: "Overlay permission is not available on iOS.",
+                                    details: nil))
+
+            case "sendValues":
+                print("[AppDelegate] Chamado sendValues")
+                if let args = call.arguments as? [String: Any],
+                   let customerId = args["id"] as? Int,
+                   let companyId = args["companyId"] as? Int {
+                    let defaults = UserDefaults.standard
+                    defaults.set(customerId, forKey: "customerId")
+                    defaults.set(companyId, forKey: "companyId")
+                    print("[AppDelegate] Valores armazenados: customerId=\(customerId), companyId=\(companyId)")
+                    result("Received values on iOS")
+                } else {
+                    result(FlutterError(code: "INVALID_ARGUMENTS",
+                                        message: "Missing customerId or companyId",
+                                        details: nil))
+                }
+
             default:
                 print("[AppDelegate] Método não implementado: \(call.method)")
                 result(FlutterMethodNotImplemented)

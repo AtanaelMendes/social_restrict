@@ -121,7 +121,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(AppsController(Get.find(), AppsRepository(Api())));
+    Get.put(AppsController(prefs: Get.find(), repository: AppsRepository(Api())));
     return GetMaterialApp(
       navigatorKey: NavigationService.navigatorKey,
       title: 'App Control',

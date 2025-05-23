@@ -3,7 +3,6 @@ import 'package:flutter_screentime/android/constant.dart';
 import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:get/state_manager.dart';
 
 askPermissionBottomSheet(context) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -15,27 +14,25 @@ askPermissionBottomSheet(context) {
       enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return const AskPermissionBootomSheet();
+        return const AskPermissionBottomSheet();
       },
     );
   });
 }
 
-class AskPermissionBootomSheet extends StatefulWidget {
-  const AskPermissionBootomSheet({Key? key}) : super(key: key);
+class AskPermissionBottomSheet extends StatefulWidget {
+  const AskPermissionBottomSheet({Key? key}) : super(key: key);
 
   @override
-  State<AskPermissionBootomSheet> createState() => _AskPermissionBootomSheetState();
+  State<AskPermissionBottomSheet> createState() => _AskPermissionBottomSheetState();
 }
 
-class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
+class _AskPermissionBottomSheetState extends State<AskPermissionBottomSheet> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return WillPopScope(
-      onWillPop: () async {
-        return false;
-      },
+      onWillPop: () async => false,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Align(
@@ -51,10 +48,7 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 10,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: Text(
                         "Social Restrict precisa de algumas permissões para funcionar corretamente.",
                         textAlign: TextAlign.center,
@@ -74,49 +68,33 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                             GestureDetector(
                               onTap: () {
                                 state.askOverlayPermission();
-                                setState(() {}); // Atualiza a UI
+                                setState(() {});
                               },
-                              child: permissionWidget(
-                                context,
-                                "Sobreposição a outros apps",
-                                state.isOverlayPermissionGiven,
-                              ),
+                              child: permissionWidget(context, "Sobreposição a outros apps", state.isOverlayPermissionGiven),
                             ),
                           if (!state.isUsageStatPermissionGiven)
                             GestureDetector(
                               onTap: () {
                                 state.askUsageStatsPermission();
-                                setState(() {}); // Atualiza a UI
+                                setState(() {});
                               },
-                              child: permissionWidget(
-                                context,
-                                "Acesso ao uso",
-                                state.isUsageStatPermissionGiven,
-                              ),
+                              child: permissionWidget(context, "Acesso ao uso", state.isUsageStatPermissionGiven),
                             ),
                           if (!state.isNotificationPermissionGiven)
                             GestureDetector(
                               onTap: () {
                                 state.askNotificationPermission();
-                                setState(() {}); // Atualiza a UI
+                                setState(() {});
                               },
-                              child: permissionWidget(
-                                context,
-                                "Enviar notificações",
-                                state.isNotificationPermissionGiven,
-                              ),
+                              child: permissionWidget(context, "Enviar notificações", state.isNotificationPermissionGiven),
                             ),
                           if (!state.isBackgroundFetchAvailable)
                             GestureDetector(
                               onTap: () {
                                 state.checkBackgroundFetchStatus();
-                                setState(() {}); // Atualiza a UI
+                                setState(() {});
                               },
-                              child: permissionWidget(
-                                context,
-                                "Atualização em segundo plano",
-                                state.isBackgroundFetchAvailable,
-                              ),
+                              child: permissionWidget(context, "Atualização em segundo plano", state.isBackgroundFetchAvailable),
                             ),
                         ],
                       ),
@@ -145,7 +123,7 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                     ),
                     MaterialButton(
                       color: Colors.white,
-                      onPressed: () async {
+                      onPressed: () {
                         Navigator.pop(context);
                       },
                       child: Text(
@@ -156,7 +134,7 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                           fontsize: 14,
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               );
@@ -169,28 +147,20 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
 
   Widget permissionWidget(BuildContext context, String name, bool permission) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 6,
-        horizontal: 6,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
       child: Container(
         width: MediaQuery.of(context).size.width * 0.8,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: Theme.of(context).primaryColor,
-          ),
+          border: Border.all(color: Theme.of(context).primaryColor),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 6,
-            vertical: 6,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "$name",
+                name,
                 style: MyFont().subtitle(
                   color: Colors.white,
                   fontweight: FontWeight.w400,

@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<void> lazyPutInitialize() async {
   final prefs = await SharedPreferences.getInstance();
   Get.lazyPut(() => prefs);
-  Get.lazyPut(() => AppsController(Get.find(), AppsRepository(Api())));
+  Get.lazyPut(() => AppsController(prefs: Get.find(), repository: AppsRepository(Api())));
   Get.lazyPut(() => MethodChannelController());
   Get.lazyPut(() => PermissionController());
 }

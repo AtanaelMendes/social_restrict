@@ -15,8 +15,8 @@ class BlockUnblockManager {
     }
 
     apps.forEach((bundleApp) async {
-      Get.lazyPut(() => AppsController(Get.find(), AppsRepository(Api())));
-      // Get.lazyPut(() => AppsController(prefs: Get.find()));
+
+      Get.lazyPut(() => AppsController(prefs: Get.find(), repository: AppsRepository(Api()),));
       if (Platform.isAndroid) {
         var app = await DeviceApps.getApp(bundleApp, true);
         if (app != null) {

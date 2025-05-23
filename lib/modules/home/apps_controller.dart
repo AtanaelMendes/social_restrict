@@ -26,10 +26,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AppsController extends GetxController implements GetxService {
   SharedPreferences prefs;
   final AppsRepository repository;
-  AppsController(
-      this.prefs,
-      this.repository,
-  );
+  AppsController({
+    required this.prefs,
+    required this.repository,
+  });
+
 
 
   String? dummyPasscode;
@@ -82,7 +83,6 @@ class AppsController extends GetxController implements GetxService {
     NavigationService.prefs ??= await SharedPreferences.getInstance();
 
     if (Platform.isAndroid) {
-      Get.put(AppsController(Get.find(), AppsRepository(Api())));
 
       Get.find<AppsController>().getAppsData();
       Get.find<AppsController>().getLockedApps();

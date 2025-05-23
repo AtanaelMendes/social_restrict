@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  final controller = Get.put(AppsController(Get.find(), AppsRepository(Api())));
+  final controller = Get.put(AppsController(prefs: Get.find(), repository: AppsRepository(Api())));
   Timer? _timer;
 
   @override
