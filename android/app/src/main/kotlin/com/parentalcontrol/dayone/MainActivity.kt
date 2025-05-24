@@ -67,9 +67,12 @@ class MainActivity : FlutterActivity() {
                     result.success(true)
                 }
                 "askUsageStatsPermission" -> {
-                    if (!isAccessGranted()) {
-                        startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
-                    }
+                    val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                    intent.data = Uri.parse("package:$packageName")
+                    startActivity(intent)
+                    // if (!isAccessGranted()) {
+                    //     startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                    // }
                     result.success(true)
                 }
                 "sendValues" -> {
