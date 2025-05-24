@@ -58,18 +58,6 @@ var globalMethodCall: String = ""
 
             print("[AppDelegate] Método chamado do Flutter: \(call.method)")
 
-            Task {
-                if #available(iOS 16.0, *) {
-                    do {
-                        print("[AppDelegate] Solicitando autorização FamilyControls...")
-                        try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
-                        print("[AppDelegate] Autorização concluída: \(AuthorizationCenter.shared.authorizationStatus.rawValue)")
-                    } catch {
-                        print("[AppDelegate] Erro ao solicitar autorização: \(error)")
-                    }
-                }
-            }
-
             switch call.method {
             case "selectAppsToDiscourage", "selectAppsToEncourage":
                 globalMethodCall = call.method
@@ -122,7 +110,22 @@ var globalMethodCall: String = ""
                     print("[AppDelegate] Erro ao iniciar monitoramento: \(error)")
                 }
                 result(nil)
-
+            case "askOverlayPermission":
+                print("[AppDelegate] Solicitando autorização FamilyControls...")
+                if #available(iOS 16.0, *) {
+                    Task {
+                        do {
+                            try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
+                            print("[AppDelegate] Autorização concluída: \(AuthorizationCenter.shared.authorizationStatus.rawValue)")
+                            result(true)
+                        } catch {
+                            print("[AppDelegate] Erro ao solicitar autorização: \(error)")
+                            result(false)
+                        }
+                    }
+                } else {
+                    result(false)
+                }
             default:
                 print("[AppDelegate] Método não implementado: \(call.method)")
                 result(FlutterMethodNotImplemented)

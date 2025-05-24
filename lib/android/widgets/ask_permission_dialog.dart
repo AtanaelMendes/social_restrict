@@ -205,7 +205,7 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "$name",
+                name,
                 style: MyFont().subtitle(
                   color: Colors.white,
                   fontweight: FontWeight.w400,
