@@ -46,23 +46,23 @@ Future<void> initState() async {
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }
 
-void initializeNotifications() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  // await FirebaseMessaging.instance.requestPermission();
-  String? fcmToken = await FirebaseMessaging.instance.getToken();
-  FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  NavigationService.prefs = await SharedPreferences.getInstance();
-  NavigationService.prefs?.setString("token", fcmToken!);
-  String tokenPrefereces = NavigationService.prefs?.getString("token") ?? "";
+Future<void> initializeNotifications() async {
+  try {
+    await Firebase.initializeApp();
+    final settings = await FirebaseMessaging.instance.requestPermission();
 
-  // NotificationHandler.initialize();
-  debugPrint("TOKENPREFERE: $tokenPrefereces");
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      debugPrint("FCM Token: $fcmToken");
 
-  _firebaseMessaging.getToken().then((String? token) {
-    assert(token != null);
-    debugPrint('Firebase Messaging Token: $token');
-  });
+      NavigationService.prefs = await SharedPreferences.getInstance();
+      NavigationService.prefs?.setString("token", fcmToken ?? "");
+    } else {
+      debugPrint("Permissão de notificação negada.");
+    }
+  } catch (e) {
+    debugPrint("Erro ao inicializar notificações: $e");
+  }
 }
 
 void getAndroidUsageStats() async {
