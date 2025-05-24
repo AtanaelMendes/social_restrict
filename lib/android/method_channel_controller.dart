@@ -13,7 +13,7 @@ import 'package:usage_stats/usage_stats.dart';
 import 'permission_controller.dart';
 
 class MethodChannelController extends GetxController implements GetxService {
- static const platform = MethodChannel('flutter.native/helper');
+  static const platform = MethodChannel('flutter.native/helper');
 
   MethodChannelController() {
     WidgetsFlutterBinding.ensureInitialized();
@@ -21,8 +21,8 @@ class MethodChannelController extends GetxController implements GetxService {
 
   @override
   void onInit() {
-   super.onInit();
-   checkBackgroundFetchStatus();
+    super.onInit();
+    checkBackgroundFetchStatus();
   }
 
   bool isOverlayPermissionGiven = false;
@@ -30,46 +30,6 @@ class MethodChannelController extends GetxController implements GetxService {
   bool isNotificationPermissionGiven = false;
   bool isBackgroundLocationPermissionGiven = false;
   bool isBackgroundFetchAvailable = false;
-
-  Future<bool> checkOverlayPermission() async {
-    log("pedindo permissao checkOverlayPermission");
-    try {
-      return await platform
-          .invokeMethod('checkOverlayPermission')
-          .then((value) {
-        log("$value", name: "checkOverlayPermission");
-        isOverlayPermissionGiven = value as bool;
-        update();
-        return isOverlayPermissionGiven;
-      });
-    } on PlatformException catch (e) {
-      log("Failed to Invoke: '${e.message}'.");
-      isOverlayPermissionGiven = false;
-      update();
-      return isOverlayPermissionGiven;
-    }
-  }
-
-  Future<bool> checkNotificationPermission() async {
-    log("chamando checkNotificationPermission");
-    return isNotificationPermissionGiven =
-        await Permission.notification.isGranted;
-  }
-
-  Future<bool> checkUsageStatePermission() async {
-    log("chamando checkUsageStatePermission");
-    isUsageStatPermissionGiven =
-        (await UsageStats.checkUsagePermission() ?? false);
-    update();
-    return isUsageStatPermissionGiven;
-  }
-
-  Future<bool> checkBackgroundLocationPermission() async {
-    isBackgroundLocationPermissionGiven =
-        await Permission.locationAlways.isGranted;
-    update();
-    return isBackgroundLocationPermissionGiven;
-  }
 
   Future<void> checkBackgroundFetchStatus() async {
     int status = await BackgroundFetch.status;
@@ -136,32 +96,57 @@ class MethodChannelController extends GetxController implements GetxService {
     }
   }
 
- Future startForeground() async {
-   try {
-     // Captura stack trace para saber quem chamou a função
-     final stack = StackTrace.current;
+  Future startForeground() async {
+    try {
+      // Captura stack trace para saber quem chamou a função
+      final stack = StackTrace.current;
 
-     await platform.invokeMethod('startForeground', "").then((value) {
-       log(
-         "Chamando startForeground:  $value\nCaller:\n$stack",
-         name: "ForegroundService",
-       );
-     });
-   } on PlatformException catch (e) {
-     log("Falha ao pedir permissao startForeground: '${e.message}'.");
-   }
- }
+      await platform.invokeMethod('startForeground', "").then((value) {
+        log(
+          "Chamando startForeground:  $value\nCaller:\n$stack",
+          name: "ForegroundService",
+        );
+      });
+    } on PlatformException catch (e) {
+      log("Falha ao pedir permissao startForeground: '${e.message}'.");
+    }
+  }
+
+  Future<bool> checkNotificationPermission() async {
+    log("chamando checkNotificationPermission");
+    return isNotificationPermissionGiven =
+    await Permission.notification.isGranted;
+  }
 
   Future<bool> askNotificationPermission() async {
-    log("pedindo permissao askNotificationPermission");
+    log("PEDINDO permissao askNotificationPermission");
     await Get.find<PermissionController>().getPermissions([Permission.notification]);
     isNotificationPermissionGiven = await Permission.notification.isGranted;
     update();
     return isNotificationPermissionGiven;
   }
 
+  Future<bool> checkOverlayPermission() async {
+    log("CHECANDO permissao checkOverlayPermission");
+    try {
+      return await platform
+          .invokeMethod('checkOverlayPermission')
+          .then((value) {
+        log("$value", name: "checkOverlayPermission");
+        isOverlayPermissionGiven = value as bool;
+        update();
+        return isOverlayPermissionGiven;
+      });
+    } on PlatformException catch (e) {
+      log("Failed to Invoke: '${e.message}'.");
+      isOverlayPermissionGiven = false;
+      update();
+      return isOverlayPermissionGiven;
+    }
+  }
+
   Future<bool> askOverlayPermission() async {
-    log("pedindo permissao askOverlayPermission");
+    log("PEDIDNDO permissao askOverlayPermission");
     try {
       return await platform.invokeMethod('askOverlayPermission').then((value) {
         log("$value", name: "askOverlayPermission");
@@ -175,14 +160,22 @@ class MethodChannelController extends GetxController implements GetxService {
     }
   }
 
+  Future<bool> checkUsageStatePermission() async {
+    log("CHECANDO permissao checkUsageStatePermission");
+    isUsageStatPermissionGiven =
+    (await UsageStats.checkUsagePermission() ?? false);
+    update();
+    return isUsageStatPermissionGiven;
+  }
+
   Future<bool> askUsageStatsPermission() async {
-    log("pedindo permissao askUsageStatsPermission");
+    log("PEDINDO permissao askUsageStatsPermission");
     try {
       return await platform.invokeMethod('askUsageStatsPermission').then((value) {
         log("$value", name: "askUsageStatsPermission");
-        isOverlayPermissionGiven = (value as bool);
+        isUsageStatPermissionGiven = (value as bool);
         update();
-        return isOverlayPermissionGiven;
+        return isUsageStatPermissionGiven;
       });
     } on PlatformException catch (e) {
       log("Falha ao pedir permissao askUsageStatsPermission: '${e.message}'.");
@@ -190,7 +183,15 @@ class MethodChannelController extends GetxController implements GetxService {
     }
   }
 
+  Future<bool> checkBackgroundLocationPermission() async {
+    log("CHECANDO permissao checkBackgroundLocationPermission");
+    isBackgroundLocationPermissionGiven = await Permission.locationAlways.isGranted;
+    update();
+    return isBackgroundLocationPermissionGiven;
+  }
+
   Future<bool> askBackgroundLocationPermission() async {
+    log("PEDINDO permissao askBackgroundLocationPermission");
     await Get.find<PermissionController>().getPermissions([Permission.locationAlways]);
     isBackgroundLocationPermissionGiven = await Permission.locationAlways.isGranted;
     update();
