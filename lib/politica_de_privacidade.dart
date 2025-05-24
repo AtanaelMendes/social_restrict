@@ -22,12 +22,27 @@ Esta Política de Privacidade descreve como o aplicativo Social Restric, desenvo
 1. Informações Coletadas
 O Social Restric coleta apenas as informações necessárias para seu funcionamento adequado, incluindo:
 
-Dados de uso de aplicativos: Para identificar quais aplicativos estão sendo utilizados e aplicar restrições, o app requer acesso à estatística de uso (perm. PACKAGE_USAGE_STATS).
-Permissões do sistema: Algumas permissões, como sobreposição de tela (SYSTEM_ALERT_WINDOW), são necessárias para exibir alertas de bloqueio.
-Localização (opcional): Pode ser coletada para recursos contextuais, como definir restrições por localização. As permissões ACCESS_FINE_LOCATION e ACCESS_COARSE_LOCATION são usadas apenas com consentimento.
-Dados de inicialização do sistema: Utiliza a permissão RECEIVE_BOOT_COMPLETED para reiniciar o serviço de bloqueio automaticamente ao ligar o dispositivo.
+Dados de uso de aplicativos:
+
+Para identificar quais aplicativos estão sendo utilizados e aplicar restrições, o app requer acesso à estatística de uso (perm. PACKAGE_USAGE_STATS).
+
+Permissões do sistema:
+
+Algumas permissões, como sobreposição de tela (SYSTEM_ALERT_WINDOW), são necessárias para exibir alertas de bloqueio.
+
+Localização (opcional):
+
+Pode ser coletada para recursos contextuais, como definir restrições por localização. As permissões ACCESS_FINE_LOCATION e ACCESS_COARSE_LOCATION são usadas apenas com consentimento.
+
+Dados de inicialização do sistema:
+
+Utiliza a permissão RECEIVE_BOOT_COMPLETED para reiniciar o serviço de bloqueio automaticamente ao ligar o dispositivo.
 Permissão de notificações: Usada para informar o usuário sobre restrições ativas ou alterações no aplicativo.
-Permissões de Bluetooth: Usadas apenas se funcionalidades futuras envolverem controle via dispositivos Bluetooth (não obrigatórias para uso básico).
+
+Permissões de Bluetooth:
+
+Usadas apenas se funcionalidades futuras envolverem controle via dispositivos Bluetooth (não obrigatórias para uso básico).
+
 2. Uso das Informações
 As informações coletadas são usadas exclusivamente para:
 
@@ -56,6 +71,7 @@ O usuário pode, a qualquer momento:
 
 Revogar permissões nas configurações do sistema;
 Desinstalar o aplicativo se não concordar com esta política.
+
 7. Alterações nesta Política
 Reservamo-nos o direito de modificar esta política a qualquer momento. Notificações serão exibidas no aplicativo em caso de mudanças significativas.
 
