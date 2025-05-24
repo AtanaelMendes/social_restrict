@@ -241,10 +241,16 @@ class IOSPermissionBottomSheet extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
+          if (!state.isUsageStatPermissionGiven)
+            ElevatedButton.icon(
+              icon: const Icon(Icons.shield),
+              label: const Text("Permitir Acesso ao Uso"),
+              onPressed: () => state.askUsageStatsPermission(),
+            ),
           ElevatedButton.icon(
             icon: const Icon(Icons.shield),
             label: const Text("Permitir Acesso ao Uso"),
-            onPressed: () => state.askOverlayPermission(),
+            onPressed: () => state.askUsageStatsPermission(),
           ),
           ElevatedButton.icon(
             icon: const Icon(Icons.location_on),

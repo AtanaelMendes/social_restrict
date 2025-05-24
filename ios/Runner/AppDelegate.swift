@@ -110,7 +110,7 @@ var globalMethodCall: String = ""
                     print("[AppDelegate] Erro ao iniciar monitoramento: \(error)")
                 }
                 result(nil)
-            case "askOverlayPermission":
+            case "askUsageStatsPermission":
                 print("[AppDelegate] Solicitando autorização FamilyControls...")
                 if #available(iOS 16.0, *) {
                     Task {
