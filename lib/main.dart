@@ -49,7 +49,7 @@ Future<void> initState() async {
 void initializeNotifications() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await FirebaseMessaging.instance.requestPermission();
+  // await FirebaseMessaging.instance.requestPermission();
   String? fcmToken = await FirebaseMessaging.instance.getToken();
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   NavigationService.prefs = await SharedPreferences.getInstance();
