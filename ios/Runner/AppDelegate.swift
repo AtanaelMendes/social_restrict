@@ -113,14 +113,21 @@ var globalMethodCall: String = ""
             case "askUsageStatsPermission":
                 print("[AppDelegate] Solicitando autorização FamilyControls...")
                 if #available(iOS 16.0, *) {
-                    Task {
-                        do {
-                            try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
-                            print("[AppDelegate] Autorização concluída: \(AuthorizationCenter.shared.authorizationStatus.rawValue)")
-                            result(true)
-                        } catch {
-                            print("[AppDelegate] Erro ao solicitar autorização: \(error)")
-                            result(false)
+                    let status = AuthorizationCenter.shared.authorizationStatus
+                    if status == .approved {
+                        print("[AppDelegate] Autorização já concedida: \(status.rawValue)")
+                        result(true)
+                    } else {
+                        Task {
+                            do {
+                                try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
+                                let newStatus = AuthorizationCenter.shared.authorizationStatus
+                                print("[AppDelegate] Autorização concluída: \(newStatus.rawValue)")
+                                result(newStatus == .approved)
+                            } catch {
+                                print("[AppDelegate] Erro ao solicitar autorização: \(error)")
+                                result(false)
+                            }
                         }
                     }
                 } else {
