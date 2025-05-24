@@ -225,8 +225,14 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
   }
 }
 
-class IOSPermissionBottomSheet extends StatelessWidget {
-  const IOSPermissionBottomSheet({super.key});
+class IOSPermissionBottomSheet extends StatefulWidget {
+  const IOSPermissionBottomSheet({Key? key}) : super(key: key);
+
+  @override
+  State<IOSPermissionBottomSheet> createState() => _IOSPermissionBottomSheet();
+}
+
+class _IOSPermissionBottomSheet extends State<IOSPermissionBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
@@ -245,25 +251,37 @@ class IOSPermissionBottomSheet extends StatelessWidget {
             ElevatedButton.icon(
               icon: const Icon(Icons.shield),
               label: const Text("Permitir Acesso ao Uso"),
-              onPressed: () => state.askUsageStatsPermission(),
+              onPressed: () {
+                state.askUsageStatsPermission();
+                setState(() {});
+              },
             ),
           if (!state.isBackgroundFetchAvailable)
             ElevatedButton.icon(
               icon: const Icon(Icons.access_alarm),
               label: const Text("Permitir Atualização em Segundo Plano"),
-              onPressed: () => state.checkBackgroundFetchStatus(),
+              onPressed: () {
+                state.checkBackgroundFetchStatus();
+                setState(() {});
+              },
             ),
           if (!state.isBackgroundLocationPermissionGiven)
             ElevatedButton.icon(
               icon: const Icon(Icons.location_on),
               label: const Text("Permitir Localização"),
-              onPressed: () => state.askBackgroundLocationPermission(),
+              onPressed: () {
+                state.askBackgroundLocationPermission();
+                setState(() {});
+              },
             ),
           if (!state.isNotificationPermissionGiven)
             ElevatedButton.icon(
               icon: const Icon(Icons.notifications),
               label: const Text("Permitir Notificações"),
-              onPressed: () => state.askNotificationPermission(),
+              onPressed: () {
+                state.askNotificationPermission();
+                setState(() {});
+              },
             ),
           const SizedBox(height: 10),
           ElevatedButton.icon(
