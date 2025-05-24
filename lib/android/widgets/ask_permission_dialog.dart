@@ -247,21 +247,24 @@ class IOSPermissionBottomSheet extends StatelessWidget {
               label: const Text("Permitir Acesso ao Uso"),
               onPressed: () => state.askUsageStatsPermission(),
             ),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.shield),
-            label: const Text("Permitir Acesso ao Uso"),
-            onPressed: () => state.askUsageStatsPermission(),
-          ),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.location_on),
-            label: const Text("Permitir Localização"),
-            onPressed: () => state.askBackgroundLocationPermission(),
-          ),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.notifications),
-            label: const Text("Permitir Notificações"),
-            onPressed: () => state.askNotificationPermission(),
-          ),
+          if (!state.isBackgroundFetchAvailable)
+            ElevatedButton.icon(
+              icon: const Icon(Icons.access_alarm),
+              label: const Text("Permitir Atualização em Segundo Plano"),
+              onPressed: () => state.checkBackgroundFetchStatus(),
+            ),
+          if (!state.isBackgroundLocationPermissionGiven)
+            ElevatedButton.icon(
+              icon: const Icon(Icons.location_on),
+              label: const Text("Permitir Localização"),
+              onPressed: () => state.askBackgroundLocationPermission(),
+            ),
+          if (!state.isNotificationPermissionGiven)
+            ElevatedButton.icon(
+              icon: const Icon(Icons.notifications),
+              label: const Text("Permitir Notificações"),
+              onPressed: () => state.askNotificationPermission(),
+            ),
           const SizedBox(height: 10),
           ElevatedButton.icon(
             icon: const Icon(Icons.close),
