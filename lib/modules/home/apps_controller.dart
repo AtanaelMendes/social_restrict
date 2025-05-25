@@ -295,39 +295,39 @@ class AppsController extends GetxController implements GetxService {
     }
   }
 
-  onUpdateAppBlocks() async {
-    AppInfo? appInfo;
-    String? blockBundle;
-    List<String> blockBundles = [];
-    String? unBlockBundle;
-    List<String> unBlockBundles = [];
+  // onUpdateAppBlocks() async {
+  //   AppInfo? appInfo;
+  //   String? blockBundle;
+  //   List<String> blockBundles = [];
+  //   String? unBlockBundle;
+  //   List<String> unBlockBundles = [];
 
-    blockApps = [
-      AppInfo(id: 10, bundle: 'br.com.brainweb.ifood'),
-      AppInfo(id: 12, bundle: 'com.google.android.youtube'),
-      AppInfo(id: 12, bundle: 'com.linkedin.android'),
-      AppInfo(id: 12, bundle: 'com.mercadolibre')
-    ];
-    unBlockApps = [];
+  //   blockApps = [
+  //     AppInfo(id: 10, bundle: 'br.com.brainweb.ifood'),
+  //     AppInfo(id: 12, bundle: 'com.google.android.youtube'),
+  //     AppInfo(id: 12, bundle: 'com.linkedin.android'),
+  //     AppInfo(id: 12, bundle: 'com.mercadolibre')
+  //   ];
+  //   unBlockApps = [];
 
-    for (var e in blockApps) {
-      blockBundle = e.bundle;
-      blockBundles.add(blockBundle ?? '');
-      if (blockApps != null && blockApps.isNotEmpty) {
-        await BlockUnblockManager.blockApps(blockBundles);
-      }
-    }
-    for (var e in unBlockApps) {
-      unBlockBundle = e.bundle;
-      unBlockBundles.add(unBlockBundle ?? '');
-      if (unBlockApps != null && unBlockApps.isNotEmpty) {
-        await BlockUnblockManager.unblockApps(unBlockBundles);
-      }
-      debugPrint('O valor que esta no unBlockBundle: $unBlockBundle');
-    }
-    debugPrint('Os valores que estao no blockApps: $blockApps' + 'Os valores que estao no unBlockApps: $unBlockApps');
-    update();
-  }
+  //   for (var e in blockApps) {
+  //     blockBundle = e.bundle;
+  //     blockBundles.add(blockBundle ?? '');
+  //     if (blockApps != null && blockApps.isNotEmpty) {
+  //       await BlockUnblockManager.blockApps(blockBundles);
+  //     }
+  //   }
+  //   for (var e in unBlockApps) {
+  //     unBlockBundle = e.bundle;
+  //     unBlockBundles.add(unBlockBundle ?? '');
+  //     if (unBlockApps != null && unBlockApps.isNotEmpty) {
+  //       await BlockUnblockManager.unblockApps(unBlockBundles);
+  //     }
+  //     debugPrint('O valor que esta no unBlockBundle: $unBlockBundle');
+  //   }
+  //   debugPrint('Os valores que estao no blockApps: $blockApps' + 'Os valores que estao no unBlockApps: $unBlockApps');
+  //   update();
+  // }
 
   // Future<void> getCurrentLocation() async {
   //   final loc.Location location = loc.Location();

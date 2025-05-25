@@ -65,7 +65,7 @@ class MethodChannelController extends GetxController implements GetxService {
           };
         }).toList()
       };
-      print('Os valores que estao no data: $data');
+      log('Os valores que estao no data: $data');
       await setPassword();
       await platform.invokeMethod('addToLockedApps', data).then((value) {
         log("$value", name: "addToLockedApps CHAMADO");
@@ -128,6 +128,7 @@ class MethodChannelController extends GetxController implements GetxService {
     // }
     // if (Platform.isIOS) {
     // }
+    await Firebase.initializeApp();
     final settings = await FirebaseMessaging.instance.getNotificationSettings();
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       isNotificationPermissionGiven = true;
@@ -261,9 +262,9 @@ class MethodChannelController extends GetxController implements GetxService {
       };
 
       final String result = await platform.invokeMethod('sendValues', values);
-      print('RECEBIDO: $result');
+      log('RECEBIDO: $result');
     } on PlatformException catch (e) {
-      print("Falaha ao enviar valores para o native: '${e.message}'.");
+      log("Falaha ao enviar valores para o native: '${e.message}'.");
     }
   }
 }

@@ -16,24 +16,20 @@ class BlockUnblockManager {
 
     apps.forEach((bundleApp) async {
       Get.lazyPut(() => AppsController(Get.find(), AppsRepository(Api())));
-      // Get.lazyPut(() => AppsController(prefs: Get.find()));
       if (Platform.isAndroid) {
         var app = await DeviceApps.getApp(bundleApp, true);
         if (app != null) {
           await Get.find<AppsController>().addToLockedApps(app);
         }
-        //await Get.find<AppsController>().addToLockedApps(app!);
       }
     });
   }
 
   static Future<void> unblockApps(List<dynamic> apps) async {
     if (Platform.isIOS) {
-      NavigationService.methodChannel
-          .invokeMethod('unlockApps', {'apps': apps});
+      NavigationService.methodChannel.invokeMethod('unlockApps', {'apps': apps});
     }
     if (Platform.isAndroid) {
-      //Get.find<MethodChannelController>().update();
       apps.forEach((bundleApp) async {
         var app = await DeviceApps.getApp(bundleApp, true);
         if (app != null) {

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screentime/android/method_channel_controller.dart';
+import 'package:flutter_screentime/background_notification.dart';
 import 'package:flutter_screentime/main.dart';
 import 'package:flutter_screentime/models/token_id_model.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
@@ -71,11 +72,13 @@ class _QRViewPageState extends State<QRViewPage> {
   }
 
   Widget _buildQrView(BuildContext context) {
-    var scanArea = (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 150.0 : 300.0;
+    var scanArea =
+        (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 150.0 : 300.0;
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
-      overlay: QrScannerOverlayShape(borderColor: Colors.red, borderRadius: 10, borderLength: 30, borderWidth: 10, cutOutSize: scanArea),
+      overlay: QrScannerOverlayShape(
+          borderColor: Colors.red, borderRadius: 10, borderLength: 30, borderWidth: 10, cutOutSize: scanArea),
       onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
     );
   }
@@ -85,80 +88,70 @@ class _QRViewPageState extends State<QRViewPage> {
     bool valuesSent = false;
 
     controller.scannedDataStream.listen((scanData) async {
+      if (valuesSent) return;
+      valuesSent = true;
+
+      setState(() {
+        isLoading = true;
+      });
+
+      result = scanData;
+      Map<String, dynamic> data = jsonDecode(scanData.code!);
+      debugPrint(data.toString());
+      debugPrint("id: ${data['id'].toString()}");
+      debugPrint("companyId: ${data['companyId'].toString()}");
+
+      id = data['id'] ?? 0;
+      companyId = data['companyId'] ?? 0;
+
+      TokenIdModel token = TokenIdModel(
+        customerId: id,
+        deviceId: tokenId,
+        status: 1,
+      );
+
+      bool confirmSendToken = await qrRepository.tokenId(token);
+
+      controller.dispose();
+
+      if (confirmSendToken) {
+        Get.snackbar(
+          'Sucesso',
+          'Token enviado.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        NavigationService.prefs?.setString("settings", scanData.code!);
+        NavigationService.prefs?.setInt("id", id!);
+        NavigationService.prefs?.setInt("companyId", companyId!);
+        sendValuesToNative(id, companyId, tokenId);
+        NotificationHandler.initialize();
+        Get.find<AppsController>().savePasscode("927594");
+        await Get.find<MethodChannelController>().setPassword();
+        await Get.find<MethodChannelController>().startForeground();
+      } else {
+        Get.snackbar(
+          'Erro',
+          'Erro ao enviar token.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        NavigationService.prefs?.setInt("companyId", 0);
+        NavigationService.prefs?.setInt("id", 0);
+        NavigationService.prefs?.setString("settings", "");
+        Get.find<MethodChannelController>().update();
+      }
+
+      // Libera o loading antes da navegação
+      if (mounted) {
         setState(() {
-          isLoading = true;
+          isLoading = false;
         });
-        result = scanData;
-        Map<String, dynamic> data = jsonDecode(scanData.code!);
-        setState(() {
-          debugPrint(data.toString());
-          debugPrint("id: ${data['id'].toString()}");
-          debugPrint("companyId: ${data['companyId'].toString()}");
-          id = data['id'] ?? 0;
-          companyId = data['companyId'] ?? 0;
-        });
+      }
 
-        if (Platform.isAndroid) {
-          Get.find<AppsController>().savePasscode("927594");
-          await Get.find<MethodChannelController>().setPassword();
-        }
+      // Aguarda um frame para garantir atualização da UI antes de navegar
+      await Future.delayed(const Duration(milliseconds: 300));
 
-        if (!valuesSent) {
-          valuesSent = true;
-
-          setState(() {
-            isLoading = true;
-          });
-
-          TokenIdModel token = TokenIdModel(
-            customerId: id,
-            deviceId: tokenId,
-            status: 1,
-          );
-
-          bool confirmSendToken = await qrRepository.tokenId(token);
-
-          controller.dispose();
-
-          if (confirmSendToken) {
-            Get.snackbar(
-              'Sucesso',
-              'Token enviado.',
-              snackPosition: SnackPosition.BOTTOM,
-            );
-            NavigationService.prefs?.setString("settings", scanData.code!);
-            NavigationService.prefs?.setInt("id", id!);
-            NavigationService.prefs?.setInt("companyId", companyId!);
-            sendValuesToNative(id, companyId, tokenId);
-
-          } else {
-            Get.snackbar(
-              'Erro',
-              'Erro ao enviar token.',
-              snackPosition: SnackPosition.BOTTOM,
-            );
-            setState(() {
-              NavigationService.prefs?.setInt("companyId", 0);
-              NavigationService.prefs?.setInt("id", 0);
-              NavigationService.prefs?.setString("settings", "");
-            });
-          }
-
-          setState(() {
-            isLoading = false;
-          });
-
-          Future.delayed(
-            const Duration(seconds: 2),
-            () {
-              Get.offAll(
-                () => const MyHomePage(),
-              );
-            },
-          );
-        }
-      },
-    );
+      Get.offAll(() => const MyHomePage());
+    });
   }
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
@@ -182,9 +175,9 @@ class _QRViewPageState extends State<QRViewPage> {
     var statusCoarse = await Permission.locationAlways.request();
 
     if (statusFine.isGranted && statusCoarse.isGranted) {
-      print("Permissões de localização concedidas");
+      log("Permissões de localização concedidas");
     } else {
-      print("Permissões de localização não concedidas");
+      log("Permissões de localização não concedidas");
     }
   }
 
