@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screentime/main.dart';
 import 'package:flutter_screentime/models/token_id_model.dart';
+import 'package:flutter_screentime/modules/home/apps_controller.dart';
+import 'package:flutter_screentime/modules/home/apps_repository.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:flutter_screentime/modules/qr-code/qr_repository.dart';
+import 'package:flutter_screentime/provider/api.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -31,13 +34,12 @@ class _QRViewPageState extends State<QRViewPage> {
   String? tokenId = NavigationService.prefs?.getString("token");
   final QrRepository qrRepository = QrRepository();
   bool isLoading = false;
-  // final appController = Get.put(AppsController(Get.find(), AppsRepository(Api())));
+  final appController = Get.put(AppsController(Get.find(), AppsRepository(Api())));
 
   @override
   void initState() {
     initialize();
     super.initState();
-    // appController.getCurrentLocation();
     _checkCameraPermission();
     _checkLocationPermission();
   }
@@ -94,6 +96,8 @@ class _QRViewPageState extends State<QRViewPage> {
           id = data['id'] ?? 0;
           companyId = data['companyId'] ?? 0;
         });
+
+        // appController.getCurrentLocation();
 
         if (!valuesSent) {
           valuesSent = true;

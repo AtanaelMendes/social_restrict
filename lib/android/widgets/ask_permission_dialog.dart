@@ -5,7 +5,6 @@ import 'package:flutter_screentime/android/constant.dart';
 import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:get/state_manager.dart';
 
 askPermissionBottomSheet(context) {
   WidgetsBinding.instance.addPostFrameCallback((_) {

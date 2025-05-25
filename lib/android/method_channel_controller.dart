@@ -1,4 +1,8 @@
+import 'dart:io';
 import 'dart:developer';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -114,14 +118,63 @@ class MethodChannelController extends GetxController implements GetxService {
 
   Future<bool> checkNotificationPermission() async {
     log("chamando checkNotificationPermission");
-    return isNotificationPermissionGiven =
-    await Permission.notification.isGranted;
+    // if (Platform.isAndroid) {
+    //   final status = await Permission.notification.status;
+    //   if (status.isGranted) {
+    //     isNotificationPermissionGiven = true;
+    //   } else {
+    //     isNotificationPermissionGiven = false;
+    //   }
+    // }
+    // if (Platform.isIOS) {
+    // }
+    final settings = await FirebaseMessaging.instance.getNotificationSettings();
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      isNotificationPermissionGiven = true;
+    } else {
+      isNotificationPermissionGiven = false;
+    }
+    update();
+    return isNotificationPermissionGiven;
   }
 
   Future<bool> askNotificationPermission() async {
-    log("PEDINDO permissao askNotificationPermission");
-    await Get.find<PermissionController>().getPermissions([Permission.notification]);
-    isNotificationPermissionGiven = await Permission.notification.isGranted;
+    log("🔔 Verificando permissão de notificação...");
+
+    // if (Platform.isAndroid) {
+    //   // Verifica se já está concedida no Android
+    //   final status = await Permission.notification.status;
+    //   if (status.isGranted) {
+    //     isNotificationPermissionGiven = true;
+    //   } else {
+    //     final result = await Permission.notification.request();
+    //     isNotificationPermissionGiven = result.isGranted;
+    //   }
+    // }
+    // if (Platform.isIOS) {
+      // Verifica status atual no iOS via Firebase Messaging
+    // }
+    await Firebase.initializeApp();
+    final settings = await FirebaseMessaging.instance.getNotificationSettings();
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      isNotificationPermissionGiven = true;
+    } else {
+      final requested = await FirebaseMessaging.instance.requestPermission();
+      isNotificationPermissionGiven = requested.authorizationStatus == AuthorizationStatus.authorized;
+    }
+
+    if (isNotificationPermissionGiven) {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      debugPrint("FCM Token: $fcmToken");
+      log("FCM Token: $fcmToken");
+
+      NavigationService.prefs = await SharedPreferences.getInstance();
+      NavigationService.prefs?.setString("token", fcmToken ?? "");
+      log("Permissão de notificação concedida.");
+    } else {
+      log("Permissão de notificação não concedida.");
+    }
+
     update();
     return isNotificationPermissionGiven;
   }
@@ -129,9 +182,7 @@ class MethodChannelController extends GetxController implements GetxService {
   Future<bool> checkOverlayPermission() async {
     log("CHECANDO permissao checkOverlayPermission");
     try {
-      return await platform
-          .invokeMethod('checkOverlayPermission')
-          .then((value) {
+      return await platform.invokeMethod('checkOverlayPermission').then((value) {
         log("$value", name: "checkOverlayPermission");
         isOverlayPermissionGiven = value as bool;
         update();
@@ -162,8 +213,7 @@ class MethodChannelController extends GetxController implements GetxService {
 
   Future<bool> checkUsageStatePermission() async {
     log("CHECANDO permissao checkUsageStatePermission");
-    isUsageStatPermissionGiven =
-    (await UsageStats.checkUsagePermission() ?? false);
+    isUsageStatPermissionGiven = (await UsageStats.checkUsagePermission() ?? false);
     update();
     return isUsageStatPermissionGiven;
   }

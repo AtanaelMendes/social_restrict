@@ -1,8 +1,6 @@
-import 'dart:io';
+import 'dart:async';
 
 import 'package:app_usage/app_usage.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -17,9 +15,6 @@ import 'package:flutter_screentime/init.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:get/get.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-import 'dart:async';
-
 import 'package:background_fetch/background_fetch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,25 +39,6 @@ const methodChannel = MethodChannel('flutter_screentime');
 
 Future<void> initState() async {
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
-}
-
-Future<void> initializeNotifications() async {
-  try {
-    await Firebase.initializeApp();
-    final settings = await FirebaseMessaging.instance.requestPermission();
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      final fcmToken = await FirebaseMessaging.instance.getToken();
-      debugPrint("FCM Token: $fcmToken");
-
-      NavigationService.prefs = await SharedPreferences.getInstance();
-      NavigationService.prefs?.setString("token", fcmToken ?? "");
-    } else {
-      debugPrint("Permissão de notificação negada.");
-    }
-  } catch (e) {
-    debugPrint("Erro ao inicializar notificações: $e");
-  }
 }
 
 void getAndroidUsageStats() async {
@@ -108,7 +84,6 @@ void main() async {
   lazyPutInitialize();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   Get.put(prefs);
-  initializeNotifications(); // chamada permissao notificacao
   companyId = NavigationService.prefs?.getInt("companyId") ?? 0;
   customerId = NavigationService.prefs?.getInt("id") ?? 0;
   await dotenv.load(fileName: '.env');

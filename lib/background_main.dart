@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
 import 'package:flutter_screentime/android/widgets/ask_permission_dialog.dart';
-// import 'package:flutter_screentime/main.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:flutter_screentime/modules/qr-code/qrviewpage.dart';
 import 'package:flutter_screentime/politica_de_privacidade.dart';
@@ -97,9 +96,7 @@ class BackgroundMainPage extends GetView<AppsController> {
                         ));
                       },
                     ),
-
                     const SizedBox(height: 10),
-
                     // VERIFICAR PERMISSÕES
                     ElevatedButton.icon(
                       icon: const Icon(Icons.verified_user),
@@ -108,14 +105,10 @@ class BackgroundMainPage extends GetView<AppsController> {
                         minimumSize: const Size(200, 50),
                       ),
                       onPressed: () async {
-                        // getAndroidPermissions();
-                        // getAndroidUsageStats();
                         askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
                       },
                     ),
-
                     const SizedBox(height: 10),
-
                     // 5. Botão Política de Privacidade
                     ElevatedButton.icon(
                       icon: const Icon(Icons.privacy_tip),

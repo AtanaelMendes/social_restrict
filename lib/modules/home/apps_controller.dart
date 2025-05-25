@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:background_fetch/background_fetch.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,6 @@ import 'package:flutter_screentime/android/application_model.dart';
 import 'package:flutter_screentime/android/constant.dart';
 import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:flutter_screentime/android/permission_controller.dart';
-import 'package:flutter_screentime/android/widgets/ask_permission_dialog.dart';
 import 'package:flutter_screentime/block_unblock_manager.dart';
 import 'package:flutter_screentime/models/block_app_model.dart';
 import 'package:flutter_screentime/models/location_model.dart';
@@ -21,7 +21,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 // import 'package:location/location.dart' as loc;
-// import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppsController extends GetxController implements GetxService {
@@ -89,13 +88,7 @@ class AppsController extends GetxController implements GetxService {
       Get.find<AppsController>().getLockedApps();
 
       // Get.find<PermissionController>().getPermissions([Permission.ignoreBatteryOptimizations]);
-
-      // getAndroidPermissions();
-      // getAndroidUsageStats();
-
-      // askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
     }
-    // initializeNotifications();
 
     jsonSettings.value = {};
 
@@ -117,14 +110,14 @@ class AppsController extends GetxController implements GetxService {
     checkAnswer.clear();
   }
 
-  void maybeAskPermissionBottomSheet(context) async {
-    var controller = Get.find<MethodChannelController>();
-    if (!(await controller.checkOverlayPermission() &&
-        await controller.checkUsageStatePermission() &&
-        await controller.checkNotificationPermission())) {
-      askPermissionBottomSheet(context);
-    }
-  }
+  // void maybeAskPermissionBottomSheet(context) async {
+  //   var controller = Get.find<MethodChannelController>();
+  //   if (!(await controller.checkOverlayPermission() &&
+  //       await controller.checkUsageStatePermission() &&
+  //       await controller.checkNotificationPermission())) {
+  //     askPermissionBottomSheet(context);
+  //   }
+  // }
 
   savePasscode(counter) {
     prefs.setString(AppConstants.setPassCode, counter);
@@ -166,6 +159,7 @@ class AppsController extends GetxController implements GetxService {
       includeSystemApps: true,
       onlyAppsWithLaunchIntent: true,
     );
+    log("Lista de aplicativos desbloqueados: ${unLockList.map((app) => app.appName).toList()}");
     excludeApps();
     update();
   }
@@ -424,19 +418,19 @@ class AppsController extends GetxController implements GetxService {
   //   return await location.getLocation();
   // }
 
-  Future<void> sendLocation(
-    int customerId,
-    double latitude,
-    double longitude,
-  ) async {
-    LocationModel locationModel = LocationModel(
-      customerId: customerId,
-      lat: latitude,
-      long: longitude,
-    );
+  // Future<void> sendLocation(
+  //   int customerId,
+  //   double latitude,
+  //   double longitude,
+  // ) async {
+  //   LocationModel locationModel = LocationModel(
+  //     customerId: customerId,
+  //     lat: latitude,
+  //     long: longitude,
+  //   );
 
-    await repository.postLocation(locationModel);
-  }
+  //   await repository.postLocation(locationModel);
+  // }
 
   Future<void> initservice() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -445,9 +439,9 @@ class AppsController extends GetxController implements GetxService {
     if (!(customerId > 0)) return;
 
     debugPrint('Dayone primeiro plano CustomerId: $customerId');
-    double latitude = latitudeValue ?? 0.0;
-    double longitude = longitudeValue ?? 0.0;
 
-    sendLocation(customerId, latitude, longitude);
+    // double latitude = latitudeValue ?? 0.0;
+    // double longitude = longitudeValue ?? 0.0;
+    // sendLocation(customerId, latitude, longitude);
   }
 }
