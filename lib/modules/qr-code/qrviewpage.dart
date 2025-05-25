@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:flutter_screentime/main.dart';
 import 'package:flutter_screentime/models/token_id_model.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
@@ -97,7 +98,10 @@ class _QRViewPageState extends State<QRViewPage> {
           companyId = data['companyId'] ?? 0;
         });
 
-        // appController.getCurrentLocation();
+        if (Platform.isAndroid) {
+          Get.find<AppsController>().savePasscode("927594");
+          await Get.find<MethodChannelController>().setPassword();
+        }
 
         if (!valuesSent) {
           valuesSent = true;

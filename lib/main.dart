@@ -1,12 +1,10 @@
 import 'dart:async';
 
-import 'package:app_usage/app_usage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screentime/config/env.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
-import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:flutter_screentime/background_main.dart';
 import 'package:flutter_screentime/modules/home/apps_repository.dart';
 import 'package:flutter_screentime/provider/api.dart';
@@ -31,7 +29,6 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
     return;
   }
   debugPrint('[BackgroundFetch] Headless event received.');
-  // Do your work here...
   BackgroundFetch.finish(taskId);
 }
 
@@ -39,38 +36,6 @@ const methodChannel = MethodChannel('flutter_screentime');
 
 Future<void> initState() async {
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
-}
-
-void getAndroidUsageStats() async {
-  try {
-    DateTime endDate = DateTime.now();
-    DateTime startDate = endDate.subtract(const Duration(days: 1));
-    List<AppUsageInfo> infoList =
-        await AppUsage().getAppUsage(startDate, endDate);
-
-    for (var info in infoList) {
-      debugPrint(
-          'Funcao do FLUTTER tempo uso ${info.packageName} ${info.usage.inMinutes}');
-    }
-  } on AppUsageException catch (exception) {
-    debugPrint(exception.toString());
-  }
-}
-
-setAndroidPasscode() async {
-  Get.find<AppsController>().savePasscode("927594");
-  await Get.find<MethodChannelController>().setPassword();
-}
-
-getAndroidPermissions() async {
-  if (!(await Get.find<MethodChannelController>().checkNotificationPermission()) ||
-      !(await Get.find<MethodChannelController>().checkOverlayPermission()) ||
-      !(await Get.find<MethodChannelController>().checkUsageStatePermission())) {
-    Get.find<MethodChannelController>().update();
-  }
-
-  await setAndroidPasscode();
-  // await Get.find<MethodChannelController>().startForeground();
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalPlugin = FlutterLocalNotificationsPlugin();
@@ -126,9 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> loadCustomerId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    // if (prefs.containsKey('id') && prefs.getInt('id')! > 0) {
-      // await Get.find<MethodChannelController>().startForeground();
-    // }
     setState(() {
       customerId = prefs.getInt('id') ?? 0;
       debugPrint('CustomerID na MAIN: $customerId');
@@ -143,12 +105,4 @@ class _MyHomePageState extends State<MyHomePage> {
           : const HomePage(),
     );
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: const HomePage(),
-  //   );
-  // }
-
 }

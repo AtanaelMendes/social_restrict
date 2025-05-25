@@ -13,7 +13,7 @@ import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:flutter_screentime/android/permission_controller.dart';
 import 'package:flutter_screentime/block_unblock_manager.dart';
 import 'package:flutter_screentime/models/block_app_model.dart';
-import 'package:flutter_screentime/models/location_model.dart';
+// import 'package:flutter_screentime/models/location_model.dart';
 import 'package:flutter_screentime/modules/home/apps_repository.dart';
 import 'package:flutter_screentime/provider/api.dart';
 import 'package:flutter_screentime/navigation_service.dart';
@@ -109,15 +109,6 @@ class AppsController extends GetxController implements GetxService {
     typeAnswer.clear();
     checkAnswer.clear();
   }
-
-  // void maybeAskPermissionBottomSheet(context) async {
-  //   var controller = Get.find<MethodChannelController>();
-  //   if (!(await controller.checkOverlayPermission() &&
-  //       await controller.checkUsageStatePermission() &&
-  //       await controller.checkNotificationPermission())) {
-  //     askPermissionBottomSheet(context);
-  //   }
-  // }
 
   savePasscode(counter) {
     prefs.setString(AppConstants.setPassCode, counter);
