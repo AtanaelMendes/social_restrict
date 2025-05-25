@@ -153,7 +153,7 @@ class MethodChannelController extends GetxController implements GetxService {
     //   }
     // }
     // if (Platform.isIOS) {
-      // Verifica status atual no iOS via Firebase Messaging
+    // Verifica status atual no iOS via Firebase Messaging
     // }
     await Firebase.initializeApp();
     final settings = await FirebaseMessaging.instance.getNotificationSettings();
@@ -165,15 +165,24 @@ class MethodChannelController extends GetxController implements GetxService {
     }
 
     if (isNotificationPermissionGiven) {
-      final fcmToken = await FirebaseMessaging.instance.getToken();
-      debugPrint("FCM Token: $fcmToken");
-      log("FCM Token: $fcmToken");
+      try {
+        final fcmToken = await FirebaseMessaging.instance.getToken();
 
-      NavigationService.prefs = await SharedPreferences.getInstance();
-      NavigationService.prefs?.setString("token", fcmToken ?? "");
-      log("Permissão de notificação concedida.");
+        if (fcmToken != null && fcmToken.isNotEmpty) {
+          debugPrint("✅ FCM Token recebido: $fcmToken");
+          log("✅ FCM Token recebido: $fcmToken");
+
+          NavigationService.prefs = await SharedPreferences.getInstance();
+          NavigationService.prefs?.setString("token", fcmToken);
+          log("✅ Token salvo com sucesso nas prefs");
+        } else {
+          log("⚠️ FCM Token está vazio ou nulo.");
+        }
+      } catch (e, stacktrace) {
+        log("❌ Erro ao obter FCM Token: $e", error: e, stackTrace: stacktrace);
+      }
     } else {
-      log("Permissão de notificação não concedida.");
+      log("❌ Permissão de notificação não concedida. FCM Token não será requisitado.");
     }
 
     update();
