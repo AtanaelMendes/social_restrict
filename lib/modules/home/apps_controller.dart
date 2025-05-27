@@ -428,10 +428,21 @@ class AppsController extends GetxController implements GetxService {
   Future<void> initservice() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int customerId = prefs.getInt("id") ?? 0;
+    int companyId = prefs.getInt("id") ?? 0;
 
     if (!(customerId > 0)) return;
+    await repository.getAllAppsBlock(customerId, companyId).then((value) async {
+      blockApps = value;
+      await BlockUnblockManager.blockApps(blockApps);
+      log('BUSCANDO lista de Block apps: ${blockApps.toString()}');
+    });
+    await repository.getAllAppsUnBlock(customerId, companyId).then((value) async {
+      unBlockApps = value;
+      await BlockUnblockManager.unblockApps(unBlockApps);
+      log('BUSCANDO lista de unblock apps: ${unBlockApps.toString()}');
+    });
 
-    debugPrint('Dayone primeiro plano CustomerId: $customerId');
+    log('Background service CustomerId: $customerId');
 
     // double latitude = latitudeValue ?? 0.0;
     // double longitude = longitudeValue ?? 0.0;
