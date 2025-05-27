@@ -275,4 +275,14 @@ class MethodChannelController extends GetxController implements GetxService {
     log("✅ Token salvo com sucesso nas prefs pelo setTokenFirebase: $fcmToken");
     update();
   }
+
+  Future startBackgroundTask() async {
+    try {
+      await platform.invokeMethod('startBackgroundTask', "").then((value) {
+        log("$value", name: "startBackgroundTask CHAMADO");
+      });
+    } on PlatformException catch (e) {
+      log("Falha ao iniciar startBackgroundTask: '${e.message}'.");
+    }
+  }
 }

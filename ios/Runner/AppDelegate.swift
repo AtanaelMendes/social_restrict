@@ -133,6 +133,10 @@ var globalMethodCall: String = ""
                 } else {
                     result(false)
                 }
+            case "startBackgroundTask":
+                print("[AppDelegate] Iniciando BackgroundTask linha \(#line)")
+                BackgroundTask.start()
+                result(nil)
             default:
                 print("[AppDelegate] Método não implementado: \(call.method) linha \(#line)")
                 result(FlutterMethodNotImplemented)
