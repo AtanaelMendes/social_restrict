@@ -139,6 +139,7 @@ class MethodChannelController extends GetxController implements GetxService {
       final requested = await FirebaseMessaging.instance.requestPermission();
       isNotificationPermissionGiven = requested.authorizationStatus == AuthorizationStatus.authorized;
     }
+    log("🔔 Permissão de notificação: ${isNotificationPermissionGiven ? 'Concedida' : 'Negada'}");
 
     if (Platform.isAndroid) {
       if (isNotificationPermissionGiven) {
@@ -269,7 +270,7 @@ class MethodChannelController extends GetxController implements GetxService {
   // }
   //
   // Chame registerMethodChannelHandler() no onInit() ou no construtor.
-  Future<bool> setTokenFirebase(String fcmToken) async {
+  Future<bool> setTokenFirebase() async {
     var fireToken = "";
      try {
       return await platform.invokeMethod('setTokenFirebase').then((value) async {
@@ -277,8 +278,8 @@ class MethodChannelController extends GetxController implements GetxService {
         fireToken = value;
         if (fireToken.isNotEmpty) {
           NavigationService.prefs = await SharedPreferences.getInstance();
-          await NavigationService.prefs?.setString("token", fcmToken);
-          log("✅ Token salvo com sucesso nas prefs pelo setTokenFirebase: $fcmToken");
+          await NavigationService.prefs?.setString("token", fireToken);
+          log("✅ Token salvo com sucesso nas prefs pelo setTokenFirebase: $fireToken");
         }
         update();
         return true;
@@ -288,8 +289,8 @@ class MethodChannelController extends GetxController implements GetxService {
       return false;
     }
     NavigationService.prefs = await SharedPreferences.getInstance();
-    await NavigationService.prefs?.setString("token", fcmToken);
-    log("✅ Token salvo com sucesso nas prefs pelo setTokenFirebase: $fcmToken");
+    await NavigationService.prefs?.setString("token", fireToken);
+    log("✅ Token salvo com sucesso nas prefs pelo setTokenFirebase: $fireToken");
     update();
   }
 
