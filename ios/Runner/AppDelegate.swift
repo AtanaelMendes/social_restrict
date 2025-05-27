@@ -133,6 +133,10 @@ var globalMethodCall: String = ""
                 } else {
                     result(false)
                 }
+            case "startBackgroundTask":
+                print("[AppDelegate] Iniciando BackgroundTask linha \(#line)")
+                BackgroundTask.start()
+                result(nil)
             default:
                 print("[AppDelegate] Método não implementado: \(call.method) linha \(#line)")
                 result(FlutterMethodNotImplemented)
@@ -144,7 +148,13 @@ var globalMethodCall: String = ""
 
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let fcmToken = fcmToken else { return }
-        methodChannel.invokeMethod("setTokenFirebase", arguments: fcmToken)
+        if let controller = window?.rootViewController as? FlutterViewController {
+            let methodChannel = FlutterMethodChannel(
+                name: "flutter.native/helper",
+                binaryMessenger: controller.binaryMessenger
+            )
+            methodChannel.invokeMethod("setTokenFirebase", arguments: fcmToken)
+        }
         print("[AppDelegate] Token FCM recebido: \(fcmToken ?? "vazio") linha \(#line)")
     }
 

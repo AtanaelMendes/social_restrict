@@ -43,7 +43,9 @@ class _QRViewPageState extends State<QRViewPage> {
     initialize();
     super.initState();
     _checkCameraPermission();
-    _checkLocationPermission();
+    if (Platform.isAndroid) {
+      _checkLocationPermission();
+    }
   }
 
   @override
@@ -158,7 +160,10 @@ class _QRViewPageState extends State<QRViewPage> {
         Get.find<MethodChannelController>().sendValuesToNative(id, companyId, tokenId);
         await Get.find<MethodChannelController>().startForeground();
       }
-      NotificationHandler.initialize();
+      if (Platform.isIOS) {
+        NotificationHandler.initialize();
+        await Get.find<MethodChannelController>().startBackgroundTask();
+      }
     } else {
       Get.snackbar(
         'Erro',

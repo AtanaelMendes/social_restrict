@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,8 @@ class NotificationHandler {
   static Future<void> onNotification(RemoteMessage message) async {
     var blockApps = jsonDecode(message.data["block"]);
     var unBlockApps = jsonDecode(message.data["unblock"]);
-    debugPrint('Block apps: $blockApps');
-    debugPrint('Unblock apps: $unBlockApps');
+    log("NotificationHandler: lista de apps para bloquear $blockApps.toString()");
+    log("NotificationHandler: lista de apps para desbloquear $unBlockApps.toString()");
 
     WidgetsFlutterBinding.ensureInitialized();
     final prefs = await SharedPreferences.getInstance();
@@ -28,10 +29,15 @@ class NotificationHandler {
   }
 
   static void initialize() {
-    FirebaseMessaging.onMessageOpenedApp.forEach((RemoteMessage message) =>
-        {NotificationHandler.onNotification(message)});
+    log("NotificationHandler: initialize");
+    FirebaseMessaging.onMessageOpenedApp.forEach((RemoteMessage message) => {
+      NotificationHandler.onNotification(message),
+      log("NotificationHandler: onMessageOpenedApp $message")
+    });
     FirebaseMessaging.onBackgroundMessage(NotificationHandler.onNotification);
-    FirebaseMessaging.onMessage.forEach((RemoteMessage message) =>
-        {NotificationHandler.onNotification(message)});
+    FirebaseMessaging.onMessage.forEach((RemoteMessage message) => {
+      NotificationHandler.onNotification(message),
+      log("NotificationHandler: onMessage: $message")
+    });
   }
 }
