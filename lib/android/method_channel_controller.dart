@@ -269,7 +269,24 @@ class MethodChannelController extends GetxController implements GetxService {
   // }
   //
   // Chame registerMethodChannelHandler() no onInit() ou no construtor.
-  Future<void> setTokenFirebase(String fcmToken) async {
+  Future<bool> setTokenFirebase(String fcmToken) async {
+    var fireToken = "";
+     try {
+      return await platform.invokeMethod('setTokenFirebase').then((value) async {
+        log("$value", name: "setTokenFirebase");
+        fireToken = value;
+        if (fireToken.isNotEmpty) {
+          NavigationService.prefs = await SharedPreferences.getInstance();
+          await NavigationService.prefs?.setString("token", fcmToken);
+          log("✅ Token salvo com sucesso nas prefs pelo setTokenFirebase: $fcmToken");
+        }
+        update();
+        return true;
+      });
+    } on PlatformException catch (e) {
+      log("Falha ao pedir permissao askUsageStatsPermission: '${e.message}'.");
+      return false;
+    }
     NavigationService.prefs = await SharedPreferences.getInstance();
     await NavigationService.prefs?.setString("token", fcmToken);
     log("✅ Token salvo com sucesso nas prefs pelo setTokenFirebase: $fcmToken");

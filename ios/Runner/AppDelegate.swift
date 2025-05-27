@@ -16,6 +16,7 @@ var globalMethodCall: String = ""
 @objc class AppDelegate: FlutterAppDelegate, MessagingDelegate {
     var model = MyModel.shared
     var store = ManagedSettingsStore()
+    var globalFcmToken: String?
 
     override func application(
         _ application: UIApplication,
@@ -137,6 +138,8 @@ var globalMethodCall: String = ""
                 print("[AppDelegate] Iniciando BackgroundTask linha \(#line)")
                 BackgroundTask.start()
                 result(nil)
+            case "setTokenFirebase":
+                result(globalFcmToken)
             default:
                 print("[AppDelegate] Método não implementado: \(call.method) linha \(#line)")
                 result(FlutterMethodNotImplemented)
@@ -147,6 +150,8 @@ var globalMethodCall: String = ""
     }
 
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        globalFcmToken = fcmToken
+        print("[AppDelegate] Token FCM recebido: \(fcmToken ?? "vazio") linha \(#line)")
         guard let fcmToken = fcmToken else { return }
         print("[AppDelegate] antes do setTokenFirebase linha \(#line)")
         if let controller = window?.rootViewController as? FlutterViewController {
