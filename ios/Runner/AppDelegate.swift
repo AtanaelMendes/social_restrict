@@ -144,7 +144,17 @@ var globalMethodCall: String = ""
 
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let fcmToken = fcmToken else { return }
-        methodChannel.invokeMethod("setTokenFirebase", arguments: fcmToken)
+        print("[AppDelegate] antes do setTokenFirebase linha \(#line)")
+        if let controller = window?.rootViewController as? FlutterViewController {
+            print("[AppDelegate] criando canal linha \(#line)")
+             let methodChannel = FlutterMethodChannel(
+                 name: "flutter.native/helper",
+                 binaryMessenger: controller.binaryMessenger
+            )
+            print("[AppDelegate] canal criado linha \(#line)")
+            methodChannel.invokeMethod("setTokenFirebase", arguments: fcmToken)
+            print("[AppDelegate] Enviando token setTokenFirebase linha \(#line)")
+        }
         print("[AppDelegate] Token FCM recebido: \(fcmToken ?? "vazio") linha \(#line)")
     }
 
