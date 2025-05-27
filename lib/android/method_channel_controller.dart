@@ -66,7 +66,6 @@ class MethodChannelController extends GetxController implements GetxService {
         }).toList()
       };
       log('Os valores que estao no data: $data');
-      await setPassword();
       await platform.invokeMethod('addToLockedApps', data).then((value) {
         log("$value", name: "addToLockedApps CHAMADO");
       });
@@ -86,7 +85,7 @@ class MethodChannelController extends GetxController implements GetxService {
         });
       }
     } on PlatformException catch (e) {
-      log("Failed to Invoke: '${e.message}'.");
+      log("Falha ao chamar setPasswordInNative: '${e.message}'.");
     }
   }
 
@@ -118,16 +117,6 @@ class MethodChannelController extends GetxController implements GetxService {
 
   Future<bool> checkNotificationPermission() async {
     log("chamando checkNotificationPermission");
-    // if (Platform.isAndroid) {
-    //   final status = await Permission.notification.status;
-    //   if (status.isGranted) {
-    //     isNotificationPermissionGiven = true;
-    //   } else {
-    //     isNotificationPermissionGiven = false;
-    //   }
-    // }
-    // if (Platform.isIOS) {
-    // }
     await Firebase.initializeApp();
     final settings = await FirebaseMessaging.instance.getNotificationSettings();
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
@@ -142,19 +131,6 @@ class MethodChannelController extends GetxController implements GetxService {
   Future<bool> askNotificationPermission() async {
     log("🔔 Verificando permissão de notificação...");
 
-    // if (Platform.isAndroid) {
-    //   // Verifica se já está concedida no Android
-    //   final status = await Permission.notification.status;
-    //   if (status.isGranted) {
-    //     isNotificationPermissionGiven = true;
-    //   } else {
-    //     final result = await Permission.notification.request();
-    //     isNotificationPermissionGiven = result.isGranted;
-    //   }
-    // }
-    // if (Platform.isIOS) {
-    // Verifica status atual no iOS via Firebase Messaging
-    // }
     await Firebase.initializeApp();
     final settings = await FirebaseMessaging.instance.getNotificationSettings();
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
@@ -258,7 +234,7 @@ class MethodChannelController extends GetxController implements GetxService {
     return isBackgroundLocationPermissionGiven;
   }
 
-  void sendValuesToNative() async {
+  void sendValuesToNative(id, companyId, tokenId) async {
     try {
       final int? id = NavigationService.prefs?.getInt("id");
       final int? companyId = NavigationService.prefs?.getInt("companyId");
@@ -269,11 +245,11 @@ class MethodChannelController extends GetxController implements GetxService {
         'companyId': companyId,
         'tokenId': tokenId,
       };
-
+      debugPrint('ENVIANDO VALORES PARA O NATIVO: $values');
       final String result = await platform.invokeMethod('sendValues', values);
-      log('RECEBIDO: $result');
+      debugPrint('Valores enviados com sucesso: $result');
     } on PlatformException catch (e) {
-      log("Falaha ao enviar valores para o native: '${e.message}'.");
+      debugPrint("FALHA ao enviar valores para o nativo: '${e.message}'.");
     }
   }
 }
