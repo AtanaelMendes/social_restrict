@@ -1,8 +1,6 @@
-import 'dart:io';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:dio/io.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_screentime/config/env_variables.dart';
 import 'package:logger/logger.dart';
 
@@ -32,7 +30,7 @@ class Api {
   );
 
   Future<Response?> postTokenId(Map body) async {
-    debugPrint("Chamando ${dio.options.baseUrl}/customers/status");
+    log("Chamando ${dio.options.baseUrl}/customers/status");
     try {
       var response = await dio.put(
         '/customers/status',
@@ -43,17 +41,17 @@ class Api {
       );
       return response;
     } catch (e) {
-      logger.e(e.toString());
+      log(e.toString());
       return null;
     }
   }
 
   Future<Response?> postLocation(Map body) async {
     final url = '${dio.options.baseUrl}/customers/loc';
-    debugPrint("Chamando $url");
+    log("Chamando $url");
 
-    if (_token == null || _token.isEmpty) {
-      debugPrint('Token não está definido!');
+    if (_token.isEmpty) {
+      log('Token não está definido!');
       return null;
     }
 
@@ -68,29 +66,49 @@ class Api {
           },
         ),
       );
-      debugPrint('Resposta statusCode: ${response.statusCode}');
-      debugPrint('Resposta data: ${response.data}');
+      log('Resposta statusCode: ${response.statusCode}');
+      log('Resposta data: ${response.data}');
       return response;
     } catch (e, stacktrace) {
-      logger.e('Erro ao chamar postLocation: $e\n$stacktrace');
+      log('Erro ao chamar postLocation: $e\n$stacktrace');
       return null;
     }
   }
 
-  // Future<Response?> getAllOrdes() async {
-  //   _customerId = NavigationService.prefs?.getInt("id");
-  //   try {
-  //     var response = await dio.get(
-  //         '${RHBrasilApi.HOST}/${RHBrasilApi.MAIN_PATH}/orders',
-  //          options: Options(headers: {'Content-Type': 'application/json','Authorization': 'Bearer $_token'},));
-  //         query: {
-  //           'customerId': [_customerId.toString()]
-  //         });
-  //     return response;
-  //   } catch (e) {
-  //     Get.log(e.toString(), isError: true);
-  //     return null;
-  //   }
-  // }
+  Future<Response?> getAllOrders(customerId, companyId) async {
+    final url = '${dio.options.baseUrl}/orders';
+    log("Chamando $url");
 
+    if (_token.isEmpty) {
+      log('Token não está definido!');
+      return null;
+    }
+
+    if (customerId == null || companyId == null) {
+      log('customerId ou companyId não podem ser nulos!');
+      return null;
+    }
+
+    try {
+      var response = await dio.get(
+        url,
+        queryParameters: {
+          'customerId': customerId.toString(),
+          'companyId': companyId.toString(),
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $_token',
+          },
+        ),
+      );
+      log('Resposta statusCode: ${response.statusCode}');
+      log('Resposta data: ${response.data}');
+      return response;
+    } catch (e, stacktrace) {
+      log('Erro ao chamar getAllOrders: $e\n$stacktrace');
+      return null;
+    }
+  }
 }

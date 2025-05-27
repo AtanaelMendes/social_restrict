@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -143,8 +142,7 @@ class _QRViewPageState extends State<QRViewPage> {
     log("SocialRestrict companyId: $companyId");
     log("SocialRestrict tokenId: $tokenId");
 
-    // bool confirmSendToken = await qrRepository.tokenId(token);
-    bool confirmSendToken = true; // Simulando sucesso no envio do token
+    bool confirmSendToken = await qrRepository.tokenId(token);
 
     controller?.dispose();
 
@@ -222,7 +220,6 @@ class _QRViewPageState extends State<QRViewPage> {
   void initialize() async {
     if (Permission.camera.status == PermissionStatus.denied) {
       Map<Permission, PermissionStatus> statuses = await [
-        Permission.location,
         Permission.camera,
       ].request();
     }
