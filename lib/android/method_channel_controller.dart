@@ -288,10 +288,6 @@ class MethodChannelController extends GetxController implements GetxService {
       log("Falha ao pedir permissao askUsageStatsPermission: '${e.message}'.");
       return false;
     }
-    NavigationService.prefs = await SharedPreferences.getInstance();
-    await NavigationService.prefs?.setString("token", fireToken);
-    log("✅ Token salvo com sucesso nas prefs pelo setTokenFirebase: $fireToken");
-    update();
   }
 
   Future startBackgroundTask() async {
