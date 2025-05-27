@@ -57,18 +57,33 @@ class _QRViewPageState extends State<QRViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    currentContext = context;
     return Scaffold(
-      body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : Column(
-              children: <Widget>[
-                Expanded(flex: 4, child: _buildQrView(context)),
-              ],
-            ),
+      appBar: AppBar(
+        title: const Text('Debug QRViewPage'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            // Simula leitura QRCode sem criar um QRViewController fake
+            final dummyScanData = Barcode('{"id":81,"companyId":33}', BarcodeFormat.qrcode, []);
+            _onQRViewCreatedForDebug(dummyScanData);
+          },
+          child: const Text('Simular leitura QRCode'),
+        ),
+      ),
     );
+    // currentContext = context;
+    // return Scaffold(
+    //   body: isLoading
+    //       ? const Center(
+    //           child: CircularProgressIndicator(),
+    //         )
+    //       : Column(
+    //           children: <Widget>[
+    //             Expanded(flex: 4, child: _buildQrView(context)),
+    //           ],
+    //         ),
+    // );
   }
 
   Widget _buildQrView(BuildContext context) {
@@ -91,77 +106,82 @@ class _QRViewPageState extends State<QRViewPage> {
       if (valuesSent) return;
       valuesSent = true;
 
-      // setState(() {
-      //   isLoading = true;
-      // });
-
-      // result = scanData;
-      // Map<String, dynamic> data = jsonDecode(scanData.code!);
-      // debugPrint(data.toString());
-      // debugPrint("id: ${data['id'].toString()}");
-      // debugPrint("companyId: ${data['companyId'].toString()}");
-
-      // id = data['id'] ?? 0;
-      // companyId = data['companyId'] ?? 0;
-      
-      id = 81;
-      companyId = 33;
-
-      TokenIdModel token = TokenIdModel(
-        customerId: id,
-        deviceId: tokenId,
-        status: 1,
-      );
-
-      log("SocialRestrict id: $id");
-      log("SocialRestrict companyId: $companyId");
-      log("SocialRestrict tokenId: $tokenId");
-
-      // bool confirmSendToken = await qrRepository.tokenId(token);
-      bool confirmSendToken = true; // Simulando sucesso no envio do token
-
-      controller.dispose();
-
-      if (confirmSendToken) {
-        Get.snackbar(
-          'Sucesso',
-          'Token enviado.',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-        NavigationService.prefs?.setString("settings", scanData.code!);
-        NavigationService.prefs?.setInt("id", id!);
-        NavigationService.prefs?.setInt("companyId", companyId!);
-          Get.find<AppsController>().savePasscode("927594");
-          // NavigationService.prefs?.setString("token", tokenId!);
-        if (Platform.isAndroid) {
-          Get.find<MethodChannelController>().sendValuesToNative(id, companyId, tokenId);
-          await Get.find<MethodChannelController>().startForeground();
-        }
-        NotificationHandler.initialize();
-      } else {
-        Get.snackbar(
-          'Erro',
-          'Erro ao enviar token.',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-        NavigationService.prefs?.setInt("companyId", 0);
-        NavigationService.prefs?.setInt("id", 0);
-        NavigationService.prefs?.setString("settings", "");
-        Get.find<MethodChannelController>().update();
-      }
-
-      // Libera o loading antes da navegação
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-
-      // Aguarda um frame para garantir atualização da UI antes de navegar
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      Get.offAll(() => const MyHomePage());
+      await _handleScanData(scanData, controller);
     });
+  }
+
+  // Função auxiliar para simular leitura QRCode no modo debug
+  Future<void> _onQRViewCreatedForDebug(Barcode scanData) async {
+    await _handleScanData(scanData, null);
+  }
+
+  Future<void> _handleScanData(Barcode scanData, QRViewController? controller) async {
+    // result = scanData;
+    // Map<String, dynamic> data = jsonDecode(scanData.code!);
+    // debugPrint(data.toString());
+    // debugPrint("id: ${data['id'].toString()}");
+    // debugPrint("companyId: ${data['companyId'].toString()}");
+
+    // id = data['id'] ?? 0;
+    // companyId = data['companyId'] ?? 0;
+    
+    id = 81;
+    companyId = 33;
+
+    TokenIdModel token = TokenIdModel(
+      customerId: id,
+      deviceId: tokenId,
+      status: 1,
+    );
+
+    log("SocialRestrict id: $id");
+    log("SocialRestrict companyId: $companyId");
+    log("SocialRestrict tokenId: $tokenId");
+
+    // bool confirmSendToken = await qrRepository.tokenId(token);
+    bool confirmSendToken = true; // Simulando sucesso no envio do token
+
+    controller?.dispose();
+
+    if (confirmSendToken) {
+      Get.snackbar(
+        'Sucesso',
+        'Token enviado.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      NavigationService.prefs?.setString("settings", scanData.code!);
+      NavigationService.prefs?.setInt("id", id!);
+      NavigationService.prefs?.setInt("companyId", companyId!);
+        Get.find<AppsController>().savePasscode("927594");
+        // NavigationService.prefs?.setString("token", tokenId!);
+      if (Platform.isAndroid) {
+        Get.find<MethodChannelController>().sendValuesToNative(id, companyId, tokenId);
+        await Get.find<MethodChannelController>().startForeground();
+      }
+      NotificationHandler.initialize();
+    } else {
+      Get.snackbar(
+        'Erro',
+        'Erro ao enviar token.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      NavigationService.prefs?.setInt("companyId", 0);
+      NavigationService.prefs?.setInt("id", 0);
+      NavigationService.prefs?.setString("settings", "");
+      Get.find<MethodChannelController>().update();
+    }
+
+    // Libera o loading antes da navegação
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+
+    // Aguarda um frame para garantir atualização da UI antes de navegar
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    Get.offAll(() => const MyHomePage());
   }
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {

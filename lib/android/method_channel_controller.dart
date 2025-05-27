@@ -140,25 +140,27 @@ class MethodChannelController extends GetxController implements GetxService {
       isNotificationPermissionGiven = requested.authorizationStatus == AuthorizationStatus.authorized;
     }
 
-    if (isNotificationPermissionGiven) {
-      try {
-        final fcmToken = await FirebaseMessaging.instance.getToken();
+    if (Platform.isAndroid) {
+      if (isNotificationPermissionGiven) {
+        try {
+          final fcmToken = await FirebaseMessaging.instance.getToken();
 
-        if (fcmToken != null && fcmToken.isNotEmpty) {
-          debugPrint("✅ FCM Token recebido: $fcmToken");
-          log("✅ FCM Token recebido: $fcmToken");
+          if (fcmToken != null && fcmToken.isNotEmpty) {
+            debugPrint("✅ FCM Token recebido: $fcmToken");
+            log("✅ FCM Token recebido: $fcmToken");
 
-          NavigationService.prefs = await SharedPreferences.getInstance();
-          NavigationService.prefs?.setString("token", fcmToken);
-          log("✅ Token salvo com sucesso nas prefs");
-        } else {
-          log("⚠️ FCM Token está vazio ou nulo.");
+            NavigationService.prefs = await SharedPreferences.getInstance();
+            NavigationService.prefs?.setString("token", fcmToken);
+            log("✅ Token salvo com sucesso nas prefs");
+          } else {
+            log("⚠️ FCM Token está vazio ou nulo.");
+          }
+        } catch (e, stacktrace) {
+          log("❌ Erro ao obter FCM Token: $e", error: e, stackTrace: stacktrace);
         }
-      } catch (e, stacktrace) {
-        log("❌ Erro ao obter FCM Token: $e", error: e, stackTrace: stacktrace);
+      } else {
+        log("❌ Permissão de notificação não concedida. FCM Token não será requisitado.");
       }
-    } else {
-      log("❌ Permissão de notificação não concedida. FCM Token não será requisitado.");
     }
 
     update();
@@ -251,5 +253,26 @@ class MethodChannelController extends GetxController implements GetxService {
     } on PlatformException catch (e) {
       debugPrint("FALHA ao enviar valores para o nativo: '${e.message}'.");
     }
+  }
+
+  // Este método pode ser chamado via MethodChannel, mas você precisa registrar um handler para ele.
+  // Por padrão, apenas métodos do lado nativo chamam métodos do Dart via MethodChannel usando MethodChannel.setMethodCallHandler.
+  // Exemplo de como registrar:
+  //
+  // void registerMethodChannelHandler() {
+  //   platform.setMethodCallHandler((call) async {
+  //     if (call.method == 'setTokenFirebase') {
+  //       final String fcmToken = call.arguments as String;
+  //       await setTokenFirebase(fcmToken);
+  //     }
+  //   });
+  // }
+  //
+  // Chame registerMethodChannelHandler() no onInit() ou no construtor.
+  Future<void> setTokenFirebase(String fcmToken) async {
+    NavigationService.prefs = await SharedPreferences.getInstance();
+    await NavigationService.prefs?.setString("token", fcmToken);
+    log("✅ Token salvo com sucesso nas prefs pelo setTokenFirebase: $fcmToken");
+    update();
   }
 }

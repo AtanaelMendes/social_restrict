@@ -143,6 +143,8 @@ var globalMethodCall: String = ""
     }
 
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        guard let fcmToken = fcmToken else { return }
+        methodChannel.invokeMethod("setTokenFirebase", arguments: fcmToken)
         print("[AppDelegate] Token FCM recebido: \(fcmToken ?? "vazio") linha \(#line)")
     }
 
