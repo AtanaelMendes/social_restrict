@@ -21,29 +21,29 @@ var globalMethodCall: String = ""
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        print("[AppDelegate] didFinishLaunchingWithOptions chamado")
+        print("[AppDelegate] didFinishLaunchingWithOptions chamado linha \(#line)")
 
         FirebaseApp.configure()
-        print("[AppDelegate] Firebase configurado")
+        print("[AppDelegate] Firebase configurado linha 27")
 
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
-            print("[AppDelegate] Permissão de notificação: \(granted)")
+            print("[AppDelegate] Permissão de notificação: \(granted) linha \(#line)")
             if granted {
                 DispatchQueue.main.async {
                     application.registerForRemoteNotifications()
-                    print("[AppDelegate] Notificações remotas registradas")
+                    print("[AppDelegate] Notificações remotas registradas linha \(#line)")
                 }
             }
         }
 
         Messaging.messaging().delegate = self
-        print("[AppDelegate] Firebase Messaging delegate configurado")
+        print("[AppDelegate] Firebase Messaging delegate configurado linha 38")
 
         GeneratedPluginRegistrant.register(with: self)
-        print("[AppDelegate] Plugins do Flutter registrados")
+        print("[AppDelegate] Plugins do Flutter registrados linha \(#line)")
 
         guard let controller = window?.rootViewController as? FlutterViewController else {
-            print("[AppDelegate] Erro ao acessar FlutterViewController")
+            print("[AppDelegate] Erro ao acessar FlutterViewController linha \(#line)")
             return super.application(application, didFinishLaunchingWithOptions: launchOptions)
         }
 
@@ -51,17 +51,17 @@ var globalMethodCall: String = ""
             name: "flutter.native/helper",
             binaryMessenger: controller.binaryMessenger
         )
-        print("[AppDelegate] FlutterMethodChannel criado")
+        print("[AppDelegate] FlutterMethodChannel criado linha \(#line)")
 
         methodChannel.setMethodCallHandler { [weak self] call, result in
             guard let self = self else { return }
 
-            print("[AppDelegate] Método chamado do Flutter: \(call.method)")
+            print("[AppDelegate] Método chamado do Flutter: \(call.method) linha \(#line)")
 
             switch call.method {
             case "selectAppsToDiscourage", "selectAppsToEncourage":
                 globalMethodCall = call.method
-                print("[AppDelegate] Apresentando ContentView para \(call.method)")
+                print("[AppDelegate] Apresentando ContentView para \(call.method) linha \(#line)")
                 let vc = UIHostingController(
                     rootView: ContentView(globalMethodCall: call.method)
                         .environmentObject(self.model)
@@ -71,11 +71,11 @@ var globalMethodCall: String = ""
                 result(nil)
 
             case "blockApps":
-                print("[AppDelegate] Chamado blockApps")
+                print("[AppDelegate] Chamado blockApps linha \(#line)")
                 var applications = self.store.application.blockedApplications ?? Set<Application>()
                 if let args = call.arguments as? [String: Any],
                    let apps = args["apps"] as? [String] {
-                    print("[AppDelegate] Aplicativos para bloquear: \(apps)")
+                    print("[AppDelegate] Aplicativos para bloquear: \(apps) linha \(#line)")
                     apps.forEach { appId in
                         applications.insert(Application(bundleIdentifier: appId))
                     }
@@ -84,10 +84,10 @@ var globalMethodCall: String = ""
                 result(nil)
 
             case "unlockApps":
-                print("[AppDelegate] Chamado unlockApps")
+                print("[AppDelegate] Chamado unlockApps linha \(#line)")
                 if let args = call.arguments as? [String: Any],
                    let apps = args["apps"] as? [String] {
-                    print("[AppDelegate] Aplicativos para desbloquear: \(apps)")
+                    print("[AppDelegate] Aplicativos para desbloquear: \(apps) linha \(#line)")
                     apps.forEach { appId in
                         self.store.application.blockedApplications?.remove(Application(bundleIdentifier: appId))
                     }
@@ -95,7 +95,7 @@ var globalMethodCall: String = ""
                 result(nil)
 
             case "report":
-                print("[AppDelegate] Chamado report")
+                print("[AppDelegate] Chamado report linha \(#line)")
                 let monitor = DeviceActivityCenter()
                 let deviceName = DeviceActivityName("teste")
                 let schedule = DeviceActivitySchedule(
@@ -105,27 +105,27 @@ var globalMethodCall: String = ""
                 )
                 do {
                     try monitor.startMonitoring(deviceName, during: schedule)
-                    print("[AppDelegate] Monitoramento iniciado para: \(deviceName.rawValue)")
+                    print("[AppDelegate] Monitoramento iniciado para: \(deviceName.rawValue) linha \(#line)")
                 } catch {
-                    print("[AppDelegate] Erro ao iniciar monitoramento: \(error)")
+                    print("[AppDelegate] Erro ao iniciar monitoramento: \(error) linha \(#line)")
                 }
                 result(nil)
             case "askUsageStatsPermission":
-                print("[AppDelegate] Solicitando autorização FamilyControls...")
+                print("[AppDelegate] Solicitando autorização FamilyControls... linha \(#line)")
                 if #available(iOS 16.0, *) {
                     let status = AuthorizationCenter.shared.authorizationStatus
                     if status == .approved {
-                        print("[AppDelegate] Autorização já concedida: \(status.rawValue)")
+                        print("[AppDelegate] Autorização já concedida: \(status.rawValue) linha \(#line)")
                         result(true)
                     } else {
                         Task {
                             do {
                                 try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
                                 let newStatus = AuthorizationCenter.shared.authorizationStatus
-                                print("[AppDelegate] Autorização concluída: \(newStatus.rawValue)")
+                                print("[AppDelegate] Autorização concluída: \(newStatus.rawValue) linha \(#line)")
                                 result(newStatus == .approved)
                             } catch {
-                                print("[AppDelegate] Erro ao solicitar autorização: \(error)")
+                                print("[AppDelegate] Erro ao solicitar autorização: \(error) linha \(#line)")
                                 result(false)
                             }
                         }
@@ -134,7 +134,7 @@ var globalMethodCall: String = ""
                     result(false)
                 }
             default:
-                print("[AppDelegate] Método não implementado: \(call.method)")
+                print("[AppDelegate] Método não implementado: \(call.method) linha \(#line)")
                 result(FlutterMethodNotImplemented)
             }
         }
@@ -143,7 +143,7 @@ var globalMethodCall: String = ""
     }
 
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print("[AppDelegate] Token FCM recebido: \(fcmToken ?? "vazio")")
+        print("[AppDelegate] Token FCM recebido: \(fcmToken ?? "vazio") linha \(#line)")
     }
 
     override func application(
@@ -151,23 +151,23 @@ var globalMethodCall: String = ""
         didReceiveRemoteNotification userInfo: [AnyHashable: Any],
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
-        print("[AppDelegate] Notificação remota recebida: \(userInfo)")
+        print("[AppDelegate] Notificação remota recebida: \(userInfo) linha \(#line)")
 
         if let unblockJSON = userInfo["unblock"] as? String {
-            print("[AppDelegate] Dados para desbloquear apps: \(unblockJSON)")
+            print("[AppDelegate] Dados para desbloquear apps: \(unblockJSON) linha \(#line)")
             processJSONAppList(unblockJSON) { appId in
                 self.store.application.blockedApplications?.remove(Application(bundleIdentifier: appId))
-                print("[AppDelegate] App desbloqueado: \(appId)")
+                print("[AppDelegate] App desbloqueado: \(appId) linha \(#line)")
             }
         }
 
         if let blockJSON = userInfo["block"] as? String {
-            print("[AppDelegate] Dados para bloquear apps: \(blockJSON)")
+            print("[AppDelegate] Dados para bloquear apps: \(blockJSON) linha \(#line)")
             processJSONAppList(blockJSON) { appId in
                 var apps = self.store.application.blockedApplications ?? Set<Application>()
                 apps.insert(Application(bundleIdentifier: appId))
                 self.store.application.blockedApplications = apps
-                print("[AppDelegate] App bloqueado: \(appId)")
+                print("[AppDelegate] App bloqueado: \(appId) linha \(#line)")
             }
         }
 
@@ -175,20 +175,20 @@ var globalMethodCall: String = ""
     }
 
     private func processJSONAppList(_ jsonString: String, _ handler: (String) -> Void) {
-        print("[AppDelegate] processJSONAppList chamado com: \(jsonString)")
+        print("[AppDelegate] processJSONAppList chamado com: \(jsonString) linha \(#line)")
         guard let data = jsonString.data(using: .utf8) else {
-            print("[AppDelegate] Erro ao converter string para Data")
+            print("[AppDelegate] Erro ao converter string para Data linha \(#line)")
             return
         }
 
         do {
             if let jsonArray = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] {
                 let appIds = jsonArray.compactMap { $0 as? String }
-                print("[AppDelegate] Apps extraídos do JSON: \(appIds)")
+                print("[AppDelegate] Apps extraídos do JSON: \(appIds) linha \(#line)")
                 appIds.forEach(handler)
             }
         } catch {
-            print("[AppDelegate] Erro ao decodificar JSON: \(error.localizedDescription)")
+            print("[AppDelegate] Erro ao decodificar JSON: \(error.localizedDescription) linha \(#line)")
         }
     }
 }

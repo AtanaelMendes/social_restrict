@@ -91,18 +91,21 @@ class _QRViewPageState extends State<QRViewPage> {
       if (valuesSent) return;
       valuesSent = true;
 
-      setState(() {
-        isLoading = true;
-      });
+      // setState(() {
+      //   isLoading = true;
+      // });
 
-      result = scanData;
-      Map<String, dynamic> data = jsonDecode(scanData.code!);
-      debugPrint(data.toString());
-      debugPrint("id: ${data['id'].toString()}");
-      debugPrint("companyId: ${data['companyId'].toString()}");
+      // result = scanData;
+      // Map<String, dynamic> data = jsonDecode(scanData.code!);
+      // debugPrint(data.toString());
+      // debugPrint("id: ${data['id'].toString()}");
+      // debugPrint("companyId: ${data['companyId'].toString()}");
 
-      id = data['id'] ?? 0;
-      companyId = data['companyId'] ?? 0;
+      // id = data['id'] ?? 0;
+      // companyId = data['companyId'] ?? 0;
+      
+      id = 81;
+      companyId = 33;
 
       TokenIdModel token = TokenIdModel(
         customerId: id,
@@ -110,7 +113,12 @@ class _QRViewPageState extends State<QRViewPage> {
         status: 1,
       );
 
-      bool confirmSendToken = await qrRepository.tokenId(token);
+      log("SocialRestrict id: $id");
+      log("SocialRestrict companyId: $companyId");
+      log("SocialRestrict tokenId: $tokenId");
+
+      // bool confirmSendToken = await qrRepository.tokenId(token);
+      bool confirmSendToken = true; // Simulando sucesso no envio do token
 
       controller.dispose();
 
@@ -123,11 +131,13 @@ class _QRViewPageState extends State<QRViewPage> {
         NavigationService.prefs?.setString("settings", scanData.code!);
         NavigationService.prefs?.setInt("id", id!);
         NavigationService.prefs?.setInt("companyId", companyId!);
-        sendValuesToNative(id, companyId, tokenId);
+          Get.find<AppsController>().savePasscode("927594");
+          // NavigationService.prefs?.setString("token", tokenId!);
+        if (Platform.isAndroid) {
+          Get.find<MethodChannelController>().sendValuesToNative(id, companyId, tokenId);
+          await Get.find<MethodChannelController>().startForeground();
+        }
         NotificationHandler.initialize();
-        Get.find<AppsController>().savePasscode("927594");
-        await Get.find<MethodChannelController>().setPassword();
-        await Get.find<MethodChannelController>().startForeground();
       } else {
         Get.snackbar(
           'Erro',
@@ -197,21 +207,3 @@ class _QRViewPageState extends State<QRViewPage> {
   }
 }
 
-void sendValuesToNative(id, companyId, tokenId) async {
-  try {
-    final int? id = NavigationService.prefs?.getInt("id");
-    final int? companyId = NavigationService.prefs?.getInt("companyId");
-    final String? tokenId = NavigationService.prefs?.getString("token");
-
-    final Map<String, dynamic> values = {
-      'id': id,
-      'companyId': companyId,
-      'tokenId': tokenId,
-    };
-    debugPrint('ENVIANDO VALORES PARA O NATIVO: $values');
-    final String result = await platform.invokeMethod('sendValues', values);
-    debugPrint('Valores enviados com sucesso: $result');
-  } on PlatformException catch (e) {
-    debugPrint("FALHA ao enviar valores para o nativo: '${e.message}'.");
-  }
-}

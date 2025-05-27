@@ -7,7 +7,7 @@ class BackgroundTask {
     static func start() {
         // Inicializar o timer que roda a cada 10 segundos
         timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
-            print("O aplicativo está rodando em segundo plano.")
+            print("BackgroundTask SocialRestrict está rodando em segundo plano. linha \(#line)")
         }
 
         // Garantir que o timer continua rodando mesmo quando o aplicativo está em segundo plano
@@ -19,6 +19,6 @@ class BackgroundTask {
 
     @objc static func appDidEnterBackground() {
         // O aplicativo entrou em segundo plano, continuar rodando o timer
-        print("O aplicativo entrou em segundo plano.")
+        print("BackgroundTask SocialRestrict entrou em segundo plano. linha \(#line)")
     }
 }

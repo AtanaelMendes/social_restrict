@@ -28,21 +28,21 @@ let schedule = DeviceActivitySchedule(
 class MySchedule {
     static public func unsetSchedule() {
         let center = DeviceActivityCenter()
-        print("center.avtivities:\(center.activities)")
+        print("SocialRestrict center.activities:\(center.activities)")
         if center.activities.isEmpty {
             return
         }
         center.stopMonitoring(center.activities)
-        print("center.avtivities:\(center.activities)")
+        print("SocialRestrict center.activities:\(center.activities)")
     }
     
     static public func setSchedule() {
         let applications = MyModel.shared.selectionToEncourage
         if applications.applicationTokens.isEmpty {
-            print("empty applicationTokens")
+            print("SocialRestrict empty applicationTokens")
         }
         if applications.categoryTokens.isEmpty {
-            print("empty categoryTokens")
+            print("SocialRestrict empty categoryTokens")
         }
         
         let events: [DeviceActivityEvent.Name: DeviceActivityEvent] = [
@@ -57,12 +57,12 @@ class MySchedule {
         let center = DeviceActivityCenter()
         do {
             // Call startMonitoring with the activity name, schedule, and events
-            print("center.avtivities:\(center.activities)")
-            print("Try to start monitoring...")
+            print("SocialRestrict center.activities:\(center.activities)")
+            print("SocialRestrict Try to start monitoring...")
             try center.startMonitoring(.daily, during: schedule, events: events)
-            print("monitoring...")
+            print("SocialRestrict monitoring...")
         } catch {
-            print("Error monitoring schedule: ", error)
+            print("SocialRestrict Error monitoring schedule: ", error)
         }
 
     }

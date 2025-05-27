@@ -112,7 +112,9 @@ class AppsController extends GetxController implements GetxService {
 
   savePasscode(counter) {
     prefs.setString(AppConstants.setPassCode, counter);
-    Get.find<MethodChannelController>().setPassword();
+    if (Platform.isAndroid) {
+      Get.find<MethodChannelController>().setPassword();
+    }
     log("${prefs.getString(AppConstants.setPassCode)}", name: "save passcode");
   }
 
