@@ -8,25 +8,25 @@ class AppsRepository {
 
   AppsRepository(this.api);
 
-  Future<List<AppInfo>> getAllAppsBlock(customerId, companyId) async {
-    List<BlockAppModel> apps = [];
+  Future<List<dynamic>> getAllAppsBlock(customerId, companyId) async {
+    List<dynamic> apps = [];
     List<AppInfo> appBlock = [];
     Response? response = await api.getAllOrders(customerId, companyId);
     if (response != null && response.statusCode == 200) {
       var body = response.data as Map<String, dynamic>;
       if (body.containsKey('block')) {
         for (var item in body['block']) {
-          appBlock.add(AppInfo.fromMap(item));
+          apps.add(item);
         }
       }
-      return appBlock;
+      return apps;
     } else {
-      return appBlock;
+      return apps;
     }
   }
 
-  Future<List<AppInfo>> getAllAppsUnBlock(customerId, companyId) async {
-    List<BlockAppModel> apps = [];
+  Future<List<dynamic>> getAllAppsUnBlock(customerId, companyId) async {
+    List<dynamic> apps = [];
     List<AppInfo> appUnBlock = [];
     Response? response = await api.getAllOrders(customerId, companyId);
     if (response != null && response.statusCode == 200) {
@@ -34,12 +34,12 @@ class AppsRepository {
 
       if (body.containsKey('unBlock')) {
         for (var item in body['unBlock']) {
-          appUnBlock.add(AppInfo.fromMap(item));
+          apps.add(item);
         }
       }
-      return appUnBlock;
+      return apps;
     } else {
-      return appUnBlock;
+      return apps;
     }
   }
 
