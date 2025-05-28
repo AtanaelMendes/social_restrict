@@ -196,6 +196,7 @@ class MethodChannelController extends GetxController implements GetxService {
       });
     } on PlatformException catch (e) {
       log("Falha ao pedir permissao askOverlayPermission: '${e.message}'.");
+      update();
       return false;
     }
   }

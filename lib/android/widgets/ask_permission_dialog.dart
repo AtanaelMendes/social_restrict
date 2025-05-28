@@ -141,11 +141,14 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                         if (await state.checkOverlayPermission() &&
                             await state.checkUsageStatePermission() &&
                             await state.checkNotificationPermission() &&
-                            state.isBackgroundFetchAvailable) {
-                          Fluttertoast.showToast(msg: "Permissões concedidas");
-                          Navigator.pop(context);
+                            state.isBackgroundFetchAvailable
+                          ) {
+                              Fluttertoast.showToast(msg: "Permissões concedidas");
+                              setState(() {});
+                              Navigator.pop(context);
                         } else {
                           Fluttertoast.showToast(msg: "Permissões negadas");
+                          setState(() {});
                         }
                       },
                       child: Text(
@@ -251,6 +254,7 @@ class _IOSPermissionBottomSheet extends State<IOSPermissionBottomSheet> {
               icon: const Icon(Icons.shield),
               label: const Text("Permitir Acesso ao Uso"),
               onPressed: () {
+                setState(() {});
                 state.askUsageStatsPermission();
                 setState(() {});
               },
@@ -260,6 +264,7 @@ class _IOSPermissionBottomSheet extends State<IOSPermissionBottomSheet> {
               icon: const Icon(Icons.access_alarm),
               label: const Text("Permitir Atualização em Segundo Plano"),
               onPressed: () {
+                setState(() {});
                 state.checkBackgroundFetchStatus();
                 setState(() {});
               },
@@ -269,6 +274,7 @@ class _IOSPermissionBottomSheet extends State<IOSPermissionBottomSheet> {
               icon: const Icon(Icons.location_on),
               label: const Text("Permitir Localização"),
               onPressed: () {
+                setState(() {});
                 state.askBackgroundLocationPermission();
                 setState(() {});
               },
@@ -278,6 +284,7 @@ class _IOSPermissionBottomSheet extends State<IOSPermissionBottomSheet> {
               icon: const Icon(Icons.notifications),
               label: const Text("Permitir Notificações"),
               onPressed: () {
+                setState(() {});
                 state.askNotificationPermission();
                 setState(() {});
               },
