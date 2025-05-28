@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -58,38 +59,39 @@ class _QRViewPageState extends State<QRViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Debug QRViewPage'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            // Simula leitura QRCode sem criar um QRViewController fake
-            final dummyScanData = Barcode('{"id":81,"companyId":33}', BarcodeFormat.qrcode, []);
-            _onQRViewCreatedForDebug(dummyScanData);
-          },
-          child: const Text('Simular leitura QRCode'),
-        ),
-      ),
-    );
-    // currentContext = context;
     // return Scaffold(
-    //   body: isLoading
-    //       ? const Center(
-    //           child: CircularProgressIndicator(),
-    //         )
-    //       : Column(
-    //           children: <Widget>[
-    //             Expanded(flex: 4, child: _buildQrView(context)),
-    //           ],
-    //         ),
+    //   appBar: AppBar(
+    //     title: const Text('Debug QRViewPage'),
+    //   ),
+    //   body: Center(
+    //     child: ElevatedButton(
+    //       onPressed: () {
+    //         // Simula leitura QRCode sem criar um QRViewController fake
+    //         final dummyScanData = Barcode('{"id":81,"companyId":33}', BarcodeFormat.qrcode, []);
+    //         _onQRViewCreatedForDebug(dummyScanData);
+    //       },
+    //       child: const Text('Simular leitura QRCode'),
+    //     ),
+    //   ),
     // );
+
+    currentContext = context;
+    return Scaffold(
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Column(
+              children: <Widget>[
+                Expanded(flex: 4, child: _buildQrView(context)),
+              ],
+            ),
+    );
   }
 
   Widget _buildQrView(BuildContext context) {
     var scanArea =
-        (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 150.0 : 300.0;
+        (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 200.0 : 300.0;
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
@@ -117,19 +119,16 @@ class _QRViewPageState extends State<QRViewPage> {
   }
 
   Future<void> _handleScanData(Barcode scanData, QRViewController? controller) async {
-    // result = scanData;
-    // Map<String, dynamic> data = jsonDecode(scanData.code!);
-    // debugPrint(data.toString());
-    // debugPrint("id: ${data['id'].toString()}");
-    // debugPrint("companyId: ${data['companyId'].toString()}");
+    result = scanData;
+    Map<String, dynamic> data = jsonDecode(scanData.code!);
+    debugPrint(data.toString());
+    debugPrint("id: ${data['id'].toString()}");
+    debugPrint("companyId: ${data['companyId'].toString()}");
 
-    // id = data['id'] ?? 0;
-    // companyId = data['companyId'] ?? 0;
+    id = data['id'] ?? 0;
+    companyId = data['companyId'] ?? 0;
 
     await Get.find<MethodChannelController>().setTokenFirebase();
-    
-    id = 81;
-    companyId = 33;
     tokenId = NavigationService.prefs?.getString("token");
 
     TokenIdModel token = TokenIdModel(
@@ -152,15 +151,17 @@ class _QRViewPageState extends State<QRViewPage> {
         'Token enviado.',
         snackPosition: SnackPosition.BOTTOM,
       );
+
       NavigationService.prefs?.setString("settings", scanData.code!);
       NavigationService.prefs?.setInt("id", id!);
       NavigationService.prefs?.setInt("companyId", companyId!);
-        Get.find<AppsController>().savePasscode("927594");
-        // NavigationService.prefs?.setString("token", tokenId!);
+      Get.find<AppsController>().savePasscode("927594");
+
       if (Platform.isAndroid) {
         Get.find<MethodChannelController>().sendValuesToNative(id, companyId, tokenId);
         await Get.find<MethodChannelController>().startForeground();
       }
+
       if (Platform.isIOS) {
         NotificationHandler.initialize();
         await Get.find<MethodChannelController>().startBackgroundTask();
