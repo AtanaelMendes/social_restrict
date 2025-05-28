@@ -13,12 +13,10 @@ class AppsRepository {
     List<AppInfo> appBlock = [];
     Response? response = await api.getAllOrders(customerId, companyId);
     if (response != null && response.statusCode == 200) {
-      var body = response.data as List<dynamic>;
-      for (var item in body) {
-        if (item is Map<String, dynamic> && item.containsKey('block')) {
-          for (var blockItem in item['block']) {
-            appBlock.add(AppInfo.fromMap(blockItem));
-          }
+      var body = response.data as Map<String, dynamic>;
+      if (body.containsKey('block')) {
+        for (var item in body['block']) {
+          appBlock.add(AppInfo.fromMap(item));
         }
       }
       return appBlock;
@@ -32,13 +30,11 @@ class AppsRepository {
     List<AppInfo> appUnBlock = [];
     Response? response = await api.getAllOrders(customerId, companyId);
     if (response != null && response.statusCode == 200) {
-      var body = response.data as List<dynamic>;
+      var body = response.data as Map<String, dynamic>;
 
-      for (var item in body) {
-        if (item is Map<String, dynamic> && item.containsKey('unBlock')) {
-          for (var unBlockItem in item['unBlock']) {
-            appUnBlock.add(AppInfo.fromMap(unBlockItem));
-          }
+      if (body.containsKey('unBlock')) {
+        for (var item in body['unBlock']) {
+          appUnBlock.add(AppInfo.fromMap(item));
         }
       }
       return appUnBlock;

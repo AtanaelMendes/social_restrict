@@ -428,7 +428,7 @@ class AppsController extends GetxController implements GetxService {
   Future<void> initservice() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int customerId = prefs.getInt("id") ?? 0;
-    int companyId = prefs.getInt("id") ?? 0;
+    int companyId = prefs.getInt("companyId") ?? 0;
 
     if (!(customerId > 0)) return;
     await repository.getAllAppsBlock(customerId, companyId).then((value) async {
