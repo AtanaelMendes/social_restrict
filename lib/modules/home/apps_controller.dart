@@ -42,8 +42,8 @@ class AppsController extends GetxController implements GetxService {
   List<ApplicationDataModel> lockList = [];
   List<String> selectLockList = [];
   bool addToAppsLoading = false;
-  List<AppInfo> blockApps = [];
-  List<AppInfo> unBlockApps = [];
+  List<dynamic> blockApps = [];
+  List<dynamic> unBlockApps = [];
   Timer? timer;
 
   final PermissionController permissionController = Get.find();
@@ -431,11 +431,13 @@ class AppsController extends GetxController implements GetxService {
     int companyId = prefs.getInt("companyId") ?? 0;
 
     if (!(customerId > 0)) return;
+
     await repository.getAllAppsBlock(customerId, companyId).then((value) async {
       blockApps = value;
       await BlockUnblockManager.blockApps(blockApps);
       log('BUSCANDO lista de Block apps: ${blockApps.toString()}');
     });
+    
     await repository.getAllAppsUnBlock(customerId, companyId).then((value) async {
       unBlockApps = value;
       await BlockUnblockManager.unblockApps(unBlockApps);
