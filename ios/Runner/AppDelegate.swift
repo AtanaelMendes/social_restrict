@@ -164,7 +164,7 @@ var globalMethodCall: String = ""
             methodChannel.invokeMethod("setTokenFirebase", arguments: fcmToken)
             print("[AppDelegate] Enviando token setTokenFirebase linha \(#line)")
         }
-        print("[AppDelegate] Token FCM recebido: \(fcmToken ?? "vazio") linha \(#line)")
+        print("[AppDelegate] Token FCM recebido: \(fcmToken) linha \(#line)")
     }
 
     override func application(

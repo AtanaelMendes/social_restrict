@@ -135,9 +135,11 @@ class MethodChannelController extends GetxController implements GetxService {
     final settings = await FirebaseMessaging.instance.getNotificationSettings();
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       isNotificationPermissionGiven = true;
+      log("🔔 Permissão FirebaseMessaging concedida");
     } else {
       final requested = await FirebaseMessaging.instance.requestPermission();
       isNotificationPermissionGiven = requested.authorizationStatus == AuthorizationStatus.authorized;
+      log("🔔 Pedindo Permissão FirebaseMessaging");
     }
     log("🔔 Permissão de notificação: ${isNotificationPermissionGiven ? 'Concedida' : 'Negada'}");
 
@@ -273,7 +275,7 @@ class MethodChannelController extends GetxController implements GetxService {
   // Chame registerMethodChannelHandler() no onInit() ou no construtor.
   Future<bool> setTokenFirebase() async {
     var fireToken = "";
-     try {
+    try {
       return await platform.invokeMethod('setTokenFirebase').then((value) async {
         log("$value", name: "setTokenFirebase");
         fireToken = value;
