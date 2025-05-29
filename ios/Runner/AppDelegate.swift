@@ -73,28 +73,65 @@ var globalMethodCall: String = ""
 
             case "blockApps":
                 print("[AppDelegate] Chamado blockApps linha \(#line)")
+                
                 var applications = self.store.application.blockedApplications ?? Set<Application>()
-                if let args = call.arguments as? [String: Any],
-                   let apps = args["apps"] as? [String] {
-                    print("[AppDelegate] Aplicativos para bloquear: \(apps) linha \(#line)")
-                    apps.forEach { appId in
-                        applications.insert(Application(bundleIdentifier: appId))
+                let arguments = call.arguments
+                print("[AppDelegate] arguments: \(String(describing: arguments)) linha \(#line)")
+                
+                let args = arguments as? [String: Any]
+                print("[AppDelegate] args convertidos: \(String(describing: args)) linha \(#line)")
+                
+                let appList = args?["apps"] as? [[String: Any]]
+                print("[AppDelegate] appList extraído: \(String(describing: appList)) linha \(#line)")
+
+                if let apps = appList {
+                    for appDict in apps {
+                        print("[AppDelegate] Iterando: \(appDict) linha \(#line)")
+                        if let bundleId = appDict["bundle"] as? String {
+                            print("[AppDelegate] Inserindo app com bundle: \(bundleId) linha \(#line)")
+                            applications.insert(Application(bundleIdentifier: bundleId))
+                        } else {
+                            print("[AppDelegate] Bundle inválido ou ausente: \(appDict) linha \(#line)")
+                        }
                     }
+
                     self.store.application.blockedApplications = applications
+                    print("[AppDelegate] Aplicativos bloqueados definidos com sucesso linha \(#line)")
+                    result(nil)
+                } else {
+                    print("[AppDelegate] Estrutura inválida de argumentos. Linha \(#line)")
+                    result(FlutterError(
+                        code: "INVALID_ARGUMENTS",
+                        message: "apps deve ser uma lista de objetos com chave 'bundle'",
+                        details: nil
+                    ))
                 }
                 result(nil)
-
             case "unlockApps":
                 print("[AppDelegate] Chamado unlockApps linha \(#line)")
-                if let args = call.arguments as? [String: Any],
-                   let apps = args["apps"] as? [String] {
-                    print("[AppDelegate] Aplicativos para desbloquear: \(apps) linha \(#line)")
-                    apps.forEach { appId in
+
+                let arguments = call.arguments
+                print("[AppDelegate] arguments: \(String(describing: arguments)) linha \(#line)")
+
+                let args = arguments as? [String: Any]
+                print("[AppDelegate] args convertidos: \(String(describing: args)) linha \(#line)")
+
+                let appsList = args?["apps"] as? [String]
+                print("[AppDelegate] appsList extraído: \(String(describing: appsList)) linha \(#line)")
+
+                let apps = appsList
+                print("[AppDelegate] apps (para iteração): \(String(describing: apps)) linha \(#line)")
+
+                if apps != nil {
+                    for appId in apps! {
+                        print("[AppDelegate] Removendo app com bundle: \(appId) linha \(#line)")
                         self.store.application.blockedApplications?.remove(Application(bundleIdentifier: appId))
                     }
+                } else {
+                    print("[AppDelegate] Estrutura inválida de argumentos. Linha \(#line)")
                 }
-                result(nil)
 
+                result(nil)
             case "report":
                 print("[AppDelegate] Chamado report linha \(#line)")
                 let monitor = DeviceActivityCenter()
