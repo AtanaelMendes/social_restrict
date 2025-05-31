@@ -75,6 +75,7 @@ var globalMethodCall: String = ""
                 print("[AppDelegate] Chamado blockApps linha \(#line)")
                 
                 var applications = self.store.application.blockedApplications ?? Set<Application>()
+                
                 let arguments = call.arguments
                 print("[AppDelegate] arguments: \(String(describing: arguments)) linha \(#line)")
                 
@@ -83,7 +84,7 @@ var globalMethodCall: String = ""
                 
                 let appList = args?["apps"] as? [[String: Any]]
                 print("[AppDelegate] appList extraído: \(String(describing: appList)) linha \(#line)")
-
+                
                 if let apps = appList {
                     for appDict in apps {
                         print("[AppDelegate] Iterando: \(appDict) linha \(#line)")
@@ -96,17 +97,15 @@ var globalMethodCall: String = ""
                     }
 
                     self.store.application.blockedApplications = applications
+                    
                     print("[AppDelegate] Aplicativos bloqueados definidos com sucesso linha \(#line)")
+                    print("[AppDelegate] blockedApplications atualizados: \(applications) linha \(#line)")
                     result(nil)
                 } else {
-                    print("[AppDelegate] Estrutura inválida de argumentos. Linha \(#line)")
-                    result(FlutterError(
-                        code: "INVALID_ARGUMENTS",
-                        message: "apps deve ser uma lista de objetos com chave 'bundle'",
-                        details: nil
-                    ))
+                    print("[AppDelegate] Falha ao extrair 'apps' do dicionário linha \(#line)")
+                    result(FlutterError(code: "invalid_args", message: "Lista de apps inválida", details: nil))
                 }
-                result(nil)
+
             case "unlockApps":
                 print("[AppDelegate] Chamado unlockApps linha \(#line)")
 
