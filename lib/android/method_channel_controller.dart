@@ -54,6 +54,15 @@ class MethodChannelController extends GetxController implements GetxService {
     update();
   }
 
+  Future<void> selectAppsToEncourage() async {
+    try {
+      await platform.invokeMethod('selectAppsToEncourage');
+      log('[MethodChannel] selectAppsToEncourage chamado com sucesso');
+    } catch (e) {
+      log('[MethodChannel] Erro ao chamar selectAppsToEncourage: $e');
+    }
+  }
+
   addToLockedAppsMethod() async {
     try {
       Map<String, dynamic> data = {
