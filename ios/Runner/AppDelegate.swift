@@ -61,8 +61,7 @@ var globalMethodCall: String = ""
         )
         print("[AppDelegate] FlutterMethodChannel criado linha \(#line)")
 
-        methodChannel.setMethodCallHandler { [weak self] call, result in
-            guard let self = self else { return }
+        methodChannel.setMethodCallHandler { [self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
 
             print("[AppDelegate] Método chamado do Flutter: \(call.method) linha \(#line)")
 
@@ -99,7 +98,7 @@ var globalMethodCall: String = ""
                         print("[AppDelegate] Iterando: \(appDict) linha \(#line)")
                         if let bundleId = appDict["bundle"] as? String {
                             print("[AppDelegate] Inserindo app com bundle: \(bundleId) linha \(#line)")
-                            applications.insert(Application(bundleIdentifier: bundleId))
+                            applications.insert(Application(bundleIdentifier: String(bundleId)))
                         } else {
                             print("[AppDelegate] Bundle inválido ou ausente: \(appDict) linha \(#line)")
                         }
@@ -107,7 +106,9 @@ var globalMethodCall: String = ""
 
                     self.store.application.blockedApplications = applications
                     
+                    var teste = FamilyActivitySelection();
 //                    self.aplicarRestricoes()
+//                    forcarBloqueioManual()
                     
                     print("[AppDelegate] Aplicativos bloqueados definidos com sucesso linha \(#line)")
                     print("[AppDelegate] blockedApplications atualizados: \(applications) linha \(#line)")
@@ -158,6 +159,7 @@ var globalMethodCall: String = ""
                     print("[AppDelegate] Erro ao iniciar monitoramento: \(error) linha \(#line)")
                 }
                 result(nil)
+                
             case "askUsageStatsPermission":
                 print("[AppDelegate] Solicitando autorização FamilyControls... linha \(#line)")
                 if #available(iOS 16.0, *) {
@@ -181,6 +183,7 @@ var globalMethodCall: String = ""
                 } else {
                     result(false)
                 }
+                
             case "startBackgroundTask":
                 print("[AppDelegate] Iniciando BackgroundTask linha \(#line)")
                 BackgroundTask.start()
@@ -195,6 +198,24 @@ var globalMethodCall: String = ""
 
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
+    
+//    @available(iOS 15.0, *)
+//    func forcarBloqueioManual() {
+//        print("[AppDelegate] Forçando bloqueio do app br.com.rhbrasil.phonegap")
+//
+//        let app = Application(bundleIdentifier: String("br.com.rhbrasil.phonegap"))
+//
+//        do {
+//            let token = try ApplicationToken(for: app)
+//            store.shield.applications = [token]
+//            store.shield.applicationCategories = nil
+//            store.shield.webDomainCategories = nil
+//            print("[AppDelegate] App bloqueado com sucesso: \(token)")
+//        } catch {
+//            print("[AppDelegate] Erro ao bloquear o app: \(error)")
+//        }
+//    }
+
     
 //    @available(iOS 15.0, *)
 //    func aplicarRestricoes() {
