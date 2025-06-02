@@ -12,7 +12,6 @@ import 'package:flutter_screentime/android/constant.dart';
 import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:flutter_screentime/android/permission_controller.dart';
 import 'package:flutter_screentime/block_unblock_manager.dart';
-import 'package:flutter_screentime/models/block_app_model.dart';
 // import 'package:flutter_screentime/models/location_model.dart';
 import 'package:flutter_screentime/modules/home/apps_repository.dart';
 import 'package:flutter_screentime/provider/api.dart';
@@ -97,6 +96,10 @@ class AppsController extends GetxController implements GetxService {
       jsonSettings.value = jsonDecode(settings);
     }
 
+  }
+
+  selectAppsToEncourage() {
+    Get.find<MethodChannelController>().selectAppsToEncourage();
   }
 
   changeQuestionIndex(index) {

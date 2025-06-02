@@ -62,7 +62,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              // 1. Logo do App
               Column(
                 children: [
                   Image.asset(
@@ -71,8 +70,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     height: 120,
                   ),
                   const SizedBox(height: 20),
-
-                  // 2. Texto explicativo
                   const Text(
                     "Seu aplicativo está configurado e pronto para receber atualizações.",
                     textAlign: TextAlign.center,
@@ -87,6 +84,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 ],
               ),
               const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: controller.selectAppsToEncourage(),
+                child: const Text("Selecionar apps incentivados"),
+              ),
             ],
           ),
         ),
