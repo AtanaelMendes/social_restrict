@@ -106,10 +106,6 @@ var globalMethodCall: String = ""
 
                     self.store.application.blockedApplications = applications
                     
-                    var teste = FamilyActivitySelection();
-//                    self.aplicarRestricoes()
-//                    forcarBloqueioManual()
-                    
                     print("[AppDelegate] Aplicativos bloqueados definidos com sucesso linha \(#line)")
                     print("[AppDelegate] blockedApplications atualizados: \(applications) linha \(#line)")
                     result(nil)
@@ -199,59 +195,6 @@ var globalMethodCall: String = ""
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
-//    @available(iOS 15.0, *)
-//    func forcarBloqueioManual() {
-//        print("[AppDelegate] Forçando bloqueio do app br.com.rhbrasil.phonegap")
-//
-//        let app = Application(bundleIdentifier: String("br.com.rhbrasil.phonegap"))
-//
-//        do {
-//            let token = try ApplicationToken(for: app)
-//            store.shield.applications = [token]
-//            store.shield.applicationCategories = nil
-//            store.shield.webDomainCategories = nil
-//            print("[AppDelegate] App bloqueado com sucesso: \(token)")
-//        } catch {
-//            print("[AppDelegate] Erro ao bloquear o app: \(error)")
-//        }
-//    }
-
-    
-//    @available(iOS 15.0, *)
-//    func aplicarRestricoes() {
-//        print("[AppDelegate] aplicando restrições linha \(#line)")
-
-//        do {
-//            let tokens = try Set(
-//                (store.application.blockedApplications ?? Set<Application>()).map {
-//                    try ApplicationToken(from: $0.bundleIdentifier as! Decoder)
-//                }
-//            )
-//            store.shield.applications = tokens
-//            store.shield.applicationCategories = Optional.none
-//            store.shield.webDomainCategories = Optional.none
-//            print("[AppDelegate] Restrições aplicadas aos apps: \(tokens) linha \(#line)")
-//        } catch {
-//            print("[AppDelegate] Erro ao criar ApplicationToken: \(error)")
-//        }
-//        do {
-//            self.store.shield.applications = try? Set(
-//                ApplicationSettings.blockedApplications.map {
-//                    return Application(bundleIdentifier: $0.bundleIdentifier)
-//                }
-//            )
-//        } catch {
-//            print("[AppDelegate] Erro ao criar ApplicationToken: \(error)")
-//        }
-        
-
-//        store.shield.applications = Set(
-//            blockedApps.map { ApplicationToken(from: $0.bundleIdentifier as! Decoder) }
-//        )
-//        store.shield.applicationCategories = Optional.none
-//        store.shield.webDomainCategories = Optional.none
-//    }
-
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         globalFcmToken = fcmToken
         print("[AppDelegate] Token FCM recebido: \(fcmToken ?? "vazio") linha \(#line)")
