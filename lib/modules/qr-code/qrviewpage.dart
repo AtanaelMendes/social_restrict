@@ -193,11 +193,11 @@ class _QRViewPageState extends State<QRViewPage> {
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
     log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
-    if (!p) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('no Permission')),
-      );
-    }
+    // if (!p) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text('no Permission')),
+    //   );
+    // }
   }
 
   void _checkCameraPermission() async {
