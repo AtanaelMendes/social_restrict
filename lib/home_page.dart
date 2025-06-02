@@ -84,10 +84,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 ],
               ),
               const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: controller.selectAppsToEncourage(),
-                child: const Text("Selecionar apps incentivados"),
-              ),
+            //   ElevatedButton(
+            //     onPressed: () async  {
+            //       await controller.selectAppsToEncourage();
+            //     },
+            //     child: const Text("Selecionar apps incentivados"),
+            //   ),
             ],
           ),
         ),
