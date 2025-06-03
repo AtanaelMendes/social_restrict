@@ -115,9 +115,30 @@ class _TutorialIosPageState extends State<TutorialIosPage> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: Image.asset(
-                    step['image']!,
-                    fit: BoxFit.contain,
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => Dialog(
+                          backgroundColor: Colors.transparent,
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).pop(),
+                            child: InteractiveViewer(
+                              child: Center(
+                                child: Image.asset(
+                                  step['image']!,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Image.asset(
+                      step['image']!,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
