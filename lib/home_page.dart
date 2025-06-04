@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       debugPrint('Dayone mudou agora segundo plano Background mode');
       _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
         // controller.getCurrentLocation();
-        //controller.startBackgroundFetch();
+        controller.startBackgroundFetch();
       });
     }
   }

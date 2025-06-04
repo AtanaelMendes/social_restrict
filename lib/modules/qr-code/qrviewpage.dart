@@ -60,16 +60,33 @@ class _QRViewPageState extends State<QRViewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : Column(
-              children: <Widget>[
-                Expanded(flex: 4, child: _buildQrView(context)),
-              ],
-            ),
+      appBar: AppBar(
+        title: const Text('Debug QRViewPage'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            // Simula leitura QRCode sem criar um QRViewController fake
+            final dummyScanData = Barcode('{"id":81,"companyId":33}', BarcodeFormat.qrcode, []);
+            _onQRViewCreatedForDebug(dummyScanData);
+          },
+          child: const Text('Simular leitura QRCode'),
+        ),
+      ),
     );
+
+    // currentContext = context;
+    // return Scaffold(
+    //   body: isLoading
+    //       ? const Center(
+    //           child: CircularProgressIndicator(),
+    //         )
+    //       : Column(
+    //           children: <Widget>[
+    //             Expanded(flex: 4, child: _buildQrView(context)),
+    //           ],
+    //         ),
+    // );
   }
 
   Widget _buildQrView(BuildContext context) {

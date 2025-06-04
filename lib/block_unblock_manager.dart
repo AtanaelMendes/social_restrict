@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:developer';
 import 'package:device_apps/device_apps.dart';
+import 'package:flutter_screentime/models/block_app_model.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
 import 'package:flutter_screentime/modules/home/apps_repository.dart';
 import 'package:flutter_screentime/provider/api.dart';
@@ -10,7 +11,7 @@ import 'package:get/instance_manager.dart';
 class BlockUnblockManager {
   BlockUnblockManager._();
 
-  static Future<void> blockApps(List<dynamic> apps) async {
+  static Future<void> blockApps(List<AppInfo> apps) async {
     log("[BlockUnblockManager] blockApps chamado com apps: $apps linha ${_line()}");
 
     if (Platform.isIOS) {
@@ -22,7 +23,7 @@ class BlockUnblockManager {
       log("[BlockUnblockManager] bundleApp atual: $bundleApp linha ${_line()}");
       Get.lazyPut(() => AppsController(Get.find(), AppsRepository(Api())));
       if (Platform.isAndroid) {
-        var app = await DeviceApps.getApp(bundleApp, true);
+        var app = await DeviceApps.getApp(bundleApp.bundle.toString(), true);
         if (app != null) {
           log("[BlockUnblockManager] App encontrado: ${app.appName} | bloqueando... linha ${_line()}");
           await Get.find<AppsController>().addToLockedApps(app);
@@ -33,7 +34,7 @@ class BlockUnblockManager {
     }
   }
 
-  static Future<void> unblockApps(List<dynamic> apps) async {
+  static Future<void> unblockApps(List<AppInfo> apps) async {
     log("[BlockUnblockManager] unblockApps chamado com apps: $apps linha ${_line()}");
 
     if (Platform.isIOS) {
@@ -44,7 +45,7 @@ class BlockUnblockManager {
     if (Platform.isAndroid) {
       for (var bundleApp in apps) {
         log("[BlockUnblockManager] bundleApp atual: $bundleApp linha ${_line()}");
-        var app = await DeviceApps.getApp(bundleApp, true);
+        var app = await DeviceApps.getApp(bundleApp.bundle.toString(), true);
         if (app != null) {
           log("[BlockUnblockManager] App encontrado: ${app.appName} | desbloqueando... linha ${_line()}");
           await Get.find<AppsController>().addToLockedApps(app);

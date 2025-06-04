@@ -7,40 +7,31 @@ class AppsRepository {
   final Api api;
 
   AppsRepository(this.api);
+  List<AppInfo> apps = [];
+  List<AppInfo> appBlock = [];
+  List<AppInfo> appUnBlock = [];
 
-  Future<List<dynamic>> getAllAppsBlock(customerId, companyId) async {
-    List<dynamic> apps = [];
-    List<AppInfo> appBlock = [];
+  Future<List<AppInfo>> apiGetOrders(customerId, companyId) async {
     Response? response = await api.getAllOrders(customerId, companyId);
     if (response != null && response.statusCode == 200) {
       var body = response.data as Map<String, dynamic>;
       if (body.containsKey('block')) {
         for (var item in body['block']) {
-          apps.add(item);
+          appBlock.add(item);
         }
       }
-      return apps;
-    } else {
-      return apps;
-    }
-  }
-
-  Future<List<dynamic>> getAllAppsUnBlock(customerId, companyId) async {
-    List<dynamic> apps = [];
-    List<AppInfo> appUnBlock = [];
-    Response? response = await api.getAllOrders(customerId, companyId);
-    if (response != null && response.statusCode == 200) {
-      var body = response.data as Map<String, dynamic>;
-
       if (body.containsKey('unBlock')) {
         for (var item in body['unBlock']) {
+          appUnBlock.add(item);
+        }
+      }
+      if (body.containsKey('apps')) {
+        for (var item in body['apps']) {
           apps.add(item);
         }
       }
-      return apps;
-    } else {
-      return apps;
     }
+    return apps;
   }
 
   Future<bool> postLocation(LocationModel locationModel) async {
@@ -48,8 +39,7 @@ class AppsRepository {
 
     if (response != null && response.statusCode == 200) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 }

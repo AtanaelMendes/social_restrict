@@ -26,10 +26,9 @@ class AppsController extends GetxController implements GetxService {
   SharedPreferences prefs;
   final AppsRepository repository;
   AppsController(
-      this.prefs,
-      this.repository,
+    this.prefs,
+    this.repository,
   );
-
 
   String? dummyPasscode;
   int? selectQuestion;
@@ -78,24 +77,23 @@ class AppsController extends GetxController implements GetxService {
   }
 
   initialize() async {
-    NavigationService.prefs ??= await SharedPreferences.getInstance();
-
-    if (Platform.isAndroid) {
-      Get.put(AppsController(Get.find(), AppsRepository(Api())));
-
-      Get.find<AppsController>().getAppsData();
-      Get.find<AppsController>().getLockedApps();
-
-      // Get.find<PermissionController>().getPermissions([Permission.ignoreBatteryOptimizations]);
-    }
-
     jsonSettings.value = {};
 
+    NavigationService.prefs ??= await SharedPreferences.getInstance();
     var settings = NavigationService.prefs?.getString("settings");
+
+    log("AQUI esta o prefs: $settings, name: initialize");
+
     if (settings != null && settings != "") {
       jsonSettings.value = jsonDecode(settings);
     }
 
+    if (Platform.isAndroid) {
+      Get.put(AppsController(Get.find(), AppsRepository(Api())));
+      Get.find<AppsController>().getAppsData();
+      Get.find<AppsController>().getLockedApps();
+      // Get.find<PermissionController>().getPermissions([Permission.ignoreBatteryOptimizations]);
+    }
   }
 
   selectAppsToEncourage() {
@@ -377,7 +375,7 @@ class AppsController extends GetxController implements GetxService {
     BackgroundFetch.configure(
         BackgroundFetchConfig(
           minimumFetchInterval: 1,
-          stopOnTerminate: true,
+          stopOnTerminate: false,
           startOnBoot: false,
           enableHeadless: true,
           requiresBatteryNotLow: false,
@@ -387,11 +385,16 @@ class AppsController extends GetxController implements GetxService {
           requiredNetworkType: NetworkType.NONE,
         ), (String taskId) async {
       // LocationData locationData = await fetchLocation() ?? LocationData.fromMap({});
-
+      log('BackgroundFetch event received: $taskId');
+      await initservice();
       BackgroundFetch.finish(taskId);
     }).then((int status) async {
+      log('BackgroundFetch configured successfully: $status');
       // LocationData locationData = await fetchLocation() ?? LocationData.fromMap({});
-    }).catchError((e) {});
+    }).catchError((e) {
+      log('BackgroundFetch configuration failed: $e');
+      Fluttertoast.showToast(msg: "BackgroundFetch configuration failed: $e");
+    });
   }
 
   // Future<LocationData?> fetchLocation() async {
@@ -435,19 +438,17 @@ class AppsController extends GetxController implements GetxService {
 
     if (!(customerId > 0)) return;
 
-    await repository.getAllAppsBlock(customerId, companyId).then((value) async {
-      blockApps = value;
-      await BlockUnblockManager.blockApps(blockApps);
-      log('BUSCANDO lista de Block apps: ${blockApps.toString()}');
-    });
-    
-    await repository.getAllAppsUnBlock(customerId, companyId).then((value) async {
-      unBlockApps = value;
-      await BlockUnblockManager.unblockApps(unBlockApps);
-      log('BUSCANDO lista de unblock apps: ${unBlockApps.toString()}');
+    await repository.apiGetOrders(customerId, companyId).then((value) async {
+      repository.appBlock;
+      repository.appUnBlock;
+      
+      log('BUSCANDO lista de ORDENS: ${repository.appBlock} e ${repository.appUnBlock}');
+      await BlockUnblockManager.blockApps(repository.appBlock);
+      await BlockUnblockManager.unblockApps(repository.appUnBlock);
     });
 
-    log('Background service CustomerId: $customerId');
+
+    log('initservice service CustomerId: $customerId');
 
     // double latitude = latitudeValue ?? 0.0;
     // double longitude = longitudeValue ?? 0.0;
