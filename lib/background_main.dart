@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
 import 'package:flutter_screentime/android/widgets/ask_permission_dialog.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_screentime/navigation_service.dart';
 import 'package:flutter_screentime/modules/qr-code/qrviewpage.dart';
 import 'package:flutter_screentime/politica_de_privacidade.dart';
 import 'package:flutter_screentime/tutorial_android_page.dart';
+import 'package:flutter_screentime/tutorial_ios_page.dart';
 import 'package:get/get.dart';
 
 class BackgroundMain extends GetView {
@@ -90,7 +93,14 @@ class BackgroundMainPage extends GetView<AppsController> {
                 ),
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => TutorialPage(), // importa TutorialPage
+                    builder: (context) {
+                      if (Platform.isAndroid) {
+                        return TutorialAndroidPage();
+                        // return TutorialIosPage();
+                      } else {
+                        return TutorialIosPage();
+                      }
+                    },
                   ));
                 },
               ),

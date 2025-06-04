@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class TutorialPage extends StatefulWidget {
+class TutorialIosPage extends StatefulWidget {
   @override
-  _TutorialPageState createState() => _TutorialPageState();
+  _TutorialIosPageState createState() => _TutorialIosPageState();
 }
 
-class _TutorialPageState extends State<TutorialPage> {
+class _TutorialIosPageState extends State<TutorialIosPage> {
   final PageController _controller = PageController();
   int _currentIndex = 0;
 
@@ -18,77 +18,56 @@ class _TutorialPageState extends State<TutorialPage> {
     },
     {
       'id': '1',
-      'image': 'assets/tutorial/step1.png',
+      'image': 'assets/tutorial/ios/step1.png',
       'title': 'Permissões',
-      'subtitle': 'Execução em segundo plano.',
-      'text': 'Clique em permitir para que o aplicativo possa ser executado em segundo plano, caso não apareça essa opção, a permissão deve ser concedida em configurações de aplicativos.'
+      'subtitle': 'Notificações.',
+      'text': 'Ao iniciar o aplicativo foi solicitado que você permitisse o envio de notificações. Caso não tenha permitido, você pode conceder essa permissão manualmente nas configurações do seu dispositivo.'
     },
     {
       'id': '2',
-      'image': 'assets/tutorial/step2.png',
+      'image': 'assets/tutorial/ios/step2.png',
       'title': 'Permissões',
       'subtitle': 'Verificação de permissões',
-      'text': 'Clique no botão "VERIFICAR PERMISSSÕES" para o correto funcionamento do aplicativo.'
+      'text': 'Clique no botão "VERIFICAR PERMISSSÕES" e conceda as permissões necessárias para o correto funcionamento do aplicativo.'
     },
     {
       'id': '3',
-      'image': 'assets/tutorial/step3.png',
+      'image': 'assets/tutorial/ios/step3.png',
       'title': 'Permissões',
       'subtitle': 'Conceda as permissões na sequência uma por vez.',
       'text': 'Para os próximos passos, clique em voltar até essa tela, para conceder as permissões uma por vez.'
     },
     {
       'id': '4',
-      'image': 'assets/tutorial/step4.png',
-      'title': 'Acesso ao uso',
-      'subtitle': 'Acesso a execução dos aplicativos.',
-      'text': 'Caso ainda não esteja concedido essa permissão, clique no APP para conceder.'
+      'image': 'assets/tutorial/ios/step4.png',
+      'title': 'Acesso ao tempo de uso',
+      'subtitle': 'Conceda essa permissão para o Social Restrict possa monitorar e restringir o uso de aplicativos.',
+      'text': 'Caso ainda não esteja concedido essa permissão, acesse as configurações do seu dispositivo e defina a permissão de "Tempo de Uso".'
     },
     {
       'id': '5',
-      'image': 'assets/tutorial/step5.png',
-      'title': 'Acesso ao uso',
-      'subtitle': 'Conceda acesso ao uso marcando essa opção.',
-      'text': 'Após marcar, clique em voltar até a tela de verificação e clique na próxima verificação.'
+      'image': 'assets/tutorial/ios/step5.png',
+      'title': 'Acesso ao tempo de uso',
+      'subtitle': 'Clique no botão e informe a senha do aparelho ou face ID.',
+      'text': ''
     },
     {
       'id': '6',
-      'image': 'assets/tutorial/step6.png',
-      'title': 'Sobrepor a outros apps',
-      'subtitle': 'Executar em conjunto aos apps definidos para restrição.',
-      'text': 'Caso ainda não esteja concedido essa permissão, clique no APP para conceder.'
+      'image': 'assets/tutorial/ios/step6.png',
+      'title': 'Acesso ao tempo de uso',
+      'subtitle': 'Permissão concedida',
+      'text': 'Caso ainda não esteja concedido essa permissão, acesse as configurações do seu dispositivo e defina a permissão de "Tempo de Uso".'
     },
     {
       'id': '7',
-      'image': 'assets/tutorial/step7.png',
-      'title': 'Sobrepor a outros apps',
-      'subtitle': 'Conceda a sobreposição marcando essa opção.',
-      'text': 'Após marcar, clique em voltar até a tela de verificação e clique na próxima verificação.'
+      'image': 'assets/tutorial/ios/step7.png',
+      'title': 'Iniciar execução de restrição',
+      'subtitle': 'Clique em ler QR CODE',
+      'text': 'Após ler o QR CODE, o social restrict entra em ação.'
     },
     {
       'id': '8',
-      'image': 'assets/tutorial/step8.png',
-      'title': 'Notificações',
-      'subtitle': 'Permitir execução de notificações.',
-      'text': 'Clique em permitir, para receber alertas de uso. Após conceder todas as permissões clique em "Confirm"'
-    },
-    {
-      'id': '9',
-      'image': 'assets/tutorial/step9.png',
-      'title': 'Iniciar execução de restrição',
-      'subtitle': 'Clique em ler QR CODE',
-      'text': 'Isso deve abrir a camêra para ler o QR CODE.'
-    },
-    {
-      'id': '10',
-      'image': 'assets/tutorial/step10.png',
-      'title': 'Camêra',
-      'subtitle': 'Conceda acesso ao uso da camêra.',
-      'text': 'Após ler o QR CODE o Social Restric entra em ação'
-    },
-    {
-      'id': '11',
-      'image': 'assets/tutorial/step11.png',
+      'image': 'assets/tutorial/ios/step8.png',
       'title': 'Concluído',
       'subtitle': 'Configuração concluída',
       'text': 'Após ler o QR CODE o APP deve abrir essa tela, nesse momento pode fechar o APP.'
@@ -136,9 +115,30 @@ class _TutorialPageState extends State<TutorialPage> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: Image.asset(
-                    step['image']!,
-                    fit: BoxFit.contain,
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => Dialog(
+                          backgroundColor: Colors.transparent,
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).pop(),
+                            child: InteractiveViewer(
+                              child: Center(
+                                child: Image.asset(
+                                  step['image']!,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Image.asset(
+                      step['image']!,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),

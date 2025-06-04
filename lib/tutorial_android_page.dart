@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class TutorialPage extends StatefulWidget {
+class TutorialAndroidPage extends StatefulWidget {
   @override
-  _TutorialPageState createState() => _TutorialPageState();
+  _TutorialAndroidPageState createState() => _TutorialAndroidPageState();
 }
 
-class _TutorialPageState extends State<TutorialPage> {
+class _TutorialAndroidPageState extends State<TutorialAndroidPage> {
   final PageController _controller = PageController();
   int _currentIndex = 0;
 
@@ -136,9 +136,30 @@ class _TutorialPageState extends State<TutorialPage> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: Image.asset(
-                    step['image']!,
-                    fit: BoxFit.contain,
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => Dialog(
+                          backgroundColor: Colors.transparent,
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).pop(),
+                            child: InteractiveViewer(
+                              child: Center(
+                                child: Image.asset(
+                                  step['image']!,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Image.asset(
+                      step['image']!,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
