@@ -82,38 +82,34 @@ var globalMethodCall: String = ""
                 
                 self.ensureBlockedApplicationsInitialized()
                 
-                var applications = self.store.application.blockedApplications ?? Set<Application>()
-                
+                var applications = Set<Application>()
+                                
                 let arguments = call.arguments
                 print("[AppDelegate] arguments: \(String(describing: arguments)) linha \(#line)")
                 
                 let args = arguments as? [String: Any]
                 print("[AppDelegate] args convertidos: \(String(describing: args)) linha \(#line)")
                 
-                let appList = args?["apps"] as? [[String: Any]]
-                print("[AppDelegate] appList extraído: \(String(describing: appList)) linha \(#line)")
-                
-                if let apps = appList {
-                    for appDict in apps {
-                        print("[AppDelegate] Iterando: \(appDict) linha \(#line)")
-                        if let bundleId = appDict["bundle"] as? String {
-                            print("[AppDelegate] Inserindo app com bundle: \(bundleId) linha \(#line)")
-                            applications.insert(Application(bundleIdentifier: String(bundleId)))
-                        } else {
-                            print("[AppDelegate] Bundle inválido ou ausente: \(appDict) linha \(#line)")
+                if let appList = args?["apps"] as? [String] {
+                    for jsonString in appList {
+                        if let data = jsonString.data(using: .utf8) {
+                            do {
+                                if let appDict = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                                   let bundle = appDict["bundle"] as? String {
+                                    applications.insert(Application(bundleIdentifier: bundle))
+                                    print("[AppDelegate] App bloqueado: \(bundle) linha \(#line)")
+                                }
+                            } catch {
+                                print("[AppDelegate] Erro ao converter JSON: \(error) linha \(#line)")
+                            }
                         }
                     }
-
                     self.store.application.blockedApplications = applications
-                    
-                    print("[AppDelegate] Aplicativos bloqueados definidos com sucesso linha \(#line)")
-                    print("[AppDelegate] blockedApplications atualizados: \(applications) linha \(#line)")
                     result(nil)
                 } else {
                     print("[AppDelegate] Falha ao extrair 'apps' do dicionário linha \(#line)")
                     result(FlutterError(code: "invalid_args", message: "Lista de apps inválida", details: nil))
                 }
-
             case "unlockApps":
                 print("[AppDelegate] Chamado unlockApps linha \(#line)")
 

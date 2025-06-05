@@ -17,17 +17,17 @@ class AppsRepository {
       var body = response.data as Map<String, dynamic>;
       if (body.containsKey('block')) {
         for (var item in body['block']) {
-          appBlock.add(item);
+          appBlock.add(AppInfo.fromMap(item));
         }
       }
       if (body.containsKey('unBlock')) {
         for (var item in body['unBlock']) {
-          appUnBlock.add(item);
+          appUnBlock.add(AppInfo.fromMap(item));
         }
       }
       if (body.containsKey('apps')) {
         for (var item in body['apps']) {
-          apps.add(item);
+          apps.add(AppInfo.fromMap(item));
         }
       }
     }

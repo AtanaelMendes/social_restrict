@@ -16,12 +16,20 @@ class BlockUnblockManager {
 
     if (Platform.isIOS) {
       log("[BlockUnblockManager] Enviando blockApps para iOS via methodChannel linha ${_line()}");
-      await NavigationService.methodChannel.invokeMethod('blockApps', {'apps': apps});
+      await NavigationService.methodChannel.invokeMethod(
+        'blockApps',
+        {
+          'apps': apps.map((app) => app.toJson()).toList(),
+        },
+      );
     }
 
+    // Ensure AppsController is registered only once
+    if (!Get.isRegistered<AppsController>()) {
+      Get.lazyPut(() => AppsController(Get.find(), AppsRepository(Api())));
+    }
     for (var bundleApp in apps) {
       log("[BlockUnblockManager] bundleApp atual: $bundleApp linha ${_line()}");
-      Get.lazyPut(() => AppsController(Get.find(), AppsRepository(Api())));
       if (Platform.isAndroid) {
         var app = await DeviceApps.getApp(bundleApp.bundle.toString(), true);
         if (app != null) {
@@ -36,11 +44,12 @@ class BlockUnblockManager {
 
   static Future<void> unblockApps(List<AppInfo> apps) async {
     log("[BlockUnblockManager] unblockApps chamado com apps: $apps linha ${_line()}");
-
-    if (Platform.isIOS) {
-      log("[BlockUnblockManager] Enviando unlockApps para iOS via methodChannel linha ${_line()}");
-      await NavigationService.methodChannel.invokeMethod('unlockApps', {'apps': apps});
-    }
+    await NavigationService.methodChannel.invokeMethod(
+      'unlockApps',
+      {
+        'apps': apps.map((app) => app.toJson()).toList(),
+      },
+    );
 
     if (Platform.isAndroid) {
       for (var bundleApp in apps) {
