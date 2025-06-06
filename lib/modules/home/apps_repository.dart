@@ -14,6 +14,9 @@ class AppsRepository {
   Future<List<AppInfo>> apiGetOrders(customerId, companyId) async {
     Response? response = await api.getAllOrders(customerId, companyId);
     if (response != null && response.statusCode == 200) {
+      apps.clear();
+      appBlock.clear();
+      appUnBlock.clear();
       var body = response.data as Map<String, dynamic>;
       if (body.containsKey('block')) {
         for (var item in body['block']) {

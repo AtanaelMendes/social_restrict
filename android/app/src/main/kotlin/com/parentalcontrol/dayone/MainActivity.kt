@@ -51,8 +51,8 @@ class MainActivity : FlutterActivity() {
     private fun setupMethodChannel(flutterEngine: FlutterEngine) {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channel).setMethodCallHandler { call, result ->
             when (call.method) {
-                "addToLockedApps" -> result.notImplemented() // Implement as needed
-                "setPasswordInNative" -> result.notImplemented() // Implement as needed
+                "addToLockedApps" -> result.success(null) // Implement as needed
+                "setPasswordInNative" -> result.success(null) // Implement as needed
                 "checkOverlayPermission" -> result.success(Settings.canDrawOverlays(this))
                 "stopForeground" -> stopForegroundService()
                 "startForeground" -> {

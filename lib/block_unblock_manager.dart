@@ -12,7 +12,7 @@ class BlockUnblockManager {
   BlockUnblockManager._();
 
   static Future<void> blockApps(List<AppInfo> apps) async {
-    log("[BlockUnblockManager] blockApps chamado com apps: $apps linha ${_line()}");
+    log("[BlockUnblockManager] blockApps chamado com apps: ${apps.map((app) => app.toJson())} linha ${_line()}");
 
     if (Platform.isIOS) {
       log("[BlockUnblockManager] Enviando blockApps para iOS via methodChannel linha ${_line()}");
@@ -29,37 +29,32 @@ class BlockUnblockManager {
       Get.lazyPut(() => AppsController(Get.find(), AppsRepository(Api())));
     }
     for (var bundleApp in apps) {
-      log("[BlockUnblockManager] bundleApp atual: $bundleApp linha ${_line()}");
       if (Platform.isAndroid) {
         var app = await DeviceApps.getApp(bundleApp.bundle.toString(), true);
         if (app != null) {
-          log("[BlockUnblockManager] App encontrado: ${app.appName} | bloqueando... linha ${_line()}");
           await Get.find<AppsController>().addToLockedApps(app);
-        } else {
-          log("[BlockUnblockManager] App não encontrado para $bundleApp linha ${_line()}");
         }
       }
     }
   }
 
   static Future<void> unblockApps(List<AppInfo> apps) async {
-    log("[BlockUnblockManager] unblockApps chamado com apps: $apps linha ${_line()}");
-    await NavigationService.methodChannel.invokeMethod(
-      'unlockApps',
-      {
-        'apps': apps.map((app) => app.toJson()).toList(),
-      },
-    );
+    log("[BlockUnblockManager] unblockApps chamado com apps: ${apps.map((app) => app.toJson())} linha ${_line()}");
+ 
+    if (Platform.isIOS) {
+      await NavigationService.methodChannel.invokeMethod(
+        'unlockApps',
+        {
+          'apps': apps.map((app) => app.toJson()).toList(),
+        },
+      );
+    }
 
     if (Platform.isAndroid) {
       for (var bundleApp in apps) {
-        log("[BlockUnblockManager] bundleApp atual: $bundleApp linha ${_line()}");
         var app = await DeviceApps.getApp(bundleApp.bundle.toString(), true);
         if (app != null) {
-          log("[BlockUnblockManager] App encontrado: ${app.appName} | desbloqueando... linha ${_line()}");
           await Get.find<AppsController>().addToLockedApps(app);
-        } else {
-          log("[BlockUnblockManager] App não encontrado para $bundleApp linha ${_line()}");
         }
       }
     }

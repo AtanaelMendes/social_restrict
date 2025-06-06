@@ -36,12 +36,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
     _timer?.cancel();
     if (state == AppLifecycleState.resumed) {
-      debugPrint('Dayone voltou para primeiro plano Background mode');
+      debugPrint('SOCIAL RESTRICT voltou para primeiro plano');
       _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
         // controller.getCurrentLocation();
       });
     } else if (state == AppLifecycleState.paused) {
-      debugPrint('Dayone mudou agora segundo plano Background mode');
+      debugPrint('SOCIAL RESTRICT mudou agora segundo plano');
       _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
         // controller.getCurrentLocation();
         controller.startBackgroundFetch();

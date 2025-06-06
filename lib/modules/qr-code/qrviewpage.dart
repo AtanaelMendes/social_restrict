@@ -127,8 +127,9 @@ class _QRViewPageState extends State<QRViewPage> {
 
     id = data['id'] ?? 0;
     companyId = data['companyId'] ?? 0;
-
-    await Get.find<MethodChannelController>().setTokenFirebase();
+    if (Platform.isIOS) {
+      await Get.find<MethodChannelController>().setTokenFirebase();
+    }
     tokenId = NavigationService.prefs?.getString("token");
 
     TokenIdModel token = TokenIdModel(
