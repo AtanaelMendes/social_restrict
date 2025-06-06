@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     super.initState();
     // controller.getCurrentLocation();
     WidgetsBinding.instance.addObserver(this);
+    controller.startBackgroundFetch();
   }
 
   @override
@@ -44,7 +45,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       debugPrint('SOCIAL RESTRICT mudou agora segundo plano');
       _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
         // controller.getCurrentLocation();
-        controller.startBackgroundFetch();
       });
     }
   }

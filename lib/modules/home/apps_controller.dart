@@ -376,7 +376,7 @@ class AppsController extends GetxController implements GetxService {
         BackgroundFetchConfig(
           minimumFetchInterval: 1,
           stopOnTerminate: false,
-          startOnBoot: false,
+          startOnBoot: true,
           enableHeadless: true,
           requiresBatteryNotLow: false,
           requiresCharging: false,
