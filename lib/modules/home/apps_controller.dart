@@ -374,7 +374,7 @@ class AppsController extends GetxController implements GetxService {
   void startBackgroundFetch() {
     BackgroundFetch.configure(
         BackgroundFetchConfig(
-          minimumFetchInterval: 1,
+          minimumFetchInterval: 15,
           stopOnTerminate: false,
           startOnBoot: true,
           enableHeadless: true,

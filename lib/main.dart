@@ -32,8 +32,6 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
   BackgroundFetch.finish(taskId);
 }
 
-const methodChannel = MethodChannel('flutter_screentime');
-
 Future<void> initState() async {
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }

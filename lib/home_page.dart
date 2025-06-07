@@ -84,6 +84,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 ],
               ),
               const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () async  {
+                  await controller.initservice();
+                },
+                child: const Text("Buscar lista de restrições"),
+              ),
+            //  const SizedBox(height: 10),
             //   ElevatedButton(
             //     onPressed: () async  {
             //       await controller.selectAppsToEncourage();
