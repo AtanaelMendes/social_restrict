@@ -59,28 +59,36 @@ class _QRViewPageState extends State<QRViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: const Text('Debug QRViewPage'),
-    //   ),
-    //   body: Center(
-    //     child: ElevatedButton(
-    //       onPressed: () {
-    //         // Simula leitura QRCode sem criar um QRViewController fake
-    //         final dummyScanData = Barcode('{"id":81,"companyId":33}', BarcodeFormat.qrcode, []);
-    //         _onQRViewCreatedForDebug(dummyScanData);
-    //       },
-    //       child: const Text('Simular leitura QRCode'),
-    //     ),
-    //   ),
-    // );
-
     currentContext = context;
+
+    // COMENTE OU DESCOMENTE UMA LINHA PARA TROCAR O MODO
+    return _buildDebugView();
+    // return _buildQRCodeScannerView();
+  }
+
+  /// Modo de depuração: simula leitura de QRCode
+  Widget _buildDebugView() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Debug QRViewPage'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            final dummyScanData = Barcode('{"id":81,"companyId":33}', BarcodeFormat.qrcode, []);
+            _onQRViewCreatedForDebug(dummyScanData);
+          },
+          child: const Text('Simular leitura QRCode'),
+        ),
+      ),
+    );
+  }
+
+  /// Modo real: exibe scanner de QRCode
+  Widget _buildQRCodeScannerView() {
     return Scaffold(
       body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
+          ? const Center(child: CircularProgressIndicator())
           : Column(
               children: <Widget>[
                 Expanded(flex: 4, child: _buildQrView(context)),
@@ -233,4 +241,3 @@ class _QRViewPageState extends State<QRViewPage> {
     super.dispose();
   }
 }
-

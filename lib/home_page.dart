@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final controller = Get.put(AppsController(Get.find(), AppsRepository(Api())));
   Timer? _timer;
+  bool isLoading = false; // <- flag para loading
 
   @override
   void initState() {
@@ -85,18 +86,31 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               ),
               const SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () async  {
-                  await controller.initservice();
-                },
-                child: const Text("Buscar lista de restrições"),
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        setState(() => isLoading = true);
+                        await controller.initservice();
+                        setState(() => isLoading = false);
+                      },
+                child: isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : const Text("Buscar lista de restrições"),
               ),
-            //  const SizedBox(height: 10),
-            //   ElevatedButton(
-            //     onPressed: () async  {
-            //       await controller.selectAppsToEncourage();
-            //     },
-            //     child: const Text("Selecionar apps incentivados"),
-            //   ),
+              //  const SizedBox(height: 10),
+              //   ElevatedButton(
+              //     onPressed: () async  {
+              //       await controller.selectAppsToEncourage();
+              //     },
+              //     child: const Text("Selecionar apps incentivados"),
+              //   ),
             ],
           ),
         ),
