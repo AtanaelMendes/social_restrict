@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screentime/config/env.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
@@ -32,7 +33,7 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
   BackgroundFetch.finish(taskId);
 }
 
-Future<void> initState() async {
+Future<void> setupBackgroundFetch() async {
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }
 
@@ -44,6 +45,9 @@ const AndroidNotificationChannel notificationChannel = AndroidNotificationChanne
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isIOS) {
+    await setupBackgroundFetch();
+  }
   lazyPutInitialize();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   Get.put(prefs);

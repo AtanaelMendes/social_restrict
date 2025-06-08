@@ -62,8 +62,8 @@ class _QRViewPageState extends State<QRViewPage> {
     currentContext = context;
 
     // COMENTE OU DESCOMENTE UMA LINHA PARA TROCAR O MODO
-    return _buildDebugView();
-    // return _buildQRCodeScannerView();
+    // return _buildDebugView();
+    return _buildQRCodeScannerView();
   }
 
   /// Modo de depuração: simula leitura de QRCode

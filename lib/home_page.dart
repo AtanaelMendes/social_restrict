@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
-import 'package:flutter_screentime/modules/home/apps_repository.dart';
-import 'package:flutter_screentime/provider/api.dart';
+// import 'package:flutter_screentime/modules/home/apps_repository.dart';
+// import 'package:flutter_screentime/provider/api.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  final controller = Get.put(AppsController(Get.find(), AppsRepository(Api())));
+  final controller = Get.find<AppsController>();
   Timer? _timer;
   bool isLoading = false; // <- flag para loading
 
