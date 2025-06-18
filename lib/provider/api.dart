@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_screentime/config/env_variables.dart';
@@ -109,6 +110,92 @@ class Api {
     } catch (e, stacktrace) {
       log('Erro ao chamar getAllOrders: $e\n$stacktrace');
       return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> login(String usuario, String senha) async {
+    try {
+      final response = await dio.post(
+        'https://www.rhbrasil.com.br/model/API/socialrestrict/login.php',
+        data: {
+          'usuario': usuario,
+          'senha': senha,
+        },
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType,
+        ),
+      );
+      if (response.statusCode == 200) {
+        return response.data is Map<String, dynamic>
+            ? response.data
+            : jsonDecode(response.data);
+      }
+      return null;
+    } catch (e) {
+      log('Erro ao fazer login: $e');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getCustomers(String token) async {
+    try {
+      final response = await dio.get(
+        'https://app-api.rhbrasil.com.br/api/customers?search=&limit=10&offset=0',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+      if (response.statusCode == 200) {
+        return response.data is Map<String, dynamic>
+            ? response.data
+            : jsonDecode(response.data);
+      }
+      return null;
+    } catch (e) {
+      log('Erro ao buscar clientes: $e');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getQrcode(String token, int userId) async {
+    try {
+      final response = await dio.get(
+        'https://app-api.rhbrasil.com.br/api/customers/$userId/qrcode',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+      if (response.statusCode == 200) {
+        return response.data is Map<String, dynamic>
+            ? response.data
+            : jsonDecode(response.data);
+      }
+      return null;
+    } catch (e) {
+      log('Erro ao buscar QRCode: $e');
+      return null;
+    }
+  }
+
+  Future<bool> painelAction(String token, String action, List<int> customers) async {
+    try {
+      final url = action == 'unblock'
+          ? 'https://app-api.rhbrasil.com.br/api/orders/unblock'
+          : 'https://app-api.rhbrasil.com.br/api/orders/block';
+      final response = await dio.post(
+        url,
+        data: jsonEncode({'customers': customers}),
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      log('Erro ao aplicar ação: $e');
+      return false;
     }
   }
 }

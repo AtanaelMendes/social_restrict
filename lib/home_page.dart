@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
+import 'package:flutter_screentime/painel/login.dart';
 // import 'package:flutter_screentime/modules/home/apps_repository.dart';
 // import 'package:flutter_screentime/provider/api.dart';
 import 'package:get/get.dart';
@@ -72,14 +73,20 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    "Seu aplicativo está configurado e pronto para receber atualizações.",
-                    textAlign: TextAlign.center,
+                    "Seu aplicativo está configurado, agora periodicamente iremos buscar a lista de restrições.",
+                    textAlign: TextAlign.justify,
                     style: TextStyle(fontSize: 26),
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    "Agora pode fechar o aplicativo que cuidaremos do resto.",
-                    textAlign: TextAlign.center,
+                    "Agora pode fechar o aplicativo ou atualize a lista clicando no botão: \n \"Buscar lista de restrições\".",
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(fontSize: 26),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Também é possível acessar o painel administrativo clicando no botão: \n \"Painel administrativo\".",
+                    textAlign: TextAlign.justify,
                     style: TextStyle(fontSize: 26),
                   ),
                 ],
@@ -103,6 +110,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         ),
                       )
                     : const Text("Buscar lista de restrições"),
+              ),
+              ElevatedButton(
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        // Navega para a tela de login
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
+                        );
+                      },
+                child: const Text("Painel administrativo"),
               ),
               //  const SizedBox(height: 10),
               //   ElevatedButton(
