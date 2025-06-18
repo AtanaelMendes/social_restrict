@@ -1,5 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screentime/provider/api.dart';
+import 'package:flutter_screentime/modules/home/apps_repository.dart';
+import 'package:flutter_screentime/models/block_app_model.dart';
+import 'package:flutter_screentime/home_page.dart';
+import 'package:flutter_screentime/navigation_service.dart'; // Adicione este import
 
 class PainelPage extends StatefulWidget {
   final String token;
@@ -18,6 +23,10 @@ class _PainelPageState extends State<PainelPage> {
   bool showSuccess = false;
   bool showError = false;
   Map<String, dynamic>? qrcodeData;
+
+  // Para o modal de apps
+  bool showAppsModal = false;
+  List<AppInfo> apps = [];
 
   @override
   void initState() {
@@ -120,6 +129,8 @@ class _PainelPageState extends State<PainelPage> {
 
   Widget buildQrcodeModal() {
     if (qrcodeData == null) return const SizedBox.shrink();
+    final base64Str = qrcodeData!['qrcode'] as String;
+    final bytes = base64Decode(base64Str.split(',').last);
     return GestureDetector(
       onTap: () => setState(() => qrcodeData = null),
       child: Container(
@@ -140,7 +151,7 @@ class _PainelPageState extends State<PainelPage> {
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 16),
-                Image.network(qrcodeData!['qrcode']),
+                Image.memory(bytes),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => setState(() => qrcodeData = null),
@@ -195,19 +206,105 @@ class _PainelPageState extends State<PainelPage> {
     );
   }
 
+  Future<void> _showAppsModal() async {
+    setState(() => isLoading = true);
+
+    // Corrija aqui para pegar os valores do NavigationService
+    int companyId = NavigationService.prefs?.getInt("companyId") ?? 0;
+    int customerId = NavigationService.prefs?.getInt("id") ?? 0;
+
+    final repo = AppsRepository(Api());
+    final appsList = await repo.apiGetOrders(customerId, companyId);
+    setState(() {
+      isLoading = false;
+      apps = appsList;
+      showAppsModal = true;
+    });
+  }
+
+  Widget buildAppsModal() {
+    return GestureDetector(
+      onTap: () => setState(() => showAppsModal = false),
+      child: Container(
+        color: Colors.black54,
+        child: Center(
+          child: Container(
+            width: 320,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Lista de Aplicativos',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 300,
+                  child: apps.isEmpty
+                      ? const Center(child: Text('Nenhum aplicativo encontrado.'))
+                      : ListView.builder(
+                          itemCount: apps.length,
+                          itemBuilder: (context, index) {
+                            final app = apps[index];
+                            return ListTile(
+                              title: Text(app.bundle ?? '--'),
+                              subtitle: Text(app.bundle ?? ''),
+                            );
+                          },
+                        ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => setState(() => showAppsModal = false),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    backgroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.red),
+                  ),
+                  child: const Text('Fechar'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Social Restrict'),
-        backgroundColor: Colors.grey[900],
+        title: const Text('Painel Administrativo'),
+        backgroundColor: Colors.blue[700],
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.red),
-            onPressed: () {
-              // Limpa token e volta para login
-              Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.settings),
+            onSelected: (value) async {
+              if (value == 'logout') {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const HomePage()),
+                  (route) => false,
+                );
+              } else if (value == 'apps') {
+                await _showAppsModal();
+              }
             },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'apps',
+                child: Text('Visualizar lista de aplicativos'),
+              ),
+              const PopupMenuItem(
+                value: 'logout',
+                child: Text('Sair'),
+              ),
+            ],
           ),
         ],
       ),
@@ -282,10 +379,10 @@ class _PainelPageState extends State<PainelPage> {
                                     ],
                                   ),
                                 ),
+                                const DataColumn(label: Text('Conexão')),
                                 const DataColumn(label: Text('Nome')),
                                 const DataColumn(label: Text('Último app usado')),
                                 const DataColumn(label: Text('Último registro')),
-                                const DataColumn(label: Text('Conexão')),
                                 const DataColumn(label: Text('QRCODE')),
                               ],
                               rows: usersList.map<DataRow>((user) {
@@ -299,18 +396,18 @@ class _PainelPageState extends State<PainelPage> {
                                         onChanged: (v) => handleUserSelect(v, userId),
                                       ),
                                     ),
+                                    DataCell(buildStatus(user['statusId'])),
                                     DataCell(Text(user['name'] ?? '--')),
                                     DataCell(Text(
                                       (user['uses_by_customers'] != null &&
-                                              user['uses_by_customers'].isNotEmpty)
-                                          ? (user['uses_by_customers'][0]['appInfo']?['name'] ?? '--')
-                                          : '--',
+                                       user['uses_by_customers'].isNotEmpty)
+                                        ? (user['uses_by_customers'][0]['appInfo']?['name'] ?? '--')
+                                        : '--'
                                     )),
                                     DataCell(Text(user['uses_by_customers'] != null &&
                                             user['uses_by_customers'].isNotEmpty
                                         ? formatDate(user['uses_by_customers'][0]['createdAt'])
                                         : formatDate(user['timeStatus']))),
-                                    DataCell(buildStatus(user['statusId'])),
                                     DataCell(
                                       ElevatedButton(
                                         onPressed: () => showQrcode(userId, user['name'] ?? ''),
@@ -327,6 +424,7 @@ class _PainelPageState extends State<PainelPage> {
               ),
             ],
           ),
+          if (showAppsModal) buildAppsModal(),
           if (qrcodeData != null) buildQrcodeModal(),
         ],
       ),
