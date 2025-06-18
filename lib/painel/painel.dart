@@ -5,6 +5,8 @@ import 'package:flutter_screentime/modules/home/apps_repository.dart';
 import 'package:flutter_screentime/models/block_app_model.dart';
 import 'package:flutter_screentime/home_page.dart';
 import 'package:flutter_screentime/navigation_service.dart'; // Adicione este import
+import 'package:get/get.dart';
+import 'package:flutter_screentime/modules/home/apps_controller.dart';
 
 class PainelPage extends StatefulWidget {
   final String token;
@@ -345,11 +347,31 @@ class _PainelPageState extends State<PainelPage> {
                         DropdownMenuItem(value: 'unblock', child: Text('Desbloquear Apps')),
                         DropdownMenuItem(value: 'block', child: Text('Bloqueio total')),
                       ],
-                      onChanged: (v) => setState(() => selectedAction = v ?? 'unblock'),
+                      onChanged: (v) async {
+                        setState(() => selectedAction = v ?? 'unblock');
+                        // Chama o AppsController > initservice ao trocar a ação
+                        try {
+                          final AppsController appsController = Get.find<AppsController>();
+                          await appsController.initservice();
+                        } catch (e) {
+                          // Caso não esteja registrado, ignore
+                        }
+                      },
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed: isLoading ? null : confirmAction,
+                      onPressed: isLoading
+                          ? null
+                          : () async {
+                              await confirmAction();
+                              // Chama o AppsController > initservice após confirmar ação
+                              try {
+                                final AppsController appsController = Get.find<AppsController>();
+                                await appsController.initservice();
+                              } catch (e) {
+                                // Caso não esteja registrado, ignore
+                              }
+                            },
                       child: const Text('Confirmar'),
                     ),
                   ],
