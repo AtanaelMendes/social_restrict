@@ -13,23 +13,31 @@ class AppsRepository {
 
   Future<List<AppInfo>> apiGetOrders(customerId, companyId) async {
     Response? response = await api.getAllOrders(customerId, companyId);
+    apps.clear();
+    appBlock.clear();
+    appUnBlock.clear();
+
     if (response != null && response.statusCode == 200) {
-      apps.clear();
-      appBlock.clear();
-      appUnBlock.clear();
-      var body = response.data as Map<String, dynamic>;
-      if (body.containsKey('block')) {
-        for (var item in body['block']) {
-          appBlock.add(AppInfo.fromMap(item));
+      var body = response.data;
+      if (body is Map<String, dynamic>) {
+        if (body.containsKey('block')) {
+          for (var item in body['block']) {
+            appBlock.add(AppInfo.fromMap(item));
+          }
         }
-      }
-      if (body.containsKey('unBlock')) {
-        for (var item in body['unBlock']) {
-          appUnBlock.add(AppInfo.fromMap(item));
+        if (body.containsKey('unBlock')) {
+          for (var item in body['unBlock']) {
+            appUnBlock.add(AppInfo.fromMap(item));
+          }
         }
-      }
-      if (body.containsKey('apps')) {
-        for (var item in body['apps']) {
+        if (body.containsKey('apps')) {
+          for (var item in body['apps']) {
+            apps.add(AppInfo.fromMap(item));
+          }
+        }
+      } else if (body is List) {
+        // Se a resposta for uma lista (mesmo vazia), apenas retorna a lista vazia de apps
+        for (var item in body) {
           apps.add(AppInfo.fromMap(item));
         }
       }

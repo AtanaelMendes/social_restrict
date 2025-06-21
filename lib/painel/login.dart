@@ -70,8 +70,8 @@ class _LoginPageState extends State<LoginPage> {
         ),
         title: const Text('Painel administrativo'),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Colors.blue[700],
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
       body: Center(

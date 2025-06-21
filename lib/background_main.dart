@@ -104,7 +104,9 @@ class BackgroundMainPage extends GetView<AppsController> {
                   ));
                 },
               ),
+
               const SizedBox(height: 10),
+
               // VERIFICAR PERMISSÕES
               ElevatedButton.icon(
                 icon: const Icon(Icons.verified_user),
@@ -116,7 +118,9 @@ class BackgroundMainPage extends GetView<AppsController> {
                   askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
                 },
               ),
+
               const SizedBox(height: 10),
+
               // 5. Botão Política de Privacidade
               ElevatedButton.icon(
                 icon: const Icon(Icons.privacy_tip),

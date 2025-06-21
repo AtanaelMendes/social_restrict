@@ -74,21 +74,41 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   const SizedBox(height: 20),
                   const Text(
                     "Seu aplicativo está configurado, agora periodicamente iremos buscar a lista de restrições.",
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(fontSize: 26),
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontSize: 24),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    "Agora pode fechar o aplicativo ou atualize a lista clicando no botão: \n \"Buscar lista de restrições\".",
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(fontSize: 26),
+                  const Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(text: "Agora pode fechar o aplicativo ou atualize a lista clicando no botão "),
+                        TextSpan(
+                          text: "Buscar lista de restrições",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(text: "."),
+                      ],
+                    ),
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontSize: 24),
                   ),
+
                   const SizedBox(height: 20),
-                  const Text(
-                    "Também é possível acessar o painel administrativo clicando no botão: \n \"Painel administrativo\".",
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(fontSize: 26),
-                  ),
+
+                  const Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(text: "Também é possível acessar o painel administrativo clicando no botão "),
+                        TextSpan(
+                          text: "Painel administrativo",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(text: "."),
+                      ],
+                    ),
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontSize: 24),
+                  )
                 ],
               ),
               const SizedBox(height: 10),

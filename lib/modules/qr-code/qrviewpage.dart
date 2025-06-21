@@ -75,7 +75,7 @@ class _QRViewPageState extends State<QRViewPage> {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            final dummyScanData = Barcode('{"id":81,"companyId":33}', BarcodeFormat.qrcode, []);
+            final dummyScanData = Barcode('{"id":83,"companyId":33}', BarcodeFormat.qrcode, []);
             _onQRViewCreatedForDebug(dummyScanData);
           },
           child: const Text('Simular leitura QRCode'),
