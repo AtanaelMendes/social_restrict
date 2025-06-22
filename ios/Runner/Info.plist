@@ -40,10 +40,12 @@
 	<string>Usamos sua localização para restringir o uso de aplicativos em horários e locais determinados pelo guardião.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Usamos sua localização para restringir o uso de aplicativos em horários e locais determinados pelo guardião.</string>
-	<key>Permitted background task scheduler identifiers</key>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.transistorsoft.customtask</string>
+		<string>com.transistorsoft.fetch</string>
 	</array>
+	<key>MinimumBackgroundFetchInterval</key>
+	<real>15</real>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

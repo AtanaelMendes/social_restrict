@@ -29,12 +29,9 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
     BackgroundFetch.finish(taskId);
     return;
   }
+  await Get.find<AppsController>().initservice();
   debugPrint('[BackgroundFetch] Headless event received.');
   BackgroundFetch.finish(taskId);
-}
-
-Future<void> setupBackgroundFetch() async {
-  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalPlugin = FlutterLocalNotificationsPlugin();
@@ -46,7 +43,7 @@ const AndroidNotificationChannel notificationChannel = AndroidNotificationChanne
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isIOS) {
-    await setupBackgroundFetch();
+    BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
   }
   lazyPutInitialize();
   SharedPreferences prefs = await SharedPreferences.getInstance();

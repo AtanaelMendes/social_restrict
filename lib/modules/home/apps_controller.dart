@@ -64,6 +64,7 @@ class AppsController extends GetxController implements GetxService {
   @override
   void onReady() {
     initialize();
+    startBackgroundFetch(); // <--- Adicione esta linha
     timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       initservice();
     });
