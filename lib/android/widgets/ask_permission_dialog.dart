@@ -86,9 +86,11 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                         children: [
                           if (!state.isOverlayPermissionGiven)
                             GestureDetector(
-                              onTap: () {
-                                state.askOverlayPermission();
-                                setState(() {}); // Atualiza a UI
+                              onTap: () async {
+                                bool granted = await state.askOverlayPermission();
+                                if (granted) {
+                                  setState(() {});
+                                }
                               },
                               child: permissionWidget(
                                 context,
@@ -98,9 +100,11 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                             ),
                           if (!state.isUsageStatPermissionGiven)
                             GestureDetector(
-                              onTap: () {
-                                state.askUsageStatsPermission();
-                                setState(() {}); // Atualiza a UI
+                              onTap: () async {
+                                bool granted = await state.askUsageStatsPermission();
+                                if (granted) {
+                                  setState(() {});
+                                }
                               },
                               child: permissionWidget(
                                 context,
@@ -110,9 +114,11 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                             ),
                           if (!state.isNotificationPermissionGiven)
                             GestureDetector(
-                              onTap: () {
-                                state.askNotificationPermission();
-                                setState(() {}); // Atualiza a UI
+                              onTap: () async {
+                                bool granted = await state.askNotificationPermission();
+                                if (granted) {
+                                  setState(() {});
+                                }
                               },
                               child: permissionWidget(
                                 context,
@@ -122,9 +128,9 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                             ),
                           if (!state.isBackgroundFetchAvailable)
                             GestureDetector(
-                              onTap: () {
-                                state.checkBackgroundFetchStatus();
-                                setState(() {}); // Atualiza a UI
+                              onTap: () async {
+                                await state.checkBackgroundFetchStatus();
+                                setState(() {});
                               },
                               child: permissionWidget(
                                 context,
@@ -253,19 +259,19 @@ class _IOSPermissionBottomSheet extends State<IOSPermissionBottomSheet> {
             ElevatedButton.icon(
               icon: const Icon(Icons.shield),
               label: const Text("Permitir Acesso ao Uso"),
-              onPressed: () {
-                setState(() {});
-                state.askUsageStatsPermission();
-                setState(() {});
+              onPressed: () async {
+                bool granted = await state.askUsageStatsPermission();
+                if (granted) {
+                  setState(() {});
+                }
               },
             ),
           if (!state.isBackgroundFetchAvailable)
             ElevatedButton.icon(
               icon: const Icon(Icons.access_alarm),
               label: const Text("Permitir Atualização em Segundo Plano"),
-              onPressed: () {
-                setState(() {});
-                state.checkBackgroundFetchStatus();
+              onPressed: () async {
+                await state.checkBackgroundFetchStatus();
                 setState(() {});
               },
             ),
@@ -273,28 +279,24 @@ class _IOSPermissionBottomSheet extends State<IOSPermissionBottomSheet> {
             ElevatedButton.icon(
               icon: const Icon(Icons.location_on),
               label: const Text("Permitir Localização"),
-              onPressed: () {
-                setState(() {});
-                state.askBackgroundLocationPermission();
-                setState(() {});
+              onPressed: () async {
+                bool granted = await state.askBackgroundLocationPermission();
+                if (granted) {
+                  setState(() {});
+                }
               },
             ),
           if (!state.isNotificationPermissionGiven)
             ElevatedButton.icon(
               icon: const Icon(Icons.notifications),
               label: const Text("Permitir Notificações"),
-              onPressed: () {
-                setState(() {});
-                state.askNotificationPermission();
-                setState(() {});
+              onPressed: () async {
+                bool granted = await state.askNotificationPermission();
+                if (granted) {
+                  setState(() {});
+                }
               },
             ),
-          const SizedBox(height: 10),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.close),
-            label: const Text("Fechar"),
-            onPressed: () => Navigator.pop(context),
-          ),
         ],
       ),
     );
