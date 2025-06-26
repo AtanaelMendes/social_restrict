@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
 import 'package:flutter_screentime/android/widgets/ask_permission_dialog.dart';
+import 'package:flutter_screentime/android/method_channel_controller.dart';
 import 'package:flutter_screentime/navigation_service.dart';
 import 'package:flutter_screentime/modules/qr-code/qrviewpage.dart';
 import 'package:flutter_screentime/politica_de_privacidade.dart';
 import 'package:flutter_screentime/tutorial_android_page.dart';
 import 'package:flutter_screentime/tutorial_ios_page.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class BackgroundMain extends GetView {
@@ -75,10 +77,19 @@ class BackgroundMainPage extends GetView<AppsController> {
                   minimumSize: const Size(200, 50),
                 ),
                 onPressed: () async {
-                  await Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const QRViewPage(),
-                  ));
-                  // initialize();
+                  // Verifica se todas as permissões foram concedidas antes de abrir a câmera
+                  if (await _checkAllPermissions()) {
+                    await Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const QRViewPage(),
+                    ));
+                    // initialize();
+                  } else {
+                    Fluttertoast.showToast(
+                      msg: "Conceda todas as permissões antes de usar o QR Code",
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.CENTER,
+                    );
+                  }
                 },
               ),
 
@@ -139,5 +150,37 @@ class BackgroundMainPage extends GetView<AppsController> {
         ),
       ),
     );
+  }
+
+  /// Verifica se todas as permissões necessárias foram concedidas
+  Future<bool> _checkAllPermissions() async {
+    try {
+      final state = Get.find<MethodChannelController>();
+      
+      if (Platform.isAndroid) {
+        // Para Android: verifica overlay, usage stats, notificação e background fetch
+        bool overlayPermission = await state.checkOverlayPermission();
+        bool usageStatsPermission = await state.checkUsageStatePermission();
+        bool notificationPermission = await state.checkNotificationPermission();
+        await state.checkBackgroundFetchStatus(); // Atualiza o status
+        
+        return overlayPermission && 
+               usageStatsPermission && 
+               notificationPermission && 
+               state.isBackgroundFetchAvailable;
+      } else {
+        bool backgroundLocationPermission = await state.checkBackgroundLocationPermission();
+        bool notificationPermission = await state.checkNotificationPermission();
+        await state.checkBackgroundFetchStatus(); // Atualiza o status
+        
+        return
+               backgroundLocationPermission && 
+               notificationPermission && 
+               state.isBackgroundFetchAvailable;
+      }
+    } catch (e) {
+      debugPrint('Erro ao verificar permissões: $e');
+      return false;
+    }
   }
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
 import 'package:flutter_screentime/painel/login.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:flutter_screentime/modules/home/apps_repository.dart';
 // import 'package:flutter_screentime/provider/api.dart';
 import 'package:get/get.dart';
@@ -66,14 +67,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             children: [
               Column(
                 children: [
-                  Image.asset(
-                    'assets/icon/180.png',
-                    width: 120,
-                    height: 120,
-                  ),
-                  const SizedBox(height: 20),
                   const Text(
-                    "Seu aplicativo está configurado, agora periodicamente iremos buscar a lista de restrições.",
+                    "O app está configurado, agora periodicamente iremos buscar as restrições.",
                     textAlign: TextAlign.left,
                     style: TextStyle(fontSize: 24),
                   ),
@@ -81,68 +76,92 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   const Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(text: "Agora pode fechar o aplicativo ou atualize a lista clicando no botão "),
-                        TextSpan(
-                          text: "Buscar lista de restrições",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(text: "."),
+                        TextSpan(text: "Caso necessário atualize as restrições manualmente clicando no botão abaixo.")
                       ],
                     ),
                     textAlign: TextAlign.left,
                     style: TextStyle(fontSize: 24),
                   ),
-
                   const SizedBox(height: 20),
-
+                  ElevatedButton(
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            setState(() => isLoading = true);
+                            try {
+                              bool success = await controller.initservice();
+                              if (success) {
+                                Fluttertoast.showToast(
+                                  msg: "✅ Atualização realizada com sucesso!",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.CENTER,
+                                  backgroundColor: Colors.green,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0,
+                                );
+                              } else {
+                                Fluttertoast.showToast(
+                                  msg: "❌ Erro ao atualizar restrições. Tente novamente.",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.CENTER,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0,
+                                );
+                              }
+                            } catch (e) {
+                              debugPrint('Erro ao atualizar restrições: $e');
+                              Fluttertoast.showToast(
+                                msg: "❌ Erro inesperado ao atualizar restrições.",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.CENTER,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                            } finally {
+                              setState(() => isLoading = false);
+                            }
+                          },
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text("Atualizar restrições"),
+                  ),
+                  const SizedBox(height: 20),
                   const Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(text: "Também é possível acessar o painel administrativo clicando no botão "),
                         TextSpan(
-                          text: "Painel administrativo",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(text: "."),
+                            text:
+                                "Acesso administrativo, clique no botão abaixo para acessar o painel e gerenciar as restrições."),
                       ],
                     ),
                     textAlign: TextAlign.left,
                     style: TextStyle(fontSize: 24),
-                  )
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            // Navega para a tela de login
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LoginPage()),
+                            );
+                          },
+                    child: const Text("Painel administrativo"),
+                  ),
                 ],
               ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: isLoading
-                    ? null
-                    : () async {
-                        setState(() => isLoading = true);
-                        await controller.initservice();
-                        setState(() => isLoading = false);
-                      },
-                child: isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : const Text("Buscar lista de restrições"),
-              ),
-              ElevatedButton(
-                onPressed: isLoading
-                    ? null
-                    : () async {
-                        // Navega para a tela de login
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const LoginPage()),
-                        );
-                      },
-                child: const Text("Painel administrativo"),
-              ),
+
               //  const SizedBox(height: 10),
               //   ElevatedButton(
               //     onPressed: () async  {

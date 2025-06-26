@@ -432,27 +432,35 @@ class AppsController extends GetxController implements GetxService {
   //   await repository.postLocation(locationModel);
   // }
 
-  Future<void> initservice() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int customerId = prefs.getInt("id") ?? 0;
-    int companyId = prefs.getInt("companyId") ?? 0;
+  Future<bool> initservice() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int customerId = prefs.getInt("id") ?? 0;
+      int companyId = prefs.getInt("companyId") ?? 0;
 
-    if (!(customerId > 0)) return;
+      if (!(customerId > 0)) {
+        log('initservice: CustomerId inválido: $customerId');
+        return false;
+      }
 
-    await repository.apiGetOrders(customerId, companyId).then((value) async {
-      repository.appBlock;
-      repository.appUnBlock;
-      
-      log('BUSCANDO lista de ORDENS: ${repository.appBlock} e ${repository.appUnBlock}');
-      await BlockUnblockManager.blockApps(repository.appBlock);
-      await BlockUnblockManager.unblockApps(repository.appUnBlock);
-    });
+      await repository.apiGetOrders(customerId, companyId).then((value) async {
+        repository.appBlock;
+        repository.appUnBlock;
+        
+        log('BUSCANDO lista de ORDENS: ${repository.appBlock} e ${repository.appUnBlock}');
+        await BlockUnblockManager.blockApps(repository.appBlock);
+        await BlockUnblockManager.unblockApps(repository.appUnBlock);
+      });
 
+      log('initservice service CustomerId: $customerId - SUCESSO');
+      return true;
 
-    log('initservice service CustomerId: $customerId');
-
-    // double latitude = latitudeValue ?? 0.0;
-    // double longitude = longitudeValue ?? 0.0;
-    // sendLocation(customerId, latitude, longitude);
+      // double latitude = latitudeValue ?? 0.0;
+      // double longitude = longitudeValue ?? 0.0;
+      // sendLocation(customerId, latitude, longitude);
+    } catch (e) {
+      log('initservice ERRO: $e');
+      return false;
+    }
   }
 }

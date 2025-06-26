@@ -61,6 +61,12 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: GetBuilder<MethodChannelController>(builder: (state) {
+              // Verifica se todas as permissões foram concedidas
+              bool allPermissionsGranted = state.isOverlayPermissionGiven &&
+                  state.isUsageStatPermissionGiven &&
+                  state.isNotificationPermissionGiven &&
+                  state.isBackgroundFetchAvailable;
+
               return SingleChildScrollView(
                 child: Column(
                   children: [
@@ -70,10 +76,12 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                         vertical: 10,
                       ),
                       child: Text(
-                        "Social Restrict precisa de algumas permissões para funcionar corretamente.",
+                        allPermissionsGranted
+                            ? "Sucesso! Todas as permissões foram concedidas."
+                            : "Social Restrict precisa de algumas permissões para funcionar corretamente.",
                         textAlign: TextAlign.center,
                         style: MyFont().subtitle(
-                          color: Colors.white,
+                          color: allPermissionsGranted ? Colors.green : Colors.white,
                           fontweight: FontWeight.w400,
                           fontsize: 16,
                         ),
@@ -141,45 +149,63 @@ class _AskPermissionBootomSheetState extends State<AskPermissionBootomSheet> {
                         ],
                       ),
                     ),
-                    MaterialButton(
-                      color: Colors.white,
-                      onPressed: () async {
-                        if (await state.checkOverlayPermission() &&
-                            await state.checkUsageStatePermission() &&
-                            await state.checkNotificationPermission() &&
-                            state.isBackgroundFetchAvailable
-                          ) {
-                              Fluttertoast.showToast(msg: "Permissões concedidas");
-                              setState(() {});
-                              Navigator.pop(context);
-                        } else {
-                          Fluttertoast.showToast(msg: "Permissões negadas");
-                          setState(() {});
-                        }
-                      },
-                      child: Text(
-                        "Verificar",
-                        style: MyFont().subtitle(
-                          color: Colors.black,
-                          fontweight: FontWeight.w400,
-                          fontsize: 14,
+                    // Exibe botões diferentes dependendo do status das permissões
+                    if (allPermissionsGranted)
+                      MaterialButton(
+                        color: Colors.green,
+                        onPressed: () async {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Fechar",
+                          style: MyFont().subtitle(
+                            color: Colors.white,
+                            fontweight: FontWeight.w400,
+                            fontsize: 14,
+                          ),
+                        ),
+                      )
+                    else ...[
+                      MaterialButton(
+                        color: Colors.white,
+                        onPressed: () async {
+                          if (await state.checkOverlayPermission() &&
+                              await state.checkUsageStatePermission() &&
+                              await state.checkNotificationPermission() &&
+                              state.isBackgroundFetchAvailable
+                            ) {
+                                Fluttertoast.showToast(msg: "Permissões concedidas");
+                                setState(() {});
+                                Navigator.pop(context);
+                          } else {
+                            Fluttertoast.showToast(msg: "Permissões negadas");
+                            setState(() {});
+                          }
+                        },
+                        child: Text(
+                          "Verificar",
+                          style: MyFont().subtitle(
+                            color: Colors.black,
+                            fontweight: FontWeight.w400,
+                            fontsize: 14,
+                          ),
                         ),
                       ),
-                    ),
-                    MaterialButton(
-                      color: Colors.white,
-                      onPressed: () async {
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        "Cancelar",
-                        style: MyFont().subtitle(
-                          color: Colors.black,
-                          fontweight: FontWeight.w400,
-                          fontsize: 14,
+                      MaterialButton(
+                        color: Colors.white,
+                        onPressed: () async {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Cancelar",
+                          style: MyFont().subtitle(
+                            color: Colors.black,
+                            fontweight: FontWeight.w400,
+                            fontsize: 14,
+                          ),
                         ),
                       ),
-                    )
+                    ]
                   ],
                 ),
               );
@@ -245,57 +271,84 @@ class _IOSPermissionBottomSheet extends State<IOSPermissionBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final state = Get.find<MethodChannelController>();
+    
+    // Verifica se todas as permissões foram concedidas para iOS
+    bool allPermissionsGranted = state.isUsageStatPermissionGiven &&
+        state.isBackgroundFetchAvailable &&
+        state.isBackgroundLocationPermissionGiven &&
+        state.isNotificationPermissionGiven;
+
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            "Permissões necessárias",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Text(
+            allPermissionsGranted
+                ? "Sucesso! Todas as permissões foram concedidas."
+                : "Permissões necessárias",
+            style: TextStyle(
+              fontSize: 18, 
+              fontWeight: FontWeight.bold,
+              color: allPermissionsGranted ? Colors.green : null,
+            ),
           ),
           const SizedBox(height: 10),
-          if (!state.isUsageStatPermissionGiven)
-            ElevatedButton.icon(
-              icon: const Icon(Icons.shield),
-              label: const Text("Permitir Acesso ao Uso"),
-              onPressed: () async {
-                bool granted = await state.askUsageStatsPermission();
-                if (granted) {
+          // Mostra botões de permissão apenas se nem todas estiverem concedidas
+          if (!allPermissionsGranted) ...[
+            if (!state.isUsageStatPermissionGiven)
+              ElevatedButton.icon(
+                icon: const Icon(Icons.shield),
+                label: const Text("Permitir Acesso ao Uso"),
+                onPressed: () async {
+                  bool granted = await state.askUsageStatsPermission();
+                  if (granted) {
+                    setState(() {});
+                  }
+                },
+              ),
+            if (!state.isBackgroundFetchAvailable)
+              ElevatedButton.icon(
+                icon: const Icon(Icons.access_alarm),
+                label: const Text("Permitir Atualização em Segundo Plano"),
+                onPressed: () async {
+                  await state.checkBackgroundFetchStatus();
                   setState(() {});
-                }
-              },
-            ),
-          if (!state.isBackgroundFetchAvailable)
+                },
+              ),
+            if (!state.isBackgroundLocationPermissionGiven)
+              ElevatedButton.icon(
+                icon: const Icon(Icons.location_on),
+                label: const Text("Permitir Localização"),
+                onPressed: () async {
+                  bool granted = await state.askBackgroundLocationPermission();
+                  if (granted) {
+                    setState(() {});
+                  }
+                },
+              ),
+            if (!state.isNotificationPermissionGiven)
+              ElevatedButton.icon(
+                icon: const Icon(Icons.notifications),
+                label: const Text("Permitir Notificações"),
+                onPressed: () async {
+                  bool granted = await state.askNotificationPermission();
+                  if (granted) {
+                    setState(() {});
+                  }
+                },
+              ),
+          ],
+          const SizedBox(height: 10),
+          // Mostra o botão "Fechar" apenas se todas as permissões estiverem concedidas
+          if (allPermissionsGranted)
             ElevatedButton.icon(
-              icon: const Icon(Icons.access_alarm),
-              label: const Text("Permitir Atualização em Segundo Plano"),
-              onPressed: () async {
-                await state.checkBackgroundFetchStatus();
-                setState(() {});
-              },
-            ),
-          if (!state.isBackgroundLocationPermissionGiven)
-            ElevatedButton.icon(
-              icon: const Icon(Icons.location_on),
-              label: const Text("Permitir Localização"),
-              onPressed: () async {
-                bool granted = await state.askBackgroundLocationPermission();
-                if (granted) {
-                  setState(() {});
-                }
-              },
-            ),
-          if (!state.isNotificationPermissionGiven)
-            ElevatedButton.icon(
-              icon: const Icon(Icons.notifications),
-              label: const Text("Permitir Notificações"),
-              onPressed: () async {
-                bool granted = await state.askNotificationPermission();
-                if (granted) {
-                  setState(() {});
-                }
-              },
+              icon: const Icon(Icons.check),
+              label: const Text("Fechar"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
+              onPressed: () => Navigator.pop(context),
             ),
         ],
       ),
