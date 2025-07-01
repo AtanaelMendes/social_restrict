@@ -61,16 +61,16 @@ class _TutorialIosPageState extends State<TutorialIosPage> {
     {
       'id': '7',
       'image': 'assets/tutorial/ios/step7.png',
-      'title': 'Iniciar execução de restrição',
-      'subtitle': 'Clique em ler QR CODE',
-      'text': 'Após ler o QR CODE, o social restrict entra em ação.'
+      'title': 'Ativar Aplicativo',
+      'subtitle': 'Basta inserir o código de ativacao no campo e clicar em "Ativar".',
+      'text': 'Após ativar o app entrará em funcionamento, você poderá acessar as configurações do app e definir os limites de uso ou bloquear aplicativos nocivos.'
     },
     {
       'id': '8',
       'image': 'assets/tutorial/ios/step8.png',
       'title': 'Concluído',
       'subtitle': 'Configuração concluída',
-      'text': 'Após ler o QR CODE o APP deve abrir essa tela, nesse momento pode fechar o APP.'
+      'text': 'Após ativar o app voce deve ser redirecionado para essa tela, onde é possível acessar o painel administrativo e realizar os comandos de restrição.'
     },
   ];
 
