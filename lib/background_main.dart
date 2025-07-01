@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screentime/code_input_page.dart';
 import 'package:flutter_screentime/modules/home/apps_controller.dart';
 import 'package:flutter_screentime/android/widgets/ask_permission_dialog.dart';
 import 'package:flutter_screentime/android/method_channel_controller.dart';
@@ -60,37 +61,11 @@ class BackgroundMainPage extends GetView<AppsController> {
 
                   // 2. Texto explicativo
                   const Text(
-                    "Solicite o QR Code ao seu guardião para escanear e utilizar o app, mas antes clique em \"VER TUTORIAL\"",
+                    "Solicite o código de ativação ao seu guardião para ativar o app, mas antes clique em \"VER TUTORIAL\", depois conceda as permissões necessárias clicando em \"VERIFICAR PERMISSÕES\".",
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20),
                   ),
                 ],
-              ),
-
-              const SizedBox(height: 10),
-
-              // 3. Botão LER QR CODE
-              ElevatedButton.icon(
-                icon: const Icon(Icons.qr_code),
-                label: const Text("LER QR CODE"),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(200, 50),
-                ),
-                onPressed: () async {
-                  // Verifica se todas as permissões foram concedidas antes de abrir a câmera
-                  if (await _checkAllPermissions()) {
-                    await Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const QRViewPage(),
-                    ));
-                    // initialize();
-                  } else {
-                    Fluttertoast.showToast(
-                      msg: "Conceda todas as permissões antes de usar o QR Code",
-                      toastLength: Toast.LENGTH_LONG,
-                      gravity: ToastGravity.CENTER,
-                    );
-                  }
-                },
               ),
 
               const SizedBox(height: 10),
@@ -127,6 +102,32 @@ class BackgroundMainPage extends GetView<AppsController> {
                 ),
                 onPressed: () async {
                   askPermissionBottomSheet(NavigationService.navigatorKey.currentContext);
+                },
+              ),
+
+              const SizedBox(height: 10),
+
+              // 3. Botão INSERIR CÓDIGO (substituindo LER QR CODE)
+              ElevatedButton.icon(
+                icon: const Icon(Icons.vpn_key),
+                label: const Text("INSERIR CÓDIGO"),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(200, 50),
+                ),
+                onPressed: () async {
+                  // Verifica se todas as permissões foram concedidas antes de abrir a tela de código
+                  if (await _checkAllPermissions()) {
+                    await Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const CodeInputPage(),
+                    ));
+                    // initialize();
+                  } else {
+                    Fluttertoast.showToast(
+                      msg: "Conceda todas as permissões antes de usar o código",
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.CENTER,
+                    );
+                  }
                 },
               ),
 

@@ -22,8 +22,18 @@ class PermissionController extends GetxController implements GetxService {
     }
   }
 
-  Future<Map<Permission, PermissionStatus>> getPermissions(
-      List<Permission> permissions) async {
+  void checkLocationPermission() async {
+    var statusFine = await Permission.location.request();
+    var statusCoarse = await Permission.locationAlways.request();
+
+    if (statusFine.isGranted && statusCoarse.isGranted) {
+      log("Permissões de localização concedidas");
+    } else {
+      log("Permissões de localização não concedidas");
+    }
+  }
+
+  Future<Map<Permission, PermissionStatus>> getPermissions(List<Permission> permissions) async {
     await _semaphore.acquire();
     Map<Permission, PermissionStatus> statuses = {};
     try {
